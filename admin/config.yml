@@ -102,52 +102,7 @@ collections:
             name: enabled
             widget: boolean
             default: true
-            hint: "Turn the entire VHS/dreamlike visual effect on or off"
-          - label: "Hue Rotate (色相旋轉)"
-            name: hueRotate
-            widget: number
-            value_type: float
-            min: 0
-            max: 360
-            step: 1
-            default: 220
-            hint: "Color hue rotation in degrees (0–360). 220 = cold blue-purple"
-          - label: "Saturation (飽和度)"
-            name: saturation
-            widget: number
-            value_type: float
-            min: 0
-            max: 2
-            step: 0.01
-            default: 0.42
-            hint: "Color saturation (0=grey, 1=normal, 2=vivid). Low value gives desaturated dreamlike look"
-          - label: "Brightness (亮度)"
-            name: brightness
-            widget: number
-            value_type: float
-            min: 0
-            max: 1.5
-            step: 0.01
-            default: 0.72
-            hint: "Image brightness (0=black, 1=normal). Lower = darker, moodier"
-          - label: "Contrast (對比度)"
-            name: contrast
-            widget: number
-            value_type: float
-            min: 0
-            max: 3
-            step: 0.01
-            default: 1.22
-            hint: "Image contrast (1=normal). Higher = more crushed blacks and blown highlights"
-          - label: "Global Blur (整體模糊)"
-            name: globalBlur
-            widget: number
-            value_type: float
-            min: 0
-            max: 4
-            step: 0.05
-            default: 0.35
-            hint: "Soft focus blur in pixels. 0=sharp, 1+=dreamlike haze"
+            hint: "Turn the entire VHS/dreamlike texture effect on or off. Site color palette is handled by CSS design and is always active."
           - label: "Vignette Opacity (暈映強度)"
             name: vignetteOpacity
             widget: number

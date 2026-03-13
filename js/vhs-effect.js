@@ -1,6 +1,10 @@
 /* =============================================
-   GGDOVE — VHS / Dreamlike Visual Effect Engine
-   All parameters driven by content/visual.json
+   GGDOVE — VHS / Dreamlike Texture Engine
+   Canvas-only: grain, scanlines, artifacts,
+   chromatic aberration, vignette, ambient glow.
+   CSS filter is NOT used — images display in
+   their original, unmodified colors.
+   Parameters driven by content/visual.json
    ============================================= */
 
 (function (global) {
@@ -15,109 +19,72 @@
     grainCanvas: null,
     grainCtx: null,
     lastGrain: 0,
-    wrapper: null,
 
-    /* ── Default values ──────────────────────── */
+    /* ── Default values ─────────────────────── */
     defaults: {
       enabled:             true,
-      hueRotate:           220,     // deg  0-360
-      saturation:          0.42,    // 0-2
-      brightness:          0.72,    // 0-1.5
-      contrast:            1.22,    // 0-3
-      globalBlur:          0.35,    // px
-      vignetteOpacity:     0.82,    // 0-1
-      vignetteColor:       '#060116',
-      overlayColor:        '#0b0428',
-      overlayOpacity:      0.30,    // 0-1
-      edgeBlurSize:        65,      // px
-      grainOpacity:        0.070,   // 0-1
-      scanlinesOpacity:    0.13,    // 0-1
-      scanlinesSpacing:    3,       // px
-      artifactsOpacity:    0.28,    // 0-1
-      glowIntensity:       1.25,    // 0-5
-      glowColor:           '#7744ff',
-      chromaticAberration: 1.8     // px (0=off)
+      // NOTE: CSS filter params (hueRotate, saturation, brightness, contrast,
+      // globalBlur) are intentionally removed. Color palette is handled by
+      // CSS design — images are never filtered.
+      vignetteOpacity:     0.80,   // 0-1
+      vignetteColor:       '#040112',
+      overlayColor:        '#08021e',
+      overlayOpacity:      0.12,   // kept very low — subtle atmospheric tint only
+      edgeBlurSize:        60,     // px
+      grainOpacity:        0.065,  // 0-1
+      scanlinesOpacity:    0.11,   // 0-1
+      scanlinesSpacing:    3,      // px
+      artifactsOpacity:    0.26,   // 0-1
+      glowIntensity:       1.20,   // 0-5
+      glowColor:           '#6633ff',
+      chromaticAberration: 1.6    // px (0=off)
     },
 
-    /* ── Public init ─────────────────────────── */
+    /* ── Public init ────────────────────────── */
     init: function (userCfg) {
       this.cfg = Object.assign({}, this.defaults, userCfg || {});
       if (!this.cfg.enabled) return;
 
       var self = this;
-      // Delay one frame so all page content is painted first
       requestAnimationFrame(function () {
         self._setup();
       });
     },
 
     _setup: function () {
-      var isHome = document.body.classList.contains('home-page');
-
-      if (isHome) {
-        // Home page: apply filter to Three.js canvas container
-        var container = document.getElementById('canvas-container');
-        if (container) container.style.filter = this._filterStr();
-      } else {
-        // Inner pages: wrap body content in filtered div
-        this._wrapContent();
-      }
-
       this._addOverlays();
       this._initCanvas();
       this._initGrainBuffer();
       this._loop();
     },
 
-    /* ── CSS filter string ───────────────────── */
-    _filterStr: function () {
-      var c = this.cfg;
-      var parts = [
-        'hue-rotate(' + c.hueRotate + 'deg)',
-        'saturate(' + c.saturation + ')',
-        'brightness(' + c.brightness + ')',
-        'contrast(' + c.contrast + ')'
-      ];
-      if (c.globalBlur > 0) parts.push('blur(' + c.globalBlur + 'px)');
-      return parts.join(' ');
-    },
-
-    /* ── Wrap inner-page content ─────────────── */
-    _wrapContent: function () {
-      var wrap = document.createElement('div');
-      wrap.id = 'vhs-content';
-      wrap.style.cssText = 'min-height:100vh;position:relative;filter:' + this._filterStr();
-      var kids = Array.from(document.body.childNodes);
-      kids.forEach(function (k) { wrap.appendChild(k); });
-      document.body.appendChild(wrap);
-      this.wrapper = wrap;
-    },
-
-    /* ── Fixed overlay divs ──────────────────── */
+    /* ── Fixed overlay divs ─────────────────── */
     _addOverlays: function () {
       var c = this.cfg;
 
-      // 1. Color tint (multiply blend → cold blue-purple shift)
+      // 1. Very subtle cold atmospheric tint — normal blend, very low opacity
+      //    Does not meaningfully shift image colors at this opacity level
       this._div('vhs-tint',
         'position:fixed;inset:0;z-index:9990;pointer-events:none;' +
         'background:' + c.overlayColor + ';' +
-        'opacity:' + c.overlayOpacity + ';' +
-        'mix-blend-mode:multiply;'
+        'opacity:' + c.overlayOpacity + ';'
       );
 
-      // 2. Vignette (radial dark gradient)
+      // 2. Vignette — darkens edges only, no hue shift
       this._div('vhs-vignette',
         'position:fixed;inset:0;z-index:9991;pointer-events:none;' +
-        'background:radial-gradient(ellipse at 50% 50%,' +
-          'transparent 18%,' + c.vignetteColor + '99 58%,' + c.vignetteColor + ' 100%);' +
+        'background:radial-gradient(ellipse 80% 75% at 50% 50%,' +
+          'transparent 20%,' +
+          c.vignetteColor + 'aa 55%,' +
+          c.vignetteColor + 'ff 100%);' +
         'opacity:' + c.vignetteOpacity + ';'
       );
 
-      // 3. Edge inner box-shadow blur
+      // 3. Inset edge shadow
       this._div('vhs-edge',
         'position:fixed;inset:0;z-index:9989;pointer-events:none;' +
         'box-shadow:inset 0 0 ' + c.edgeBlurSize + 'px ' +
-          Math.round(c.edgeBlurSize * 0.6) + 'px ' + c.vignetteColor + ';'
+          Math.round(c.edgeBlurSize * 0.5) + 'px ' + c.vignetteColor + ';'
       );
     },
 
@@ -129,7 +96,7 @@
       return el;
     },
 
-    /* ── Main canvas (grain / scanlines / glitch) */
+    /* ── Main canvas ─────────────────────────── */
     _initCanvas: function () {
       this.canvas = document.createElement('canvas');
       this.canvas.id = 'vhs-canvas';
@@ -148,7 +115,7 @@
       this.canvas.height = window.innerHeight;
     },
 
-    /* ── Offscreen grain buffer (256×256, tiled) ─ */
+    /* ── Grain buffer ─────────────────────────── */
     _initGrainBuffer: function () {
       this.grainCanvas = document.createElement('canvas');
       this.grainCanvas.width  = 256;
@@ -166,26 +133,28 @@
 
       for (var i = 0; i < data.length; i += 4) {
         var v = Math.random() * 255 | 0;
+        // Neutral grain — no blue tint added so image colors aren't shifted
         data[i]   = v;
         data[i+1] = v;
-        data[i+2] = (v + Math.random() * 40) | 0; // slight blue tint
+        data[i+2] = v;
         data[i+3] = (Math.random() * op * 255) | 0;
       }
       gc.putImageData(img, 0, 0);
     },
 
-    /* ── Draw passes ─────────────────────────── */
+    /* ── Draw passes ──────────────────────────── */
     _drawGlow: function () {
       var gi = this.cfg.glowIntensity;
       if (gi <= 0) return;
       var ctx = this.ctx;
       var w = this.canvas.width, h = this.canvas.height;
-      var grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, h * 0.65);
-      var alpha = Math.round(gi * 10).toString(16).padStart(2,'0');
+      var grad = ctx.createRadialGradient(w/2, h * 0.46, 0, w/2, h * 0.46, h * 0.62);
+      var alpha = Math.min(255, Math.round(gi * 12)).toString(16).padStart(2,'0');
       grad.addColorStop(0, this.cfg.glowColor + alpha);
+      grad.addColorStop(0.5, this.cfg.glowColor + '0a');
       grad.addColorStop(1, 'transparent');
       ctx.save();
-      ctx.globalAlpha = 0.28;
+      ctx.globalAlpha = 0.30;
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
       ctx.restore();
@@ -209,10 +178,10 @@
     _drawScanlines: function () {
       var op = this.cfg.scanlinesOpacity;
       if (op <= 0) return;
-      var sp = this.cfg.scanlinesSpacing;
+      var sp  = Math.max(1, this.cfg.scanlinesSpacing);
       var ctx = this.ctx;
       ctx.save();
-      ctx.fillStyle = 'rgba(0,0,8,' + op + ')';
+      ctx.fillStyle = 'rgba(0,0,0,' + op + ')';
       for (var y = 0; y < this.canvas.height; y += sp) {
         ctx.fillRect(0, y, this.canvas.width, 1);
       }
@@ -225,42 +194,42 @@
       var ctx = this.ctx;
       var w = this.canvas.width, h = this.canvas.height;
 
-      // Horizontal glitch bar (occasional)
-      if (Math.random() < 0.042) {
+      // Horizontal glitch bar
+      if (Math.random() < 0.038) {
         var y1 = Math.random() * h;
-        var bh = Math.random() * 3.5 + 0.5;
-        var xs = (Math.random() - 0.5) * 35;
+        var bh = Math.random() * 3 + 0.5;
+        var xs = (Math.random() - 0.5) * 30;
         ctx.save();
-        ctx.fillStyle = 'rgba(120,155,255,' + (op * Math.random() * 0.38) + ')';
+        ctx.fillStyle = 'rgba(110,140,255,' + (op * Math.random() * 0.32) + ')';
         ctx.fillRect(xs, y1, w, bh);
         ctx.restore();
       }
 
       // White tracking streak
-      if (Math.random() < 0.018) {
+      if (Math.random() < 0.015) {
         var y2 = Math.random() * h;
         ctx.save();
-        ctx.fillStyle = 'rgba(200,210,255,' + (op * 0.22) + ')';
-        ctx.fillRect(0, y2, w * (0.25 + Math.random() * 0.75), 1.2);
+        ctx.fillStyle = 'rgba(190,205,255,' + (op * 0.18) + ')';
+        ctx.fillRect(0, y2, w * (0.3 + Math.random() * 0.7), 1);
         ctx.restore();
       }
 
-      // Color smear band
-      if (Math.random() < 0.012) {
+      // Subtle color smear band
+      if (Math.random() < 0.010) {
         var y3 = Math.random() * h;
-        var sh = Math.random() * 7 + 1;
+        var sh = Math.random() * 6 + 1;
         ctx.save();
-        ctx.fillStyle = 'rgba(70,30,180,' + (op * 0.14) + ')';
+        ctx.fillStyle = 'rgba(60,20,160,' + (op * 0.10) + ')';
         ctx.fillRect(0, y3, w, sh);
         ctx.restore();
       }
 
       // Vertical flicker stripe (very rare)
-      if (Math.random() < 0.005) {
+      if (Math.random() < 0.004) {
         var x4 = Math.random() * w;
-        var sw = Math.random() * 3 + 1;
+        var sw = Math.random() * 2.5 + 0.5;
         ctx.save();
-        ctx.fillStyle = 'rgba(180,200,255,' + (op * 0.10) + ')';
+        ctx.fillStyle = 'rgba(170,190,255,' + (op * 0.08) + ')';
         ctx.fillRect(x4, 0, sw, h);
         ctx.restore();
       }
@@ -271,26 +240,27 @@
       if (ca <= 0) return;
       var ctx = this.ctx;
       var w = this.canvas.width, h = this.canvas.height;
-      var str = ca * 0.022;
+      var zone = Math.min(0.22, ca * 0.012 + 0.06);
+      var str  = ca * 0.018;
 
       ctx.save();
       // Red fringe — left edge
-      var lg = ctx.createLinearGradient(0, 0, w * 0.18, 0);
-      lg.addColorStop(0, 'rgba(255,0,60,' + str + ')');
+      var lg = ctx.createLinearGradient(0, 0, w * zone, 0);
+      lg.addColorStop(0, 'rgba(255,0,50,' + str + ')');
       lg.addColorStop(1, 'transparent');
       ctx.fillStyle = lg;
-      ctx.fillRect(0, 0, w * 0.18, h);
+      ctx.fillRect(0, 0, w * zone, h);
 
       // Cyan fringe — right edge
-      var rg = ctx.createLinearGradient(w, 0, w * 0.82, 0);
-      rg.addColorStop(0, 'rgba(0,80,255,' + str + ')');
+      var rg = ctx.createLinearGradient(w, 0, w * (1 - zone), 0);
+      rg.addColorStop(0, 'rgba(0,90,255,' + str + ')');
       rg.addColorStop(1, 'transparent');
       ctx.fillStyle = rg;
-      ctx.fillRect(w * 0.82, 0, w * 0.18, h);
+      ctx.fillRect(w * (1 - zone), 0, w * zone, h);
       ctx.restore();
     },
 
-    /* ── Animation loop ──────────────────────── */
+    /* ── Animation loop ─────────────────────── */
     _loop: function () {
       var ctx = this.ctx;
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -306,31 +276,18 @@
       this.animId = requestAnimationFrame(function () { self._loop(); });
     },
 
-    /* ── Public: live-update a single param ───── */
+    /* ── Public: live-update a single param ─── */
     update: function (key, value) {
       if (!(key in this.cfg)) return;
       this.cfg[key] = value;
 
-      // Re-apply filter if it's a filter param
-      var filterParams = ['hueRotate','saturation','brightness','contrast','globalBlur'];
-      if (filterParams.indexOf(key) !== -1) {
-        var filterStr = this._filterStr();
-        var content = document.getElementById('vhs-content');
-        if (content) content.style.filter = filterStr;
-        var container = document.getElementById('canvas-container');
-        if (container) container.style.filter = filterStr;
-      }
-
-      // Re-apply overlay params
       var tint = document.getElementById('vhs-tint');
       if (tint) {
         tint.style.background = this.cfg.overlayColor;
-        tint.style.opacity = this.cfg.overlayOpacity;
+        tint.style.opacity    = this.cfg.overlayOpacity;
       }
       var vig = document.getElementById('vhs-vignette');
-      if (vig) {
-        vig.style.opacity = this.cfg.vignetteOpacity;
-      }
+      if (vig) vig.style.opacity = this.cfg.vignetteOpacity;
     },
 
     /* ── Destroy ─────────────────────────────── */
@@ -340,12 +297,6 @@
         var el = document.getElementById(id);
         if (el) el.remove();
       });
-      var wrap = document.getElementById('vhs-content');
-      if (wrap) {
-        var p = wrap.parentNode;
-        while (wrap.firstChild) p.insertBefore(wrap.firstChild, wrap);
-        wrap.remove();
-      }
     }
   };
 
