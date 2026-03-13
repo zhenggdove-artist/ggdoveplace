@@ -2,7 +2,7 @@ backend:
   name: github
   repo: zhenggdove-artist/ggdoveplace
   branch: main
-  base_url: https://sveltia-cms-auth.pages.dev
+  base_url: https://ggdove-cms-auth.onrender.com
 
 media_folder: images/uploads
 public_folder: /images/uploads
