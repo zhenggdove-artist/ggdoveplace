@@ -32,7 +32,7 @@
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="home-page">
   <div id="canvas-container"></div>
 
   <nav id="home-nav">
@@ -47,6 +47,7 @@
   </nav>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/vhs-effect.js"></script>
   <script>
   (function() {
     // ── Scene setup ──
@@ -235,6 +236,11 @@
 
     // Fade in nav after 2s
     setTimeout(() => document.getElementById('home-nav').classList.add('visible'), 2000);
+
+    // Init VHS effect from visual.json
+    fetch('content/visual.json').then(r => r.json()).catch(() => ({})).then(cfg => {
+      if (window.VHSEffect) VHSEffect.init(cfg);
+    });
   })();
   </script>
 </body>

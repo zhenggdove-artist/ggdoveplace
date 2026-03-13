@@ -2,17 +2,30 @@
    GGDOVE PORTFOLIO — Main JS
    ============================================= */
 
-const DATA_URL = 'content/data.json';
-let siteData = null;
+const DATA_URL   = 'content/data.json';
+const VISUAL_URL = 'content/visual.json';
+let siteData   = null;
+let visualData = null;
 let lightboxItems = [];
 let lightboxIndex = 0;
 const INITIAL_SHOW = 9;
 
 // ── Load data ──────────────────────────────────
 async function loadData() {
-  const res = await fetch(DATA_URL);
-  siteData = await res.json();
+  const [data, visual] = await Promise.all([
+    fetch(DATA_URL).then(r => r.json()),
+    fetch(VISUAL_URL).then(r => r.json()).catch(() => ({}))
+  ]);
+  siteData   = data;
+  visualData = visual;
   return siteData;
+}
+
+// ── Init VHS effect (call after all rendering) ─
+function initVHS() {
+  if (window.VHSEffect && visualData) {
+    VHSEffect.init(visualData);
+  }
 }
 
 // ── Header / Nav ───────────────────────────────
@@ -38,8 +51,6 @@ function renderHeader(activePage) {
 // ── Lightbox ───────────────────────────────────
 function initLightbox() {
   const lb   = document.getElementById('lightbox');
-  const img  = document.getElementById('lb-img');
-  const info = document.getElementById('lb-info');
   if (!lb) return;
 
   document.getElementById('lb-close').onclick = () => lb.classList.remove('open');

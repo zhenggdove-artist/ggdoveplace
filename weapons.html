@@ -25,12 +25,14 @@
   </div>
 
   <footer><p>© GGdove</p></footer>
+  <script src="js/vhs-effect.js"></script>
   <script src="js/main.js"></script>
   <script>
     loadData().then(() => {
       renderHeader('weapons');
       initLightbox();
       renderWeapons();
+      initVHS();
     });
   </script>
 </body>

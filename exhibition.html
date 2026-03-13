@@ -13,11 +13,13 @@
     <div class="exhibition-list" id="exhibition-list"></div>
   </div>
   <footer><p>© GGdove</p></footer>
+  <script src="js/vhs-effect.js"></script>
   <script src="js/main.js"></script>
   <script>
     loadData().then(() => {
       renderHeader('exhibition');
       renderExhibition();
+      initVHS();
     });
   </script>
 </body>

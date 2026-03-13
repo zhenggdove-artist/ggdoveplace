@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: YOUR_GITHUB_USERNAME/ggdoveplace
+  repo: zhenggdove-artist/ggdoveplace
   branch: main
   base_url: https://sveltia-cms-auth.pages.dev
 
@@ -90,3 +90,157 @@ collections:
               - { label: Title,       name: title,       widget: string }
               - { label: Subtitle,    name: subtitle,    widget: string }
               - { label: Description, name: description, widget: string }
+
+  - name: visual
+    label: Visual Style — VHS Effect (視覺效果)
+    files:
+      - label: VHS Visual Parameters
+        name: visual_params
+        file: content/visual.json
+        fields:
+          - label: "Enable VHS Effect"
+            name: enabled
+            widget: boolean
+            default: true
+            hint: "Turn the entire VHS/dreamlike visual effect on or off"
+          - label: "Hue Rotate (色相旋轉)"
+            name: hueRotate
+            widget: number
+            value_type: float
+            min: 0
+            max: 360
+            step: 1
+            default: 220
+            hint: "Color hue rotation in degrees (0–360). 220 = cold blue-purple"
+          - label: "Saturation (飽和度)"
+            name: saturation
+            widget: number
+            value_type: float
+            min: 0
+            max: 2
+            step: 0.01
+            default: 0.42
+            hint: "Color saturation (0=grey, 1=normal, 2=vivid). Low value gives desaturated dreamlike look"
+          - label: "Brightness (亮度)"
+            name: brightness
+            widget: number
+            value_type: float
+            min: 0
+            max: 1.5
+            step: 0.01
+            default: 0.72
+            hint: "Image brightness (0=black, 1=normal). Lower = darker, moodier"
+          - label: "Contrast (對比度)"
+            name: contrast
+            widget: number
+            value_type: float
+            min: 0
+            max: 3
+            step: 0.01
+            default: 1.22
+            hint: "Image contrast (1=normal). Higher = more crushed blacks and blown highlights"
+          - label: "Global Blur (整體模糊)"
+            name: globalBlur
+            widget: number
+            value_type: float
+            min: 0
+            max: 4
+            step: 0.05
+            default: 0.35
+            hint: "Soft focus blur in pixels. 0=sharp, 1+=dreamlike haze"
+          - label: "Vignette Opacity (暈映強度)"
+            name: vignetteOpacity
+            widget: number
+            value_type: float
+            min: 0
+            max: 1
+            step: 0.01
+            default: 0.82
+            hint: "Darkness of the vignette edge fade (0=none, 1=full black edges)"
+          - label: "Vignette Color (暈映顏色)"
+            name: vignetteColor
+            widget: color
+            default: "#060116"
+            hint: "Color of the vignette and edge shadow. Deep purple/black recommended"
+          - label: "Overlay Color (色調疊加顏色)"
+            name: overlayColor
+            widget: color
+            default: "#0b0428"
+            hint: "Color of the full-screen color tint overlay (multiply blend)"
+          - label: "Overlay Opacity (色調疊加強度)"
+            name: overlayOpacity
+            widget: number
+            value_type: float
+            min: 0
+            max: 1
+            step: 0.01
+            default: 0.30
+            hint: "How strong the color tint overlay is (0=none, 1=full color)"
+          - label: "Edge Blur Size (邊緣模糊大小)"
+            name: edgeBlurSize
+            widget: number
+            value_type: int
+            min: 0
+            max: 200
+            step: 5
+            default: 65
+            hint: "Size of the inner box-shadow blur on screen edges in pixels"
+          - label: "Grain Opacity (顆粒強度)"
+            name: grainOpacity
+            widget: number
+            value_type: float
+            min: 0
+            max: 0.5
+            step: 0.005
+            default: 0.07
+            hint: "Film grain intensity (0=none, 0.15+=heavy grain)"
+          - label: "Scanlines Opacity (掃描線強度)"
+            name: scanlinesOpacity
+            widget: number
+            value_type: float
+            min: 0
+            max: 0.5
+            step: 0.01
+            default: 0.13
+            hint: "Horizontal scanline darkness (0=none, 0.3=very visible)"
+          - label: "Scanlines Spacing (掃描線間距)"
+            name: scanlinesSpacing
+            widget: number
+            value_type: int
+            min: 1
+            max: 10
+            step: 1
+            default: 3
+            hint: "Pixels between each scanline (1=dense, 6=sparse)"
+          - label: "Artifacts Opacity (故障效果強度)"
+            name: artifactsOpacity
+            widget: number
+            value_type: float
+            min: 0
+            max: 1
+            step: 0.01
+            default: 0.28
+            hint: "Intensity of random VHS glitch bars, tracking streaks and color smears"
+          - label: "Glow Intensity (光暈強度)"
+            name: glowIntensity
+            widget: number
+            value_type: float
+            min: 0
+            max: 5
+            step: 0.05
+            default: 1.25
+            hint: "Ambient center glow brightness (0=none, 3+=strong bloom)"
+          - label: "Glow Color (光暈顏色)"
+            name: glowColor
+            widget: color
+            default: "#7744ff"
+            hint: "Color of the ambient radial glow effect"
+          - label: "Chromatic Aberration (色差強度)"
+            name: chromaticAberration
+            widget: number
+            value_type: float
+            min: 0
+            max: 8
+            step: 0.1
+            default: 1.8
+            hint: "Red/cyan color fringe on screen edges in pixels (0=off, 4+=strong lens distortion)"
