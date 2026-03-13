@@ -3,7 +3,7 @@
   "scanlinesSpacing": 3,
   "edgeBlurSize": 35,
   "glowIntensity": 1.5,
-  "chromaticAberration": 2.2,
+  "chromaticAberration": 4,
   "vignetteColor": "#03082d",
   "scanlinesOpacity": 0.13,
   "artifactsOpacity": 0.38,
