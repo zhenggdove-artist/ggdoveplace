@@ -5,10 +5,10 @@
     "description": "Portfolio of Zheng Jun Peng"
   },
   "bio": {
-    "name": "鄭鈞鵬 Zheng Jun Peng",
+    "name": "鄭君朋 Zheng Jun Peng",
     "subtitle": "Artist / GGdove",
     "photo": "images/bio-photo.jpg",
-    "text": "鄭鈞鵬，藝術家，以GGdove為名進行創作。作品橫跨裝置、影像、繪畫等媒材，關注日常物件與身體感知之間的張力關係。",
+    "text": "鄭君朋 (Jun-Peng Zheng) 畢業於台北市立大學視覺藝術學系。\n其跨領域藝術實踐的核心在於建構一套將嚴肅的社會、宗教與權力結構轉譯\n為「遊戲型態（Ludic Forms）」的介入機制。將創作視為一種中\n介過程，透過模擬與系統化的策略，將個體創傷、政治憤怒與制度性\n批判重新編碼為可操作的互動體系。\n他擅長利用技術介入（如人工智慧與數位媒介）攪擾數據、文本與現\n實存有之間的界線。對他而言，「遊戲化」並非消遣，而是一種解構\n宏大敘事、揭示隱蔽權力動態的批判工具。透過在模擬空間中重構神\n話原型與儀式行為，他的作品在虛實交匯的縫隙中，為觀者開啟了重\n新審視當代社會運作邏輯的思辨空間",
     "cv_url": ""
   },
   "contact": {
@@ -19,31 +19,206 @@
     "image": "images/contact-bg.jpeg"
   },
   "projects": [
-    { "id": 1,  "image": "images/project-01.jpg", "title": "無人問津的角落 II", "year": "2025", "medium": "Mixed media", "dimensions": "45 x 55 cm" },
-    { "id": 2,  "image": "images/project-02.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 3,  "image": "images/project-03.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 4,  "image": "images/project-04.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 5,  "image": "images/project-05.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 6,  "image": "images/project-06.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 7,  "image": "images/project-07.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 8,  "image": "images/project-08.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 9,  "image": "images/project-09.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 10, "image": "images/project-10.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 11, "image": "images/project-11.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 12, "image": "images/project-12.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 13, "image": "images/project-13.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 14, "image": "images/project-14.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 15, "image": "images/project-15.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 16, "image": "images/project-16.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 17, "image": "images/project-17.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 18, "image": "images/project-18.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 19, "image": "images/project-19.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 20, "image": "images/project-20.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 21, "image": "images/project-21.png", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 22, "image": "images/project-22.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 23, "image": "images/project-23.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 24, "image": "images/project-24.jpg", "title": "", "year": "", "medium": "", "dimensions": "" },
-    { "id": 25, "image": "images/project-25.jpg", "title": "", "year": "", "medium": "", "dimensions": "" }
+    {
+      "id": 1,
+      "image": "images/project-01.jpg",
+      "title": "無人問津的角落 II",
+      "year": "2025",
+      "medium": "Mixed media",
+      "dimensions": "45 x 55 cm"
+    },
+    {
+      "id": 2,
+      "image": "images/project-02.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 3,
+      "image": "images/project-03.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 4,
+      "image": "images/project-04.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 5,
+      "image": "images/project-05.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 6,
+      "image": "images/project-06.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 7,
+      "image": "images/project-07.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 8,
+      "image": "images/project-08.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 9,
+      "image": "images/project-09.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 10,
+      "image": "images/project-10.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 11,
+      "image": "images/project-11.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 12,
+      "image": "images/project-12.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 13,
+      "image": "images/project-13.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 14,
+      "image": "images/project-14.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 15,
+      "image": "images/project-15.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 16,
+      "image": "images/project-16.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 17,
+      "image": "images/project-17.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 18,
+      "image": "images/project-18.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 19,
+      "image": "images/project-19.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 20,
+      "image": "images/project-20.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 21,
+      "image": "images/project-21.png",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 22,
+      "image": "images/project-22.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 23,
+      "image": "images/project-23.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 24,
+      "image": "images/project-24.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    },
+    {
+      "id": 25,
+      "image": "images/project-25.jpg",
+      "title": "",
+      "year": "",
+      "medium": "",
+      "dimensions": ""
+    }
   ],
   "exhibition": [
     {
@@ -66,18 +241,83 @@
     }
   ],
   "weapons": [
-    { "id": 1,  "image": "images/weapon-01.jpg", "name": "停止蠕動罷，你這醜陋的東西！", "price": "" },
-    { "id": 2,  "image": "images/weapon-02.jpg", "name": "對話錄殘卷 Dialogue Fragment-I-E", "price": "" },
-    { "id": 3,  "image": "images/weapon-03.jpg", "name": "優良人體細胞操作規範", "price": "" },
-    { "id": 4,  "image": "images/weapon-04.jpg", "name": "weapon-04", "price": "" },
-    { "id": 5,  "image": "images/weapon-05.jpg", "name": "weapon-05", "price": "" },
-    { "id": 6,  "image": "images/weapon-06.jpg", "name": "weapon-06", "price": "" },
-    { "id": 7,  "image": "images/weapon-07.jpg", "name": "weapon-07", "price": "" },
-    { "id": 8,  "image": "images/weapon-08.jpg", "name": "weapon-08", "price": "" },
-    { "id": 9,  "image": "images/weapon-09.jpg", "name": "weapon-09", "price": "" },
-    { "id": 10, "image": "images/weapon-10.jpg", "name": "weapon-10", "price": "" },
-    { "id": 11, "image": "images/weapon-11.jpg", "name": "weapon-11", "price": "" },
-    { "id": 12, "image": "images/weapon-12.jpg", "name": "weapon-12", "price": "" },
-    { "id": 13, "image": "images/weapon-13.jpg", "name": "weapon-13", "price": "" }
+    {
+      "id": 1,
+      "image": "images/weapon-01.jpg",
+      "name": "停止蠕動罷，你這醜陋的東西！",
+      "price": ""
+    },
+    {
+      "id": 2,
+      "image": "images/weapon-02.jpg",
+      "name": "對話錄殘卷 Dialogue Fragment-I-E",
+      "price": ""
+    },
+    {
+      "id": 3,
+      "image": "images/weapon-03.jpg",
+      "name": "優良人體細胞操作規範",
+      "price": ""
+    },
+    {
+      "id": 4,
+      "image": "images/weapon-04.jpg",
+      "name": "weapon-04",
+      "price": ""
+    },
+    {
+      "id": 5,
+      "image": "images/weapon-05.jpg",
+      "name": "weapon-05",
+      "price": ""
+    },
+    {
+      "id": 6,
+      "image": "images/weapon-06.jpg",
+      "name": "weapon-06",
+      "price": ""
+    },
+    {
+      "id": 7,
+      "image": "images/weapon-07.jpg",
+      "name": "weapon-07",
+      "price": ""
+    },
+    {
+      "id": 8,
+      "image": "images/weapon-08.jpg",
+      "name": "weapon-08",
+      "price": ""
+    },
+    {
+      "id": 9,
+      "image": "images/weapon-09.jpg",
+      "name": "weapon-09",
+      "price": ""
+    },
+    {
+      "id": 10,
+      "image": "images/weapon-10.jpg",
+      "name": "weapon-10",
+      "price": ""
+    },
+    {
+      "id": 11,
+      "image": "images/weapon-11.jpg",
+      "name": "weapon-11",
+      "price": ""
+    },
+    {
+      "id": 12,
+      "image": "images/weapon-12.jpg",
+      "name": "weapon-12",
+      "price": ""
+    },
+    {
+      "id": 13,
+      "image": "images/weapon-13.jpg",
+      "name": "weapon-13",
+      "price": ""
+    }
   ]
 }
