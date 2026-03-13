@@ -1,16 +1,17 @@
 {
   "enabled": true,
-  "vignetteOpacity": 0.82,
-  "vignetteColor": "#030010",
-  "overlayColor": "#06011a",
-  "overlayOpacity": 0.12,
-  "edgeBlurSize": 65,
-  "grainOpacity": 0.075,
-  "scanlinesOpacity": 0.13,
   "scanlinesSpacing": 3,
+  "edgeBlurSize": 65,
+  "glowIntensity": 1.5,
+  "chromaticAberration": 2.2,
+  "vignetteColor": "#18fcbd",
+  "scanlinesOpacity": 0.13,
   "artifactsOpacity": 0.38,
+  "grainOpacity": 0.075,
+  "vignetteOpacity": 0.82,
+  "overlayColor": "#ddc51a",
   "rollingBarEnabled": true,
-  "glowIntensity": 1.50,
-  "glowColor": "#5522ff",
-  "chromaticAberration": 2.2
+  "glowColor": "#ff2282",
+  "overlayOpacity": 0.21,
+  "edgeBlurAmount": 5
 }
