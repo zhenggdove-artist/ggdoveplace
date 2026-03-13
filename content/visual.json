@@ -8,10 +8,10 @@
   "scanlinesOpacity": 0.13,
   "artifactsOpacity": 0.38,
   "grainOpacity": 0.075,
-  "vignetteOpacity": 0.68,
+  "vignetteOpacity": 0.2,
   "overlayColor": "#f69013",
   "rollingBarEnabled": true,
   "glowColor": "#ff2282",
-  "overlayOpacity": 0.88,
+  "overlayOpacity": 0.1,
   "edgeBlurAmount": 5
 }
