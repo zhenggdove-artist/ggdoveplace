@@ -30,16 +30,15 @@
     ───────────────────────────────────────────── */
     defaults: {
       enabled:             true,
-      vignetteOpacity:     0.88,
+      vignetteOpacity:     0.82,
       vignetteColor:       '#030010',
       overlayColor:        '#06011a',
-      overlayOpacity:      0.14,
-      edgeBlurSize:        70,
-      edgeBlurAmount:      7,          // backdrop-filter blur radius in px
-      grainOpacity:        0.10,       // strong film grain
-      scanlinesOpacity:    0.18,       // clearly visible scanlines
+      overlayOpacity:      0.12,
+      edgeBlurSize:        65,
+      grainOpacity:        0.075,      // visible but text still legible
+      scanlinesOpacity:    0.13,       // scanlines present but not overpowering
       scanlinesSpacing:    3,
-      artifactsOpacity:    0.42,       // active VHS artifacts
+      artifactsOpacity:    0.38,       // active VHS artifacts
       rollingBarEnabled:   true,
       glowIntensity:       1.50,
       glowColor:           '#5522ff',
@@ -64,32 +63,17 @@
     /* ── Overlay divs ─────────────────────────
        Layering (bottom → top):
          page content               z: 0
-         vhs-edge-blur (backdrop)   z: 9987  ← blurs edges of page content
          vhs-edge (box-shadow)      z: 9988
          vhs-tint (cold atmosphere) z: 9990
          vhs-vignette (dark edges)  z: 9991
          vhs-canvas (grain/lines)   z: 9993  ← texture on top
+       NOTE: backdrop-filter was removed — it caused full-page blur in
+       browsers that don't support mask-image+backdrop-filter together.
     ─────────────────────────────────────────── */
     _addOverlays: function () {
       var c = this.cfg;
 
-      // 1. Edge soft-focus using backdrop-filter + gradient mask
-      //    Blurs only the outer ~28% of viewport edges; center is sharp.
-      //    Does NOT change any colors — purely geometric blur.
-      var blurMask =
-        'radial-gradient(ellipse 72% 68% at 50% 50%,' +
-        'transparent 0%,transparent 36%,' +
-        'rgba(0,0,0,0.5) 56%,black 76%)';
-
-      this._div('vhs-edge-blur',
-        'position:fixed;inset:0;z-index:9987;pointer-events:none;' +
-        'backdrop-filter:blur(' + c.edgeBlurAmount + 'px);' +
-        '-webkit-backdrop-filter:blur(' + c.edgeBlurAmount + 'px);' +
-        'mask-image:' + blurMask + ';' +
-        '-webkit-mask-image:' + blurMask + ';'
-      );
-
-      // 2. Inset edge shadow
+      // 1. Inset edge shadow
       this._div('vhs-edge',
         'position:fixed;inset:0;z-index:9988;pointer-events:none;' +
         'box-shadow:inset 0 0 ' + c.edgeBlurSize + 'px ' +
@@ -417,7 +401,7 @@
     /* ── Destroy ──────────────────────────────────── */
     destroy: function () {
       if (this.animId) cancelAnimationFrame(this.animId);
-      ['vhs-edge-blur','vhs-edge','vhs-tint','vhs-vignette','vhs-canvas'].forEach(function (id) {
+      ['vhs-edge','vhs-tint','vhs-vignette','vhs-canvas'].forEach(function (id) {
         var el = document.getElementById(id);
         if (el) el.remove();
       });

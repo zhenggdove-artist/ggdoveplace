@@ -33,7 +33,7 @@ function renderHeader(activePage) {
   const nav = document.getElementById('main-nav');
   if (!nav || !siteData) return;
   const pages = [
-    { id: 'projects',   label: 'Works',      href: 'projects.html'   },
+    { id: 'projects',   label: 'Works',      href: 'index.html'      },
     { id: 'exhibition', label: 'Exhibition',  href: 'exhibition.html' },
     { id: 'weapons',    label: 'Weapons',     href: 'weapons.html'    },
     { id: 'bio',        label: 'Bio',         href: 'bio.html'        },
