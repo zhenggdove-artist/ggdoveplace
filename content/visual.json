@@ -1,17 +1,17 @@
 {
   "enabled": true,
   "scanlinesSpacing": 3,
-  "edgeBlurSize": 65,
+  "edgeBlurSize": 35,
   "glowIntensity": 1.5,
   "chromaticAberration": 2.2,
-  "vignetteColor": "#18fcbd",
+  "vignetteColor": "#03082d",
   "scanlinesOpacity": 0.13,
   "artifactsOpacity": 0.38,
   "grainOpacity": 0.075,
-  "vignetteOpacity": 0.82,
-  "overlayColor": "#ddc51a",
+  "vignetteOpacity": 0.68,
+  "overlayColor": "#f69013",
   "rollingBarEnabled": true,
   "glowColor": "#ff2282",
-  "overlayOpacity": 0.21,
+  "overlayOpacity": 0.88,
   "edgeBlurAmount": 5
 }
