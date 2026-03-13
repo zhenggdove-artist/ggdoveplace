@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGdove | 名為鴿子的一隻迅猛龍</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a0a; overflow: hidden; }
+    #canvas-container { position: fixed; inset: 0; }
+    #home-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.8rem 3rem;
+      opacity: 0; transition: opacity 1.2s ease;
+    }
+    #home-nav.visible { opacity: 1; }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; letter-spacing: 0.2em; text-transform: uppercase;
+      text-decoration: none; color: rgba(255,255,255,0.9);
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none; color: rgba(255,255,255,0.55);
+      transition: color 0.25s;
+    }
+    .nav-links a:hover { color: rgba(255,255,255,0.9); }
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&display=swap');
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <nav id="home-nav">
+    <a class="nav-logo" href="index.html">GGdove</a>
+    <ul class="nav-links">
+      <li><a href="projects.html">Works</a></li>
+      <li><a href="exhibition.html">Exhibition</a></li>
+      <li><a href="weapons.html">Weapons</a></li>
+      <li><a href="bio.html">Bio</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+  (function() {
+    // ── Scene setup ──
+    const scene    = new THREE.Scene();
+    const camera   = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 2000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(devicePixelRatio);
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setClearColor(0x080810, 1);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    camera.position.set(0, 8, 30);
+    camera.lookAt(0, 0, 0);
+
+    // ── Lighting ──
+    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(10, 20, 10);
+    scene.add(dirLight);
+    const pinkLight = new THREE.PointLight(0xff88cc, 2, 30);
+    pinkLight.position.set(0, 5, 0);
+    scene.add(pinkLight);
+
+    // ── Stars ──
+    const starGeo = new THREE.BufferGeometry();
+    const starPositions = [];
+    for (let i = 0; i < 4000; i++) {
+      starPositions.push((Math.random()-0.5)*400, (Math.random()-0.5)*400, (Math.random()-0.5)*400);
+    }
+    starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+    const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, sizeAttenuation: true });
+    scene.add(new THREE.Points(starGeo, starMat));
+
+    // Red accent stars
+    const redGeo = new THREE.BufferGeometry();
+    const redPos = [];
+    for (let i = 0; i < 300; i++) {
+      redPos.push((Math.random()-0.5)*200, (Math.random()-0.5)*200, (Math.random()-0.5)*200);
+    }
+    redGeo.setAttribute('position', new THREE.Float32BufferAttribute(redPos, 3));
+    scene.add(new THREE.Points(redGeo, new THREE.PointsMaterial({ color: 0xff3333, size: 0.6 })));
+
+    // ── Platform ──
+    const platformGeo = new THREE.BoxGeometry(20, 0.3, 20);
+    const platformMat = new THREE.MeshPhongMaterial({ color: 0x1a3366, transparent: true, opacity: 0.7 });
+    const platform = new THREE.Mesh(platformGeo, platformMat);
+    platform.position.y = -3;
+    scene.add(platform);
+
+    // Grid on platform
+    const grid = new THREE.GridHelper(20, 20, 0x3355aa, 0x223366);
+    grid.position.y = -2.85;
+    scene.add(grid);
+
+    // ── Floating cubes ──
+    const cubes = [];
+    for (let i = 0; i < 28; i++) {
+      const size = 0.15 + Math.random() * 0.5;
+      const geo = new THREE.BoxGeometry(size, size, size);
+      const mat = new THREE.MeshPhongMaterial({
+        color: 0x00eeff, wireframe: Math.random() > 0.5,
+        transparent: true, opacity: 0.5 + Math.random() * 0.5
+      });
+      const cube = new THREE.Mesh(geo, mat);
+      cube.position.set((Math.random()-0.5)*16, -2 + Math.random()*12, (Math.random()-0.5)*16);
+      cube.userData = {
+        speed: 0.002 + Math.random()*0.008,
+        amp: 0.3 + Math.random()*0.7,
+        phase: Math.random()*Math.PI*2,
+        rotSpeed: (Math.random()-0.5)*0.03
+      };
+      scene.add(cube);
+      cubes.push(cube);
+    }
+
+    // ── Torus rings ──
+    const torusColors = [0xff88cc, 0xff44aa, 0xdd22ff];
+    const tori = [];
+    torusColors.forEach((color, i) => {
+      const geo = new THREE.TorusGeometry(4 + i*1.5, 0.06, 8, 80);
+      const mat = new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.7 });
+      const t = new THREE.Mesh(geo, mat);
+      t.rotation.x = Math.PI/2 + i * 0.3;
+      t.position.y = -1 + i * 0.5;
+      t.userData = { rotZ: 0.003 + i * 0.002, rotX: 0.001 };
+      scene.add(t);
+      tori.push(t);
+    });
+
+    // ── Wireframe figure ──
+    const figGroup = new THREE.Group();
+    // Body
+    const bodyGeo = new THREE.CylinderGeometry(0.5, 0.7, 3, 8);
+    const wireMat = new THREE.MeshPhongMaterial({ color: 0x44ff88, wireframe: true });
+    figGroup.add(new THREE.Mesh(bodyGeo, wireMat));
+    // Head
+    const headGeo = new THREE.SphereGeometry(0.6, 8, 8);
+    const head = new THREE.Mesh(headGeo, wireMat.clone());
+    head.position.y = 2.3;
+    figGroup.add(head);
+    // Arms
+    [-1, 1].forEach(side => {
+      const armGeo = new THREE.CylinderGeometry(0.12, 0.12, 2, 6);
+      const arm = new THREE.Mesh(armGeo, wireMat.clone());
+      arm.position.set(side * 1.1, 0.3, 0);
+      arm.rotation.z = side * Math.PI/4;
+      figGroup.add(arm);
+    });
+    figGroup.position.set(0, -1.5, 0);
+    scene.add(figGroup);
+
+    // ── Red vertical dotted line ──
+    const linePts = [];
+    for (let y = -5; y <= 15; y += 0.3) linePts.push(new THREE.Vector3(0, y, 0));
+    const lineGeo = new THREE.BufferGeometry().setFromPoints(linePts);
+    scene.add(new THREE.Points(lineGeo, new THREE.PointsMaterial({ color: 0xff2222, size: 0.08 })));
+
+    // ── Glowing orb ──
+    const orbGeo = new THREE.SphereGeometry(0.8, 16, 16);
+    const orbMat = new THREE.MeshPhongMaterial({ color: 0xff66bb, emissive: 0xff2299, emissiveIntensity: 0.8, transparent: true, opacity: 0.9 });
+    const orb = new THREE.Mesh(orbGeo, orbMat);
+    orb.position.set(3, 2, -2);
+    scene.add(orb);
+
+    // ── Grey tower ──
+    const towerGeo = new THREE.BoxGeometry(1.2, 6, 1.2);
+    const towerMat = new THREE.MeshPhongMaterial({ color: 0x555566, wireframe: true });
+    const tower = new THREE.Mesh(towerGeo, towerMat);
+    tower.position.set(-5, 0, -3);
+    scene.add(tower);
+
+    // ── Ground particle cloud ──
+    const groundGeo = new THREE.BufferGeometry();
+    const groundPos = [];
+    for (let i = 0; i < 500; i++) {
+      groundPos.push((Math.random()-0.5)*24, -3 + Math.random()*0.5, (Math.random()-0.5)*24);
+    }
+    groundGeo.setAttribute('position', new THREE.Float32BufferAttribute(groundPos, 3));
+    scene.add(new THREE.Points(groundGeo, new THREE.PointsMaterial({ color: 0xaaaaff, size: 0.08, transparent: true, opacity: 0.5 })));
+
+    // ── Animate ──
+    let t = 0;
+    let camAngle = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      t += 0.01;
+      camAngle += 0.0015;
+
+      // Camera orbit
+      camera.position.x = Math.sin(camAngle) * 28;
+      camera.position.z = Math.cos(camAngle) * 28;
+      camera.position.y = 6 + Math.sin(camAngle * 0.3) * 3;
+      camera.lookAt(0, 1, 0);
+
+      // Animate cubes
+      cubes.forEach(c => {
+        c.position.y += Math.sin(t * c.userData.speed * 100 + c.userData.phase) * 0.003 * c.userData.amp;
+        c.rotation.x += c.userData.rotSpeed;
+        c.rotation.y += c.userData.rotSpeed * 0.7;
+      });
+
+      // Animate tori
+      tori.forEach(tr => {
+        tr.rotation.z += tr.userData.rotZ;
+        tr.rotation.x += tr.userData.rotX;
+      });
+
+      // Animate figure
+      figGroup.rotation.y += 0.005;
+      figGroup.position.y = -1.5 + Math.sin(t * 0.5) * 0.3;
+
+      // Animate orb
+      orb.position.y = 2 + Math.sin(t * 0.8) * 1.2;
+      orb.position.x = 3 + Math.cos(t * 0.5) * 2;
+      orbMat.emissiveIntensity = 0.5 + Math.sin(t * 2) * 0.4;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+
+    // Fade in nav after 2s
+    setTimeout(() => document.getElementById('home-nav').classList.add('visible'), 2000);
+  })();
+  </script>
+</body>
+</html>

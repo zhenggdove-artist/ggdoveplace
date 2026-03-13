@@ -1,0 +1,92 @@
+backend:
+  name: github
+  repo: YOUR_GITHUB_USERNAME/ggdoveplace
+  branch: main
+  base_url: https://sveltia-cms-auth.pages.dev
+
+media_folder: images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: projects
+    label: Works (作品)
+    files:
+      - label: Works Data
+        name: works
+        file: content/data.json
+        fields:
+          - label: Projects
+            name: projects
+            widget: list
+            fields:
+              - { label: ID,         name: id,         widget: number }
+              - { label: Image,      name: image,      widget: image }
+              - { label: Title,      name: title,      widget: string, required: false }
+              - { label: Year,       name: year,       widget: string, required: false }
+              - { label: Medium,     name: medium,     widget: string, required: false }
+              - { label: Dimensions, name: dimensions, widget: string, required: false }
+
+  - name: weapons
+    label: Weapons (武器)
+    files:
+      - label: Weapons Data
+        name: weapons_data
+        file: content/data.json
+        fields:
+          - label: Weapons
+            name: weapons
+            widget: list
+            fields:
+              - { label: ID,    name: id,    widget: number }
+              - { label: Image, name: image, widget: image }
+              - { label: Name,  name: name,  widget: string, required: false }
+              - { label: Price, name: price, widget: string, required: false }
+
+  - name: bio
+    label: Bio (簡介)
+    files:
+      - label: Bio Data
+        name: bio_data
+        file: content/data.json
+        fields:
+          - label: Bio
+            name: bio
+            widget: object
+            fields:
+              - { label: Name,     name: name,     widget: string }
+              - { label: Subtitle, name: subtitle, widget: string }
+              - { label: Photo,    name: photo,    widget: image }
+              - { label: Text,     name: text,     widget: text }
+              - { label: CV URL,   name: cv_url,   widget: string, required: false }
+
+  - name: contact
+    label: Contact (聯絡)
+    files:
+      - label: Contact Data
+        name: contact_data
+        file: content/data.json
+        fields:
+          - label: Contact
+            name: contact
+            widget: object
+            fields:
+              - { label: Email,         name: email,         widget: string }
+              - { label: Instagram,     name: instagram,     widget: string, required: false }
+              - { label: Instagram URL, name: instagram_url, widget: string, required: false }
+              - { label: Location,      name: location,      widget: string, required: false }
+              - { label: Image,         name: image,         widget: image }
+
+  - name: site_settings
+    label: Site Settings (網站設定)
+    files:
+      - label: Settings
+        name: settings
+        file: content/data.json
+        fields:
+          - label: Site
+            name: site
+            widget: object
+            fields:
+              - { label: Title,       name: title,       widget: string }
+              - { label: Subtitle,    name: subtitle,    widget: string }
+              - { label: Description, name: description, widget: string }

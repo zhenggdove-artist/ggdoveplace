@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bio — GGdove</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav id="main-nav"></nav>
+    <h2 class="page-title">Bio</h2>
+    <div class="bio-layout" id="bio-wrap"></div>
+  </div>
+  <footer><p>© GGdove</p></footer>
+  <script src="js/main.js"></script>
+  <script>
+    loadData().then(() => {
+      renderHeader('bio');
+      renderBio();
+    });
+  </script>
+</body>
+</html>

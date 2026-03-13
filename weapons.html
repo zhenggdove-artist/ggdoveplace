@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weapons — GGdove</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav id="main-nav"></nav>
+    <h2 class="page-title">Weapons</h2>
+    <div class="weapons-grid" id="weapons-grid"></div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lb-close">×</button>
+    <button class="lightbox-prev" id="lb-prev">‹</button>
+    <button class="lightbox-next" id="lb-next">›</button>
+    <div class="lightbox-inner">
+      <img class="lightbox-img" id="lb-img" src="" alt="">
+      <div class="lightbox-info" id="lb-info"></div>
+    </div>
+  </div>
+
+  <footer><p>© GGdove</p></footer>
+  <script src="js/main.js"></script>
+  <script>
+    loadData().then(() => {
+      renderHeader('weapons');
+      initLightbox();
+      renderWeapons();
+    });
+  </script>
+</body>
+</html>
