@@ -131,15 +131,29 @@ collections:
             step: 0.01
             default: 0.30
             hint: "How strong the color tint overlay is (0=none, 1=full color)"
-          - label: "Edge Blur Size (邊緣模糊大小)"
+          - label: "Edge Blur Size (邊緣暗角大小)"
             name: edgeBlurSize
             widget: number
             value_type: int
             min: 0
             max: 200
             step: 5
-            default: 65
-            hint: "Size of the inner box-shadow blur on screen edges in pixels"
+            default: 70
+            hint: "Size of the inner box-shadow darkness on screen edges in pixels"
+          - label: "Edge Soft Focus (邊緣柔焦強度)"
+            name: edgeBlurAmount
+            widget: number
+            value_type: int
+            min: 0
+            max: 20
+            step: 1
+            default: 7
+            hint: "Backdrop blur radius for edge soft-focus effect in px (0=off, 10+=strong dream blur). Does NOT affect image colors."
+          - label: "Rolling Bar / VHS Tracking (磁帶追蹤條)"
+            name: rollingBarEnabled
+            widget: boolean
+            default: true
+            hint: "Periodically shows a rolling dark band scrolling down the screen — simulates VHS tape tracking issues"
           - label: "Grain Opacity (顆粒強度)"
             name: grainOpacity
             widget: number

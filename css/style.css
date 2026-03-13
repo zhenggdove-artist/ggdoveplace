@@ -1,6 +1,6 @@
 /* =============================================
    GGDOVE PORTFOLIO — VHS / Dreamlike Style
-   Aesthetic baked into design — no filter on images
+   Aesthetic baked into design — images unfiltered
    ============================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Space+Mono:wght@400;700&display=swap');
@@ -8,18 +8,18 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:           #05050d;
-  --bg-2:         #0c0c1e;
-  --bg-3:         #13132a;
-  --text:         #b4c4e0;
-  --text-dim:     #485878;
-  --text-bright:  #dce8ff;
+  --bg:           #04040c;
+  --bg-2:         #0a0a1c;
+  --bg-3:         #111128;
+  --text:         #c2d2ee;
+  --text-dim:     #4a5a7a;
+  --text-bright:  #eaf2ff;
   --accent:       #7755ee;
   --accent-dim:   rgba(119, 85, 238, 0.28);
-  --accent-glow:  rgba(119, 85, 238, 0.50);
-  --red:          #ff2244;
-  --border:       rgba(70, 90, 180, 0.16);
-  --border-glow:  rgba(100, 80, 255, 0.32);
+  --accent-glow:  rgba(119, 85, 238, 0.55);
+  --red-ghost:    rgba(255, 8, 38, 0.72);
+  --blue-ghost:   rgba(0, 65, 255, 0.55);
+  --border:       rgba(70, 90, 180, 0.15);
   --mono: 'Space Mono', 'Courier New', monospace;
   --serif: 'Cormorant Garamond', Georgia, serif;
 }
@@ -35,16 +35,65 @@ body {
   min-height: 100vh;
 }
 
-/* ── Custom scrollbar ── */
-::-webkit-scrollbar { width: 4px; }
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-/* ── Selection highlight ── */
+/* ── Selection ── */
 ::selection { background: var(--accent-dim); color: var(--text-bright); }
 
-/* ── Page wrapper ── */
+/* =============================================
+   KEYFRAME ANIMATIONS — VHS Glitch & Drift
+   ============================================= */
+
+/* Continuous red/cyan chromatic drift for large headings */
+@keyframes vhsHeadingGlitch {
+  0%   { text-shadow: -2px 0 var(--red-ghost), 2px 0 var(--blue-ghost), 0 0 28px var(--accent-glow); }
+  8%   { text-shadow: -4px 0 rgba(255,0,30,0.80), 3px 1px rgba(0,50,255,0.45), 0 0 16px var(--accent-glow); }
+  16%  { text-shadow: -1px 1px var(--red-ghost), 1px -1px rgba(0,90,255,0.60), 0 0 40px var(--accent-glow); }
+  24%  { text-shadow: -3px 0 rgba(255,0,20,0.75), 2px 0 var(--blue-ghost), 0 0 22px var(--accent-glow); }
+  32%  { text-shadow: -2px -1px var(--red-ghost), 2px 1px rgba(0,80,255,0.55), 0 0 35px var(--accent-glow); }
+  40%  { text-shadow: -5px 0 rgba(255,0,15,0.65), 3px 0 rgba(0,55,255,0.50), 0 0 20px var(--accent-glow); }
+  50%  { text-shadow: -2px 0 var(--red-ghost), 2px 0 var(--blue-ghost), 0 0 44px var(--accent-glow); }
+  58%  { text-shadow: -3px 1px rgba(255,0,30,0.75), 2px -1px rgba(0,60,255,0.50), 0 0 24px var(--accent-glow); }
+  66%  { text-shadow: -1px 0 rgba(255,20,50,0.80), 1px 0 rgba(0,80,255,0.60), 0 0 36px var(--accent-glow); }
+  74%  { text-shadow: -4px 0 rgba(255,5,35,0.70), 3px 0 rgba(0,50,255,0.45), 0 0 18px var(--accent-glow); }
+  82%  { text-shadow: -2px 1px var(--red-ghost), 2px -1px rgba(0,70,255,0.52), 0 0 30px var(--accent-glow); }
+  90%  { text-shadow: -3px 0 rgba(255,0,25,0.75), 2px 0 var(--blue-ghost), 0 0 38px var(--accent-glow); }
+  100% { text-shadow: -2px 0 var(--red-ghost), 2px 0 var(--blue-ghost), 0 0 28px var(--accent-glow); }
+}
+
+/* Occasional glitch burst for nav logo */
+@keyframes vhsLogoGlitch {
+  0%, 87%, 100% { text-shadow: 0 0 22px var(--accent-glow); }
+  88%  { text-shadow: -4px 0 var(--red-ghost), 3px 0 var(--blue-ghost), 0 0 12px var(--accent-glow); opacity: 0.85; }
+  89.5%{ text-shadow: 2px 0 var(--red-ghost), -2px 0 var(--blue-ghost), 0 0 18px var(--accent-glow); opacity: 1; }
+  91%  { text-shadow: -3px 0 var(--red-ghost), 2px 0 var(--blue-ghost), 0 0 10px var(--accent-glow); opacity: 0.92; }
+  93%  { text-shadow: 0 0 22px var(--accent-glow); opacity: 1; }
+  96%  { text-shadow: -2px 0 rgba(255,0,30,0.5), 1px 0 rgba(0,60,255,0.4), 0 0 22px var(--accent-glow); }
+}
+
+/* Page title glitch (infrequent) */
+@keyframes vhsTitleGlitch {
+  0%, 91%, 100% { text-shadow: 0 0 20px var(--accent-glow); opacity: 1; }
+  92%  { text-shadow: -3px 0 var(--red-ghost), 2px 0 var(--blue-ghost), 0 0 8px var(--accent-glow); opacity: 0.88; }
+  93.5%{ text-shadow: 0 0 20px var(--accent-glow); opacity: 1; }
+  95%  { text-shadow: -2px 0 rgba(255,0,30,0.5), 1px 0 rgba(0,60,255,0.4), 0 0 20px var(--accent-glow); opacity: 0.95; }
+  97%  { text-shadow: 0 0 20px var(--accent-glow); opacity: 1; }
+}
+
+/* Subtle pulse glow for accent elements */
+@keyframes vhsGlowPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.72; }
+}
+
+/* =============================================
+   LAYOUT
+   ============================================= */
+
 .page-wrapper {
   max-width: 1100px;
   margin: 0 auto;
@@ -53,26 +102,25 @@ body {
   position: relative;
 }
 
-/* Subtle vertical glow lines flanking content */
+/* Vertical glow lines flanking content */
 .page-wrapper::before,
 .page-wrapper::after {
   content: '';
   position: fixed;
-  top: 0;
-  bottom: 0;
+  top: 0; bottom: 0;
   width: 1px;
   background: linear-gradient(to bottom,
-    transparent 0%,
-    var(--border) 15%,
-    var(--border) 85%,
-    transparent 100%);
+    transparent 0%, var(--border) 15%, var(--border) 85%, transparent 100%);
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.5;
 }
-.page-wrapper::before { left: calc(50% - 550px); }
-.page-wrapper::after  { right: calc(50% - 550px); }
+.page-wrapper::before { left: calc(50% - 552px); }
+.page-wrapper::after  { right: calc(50% - 552px); }
 
-/* ── Navigation ── */
+/* =============================================
+   NAVIGATION
+   ============================================= */
+
 nav {
   display: flex;
   justify-content: space-between;
@@ -89,12 +137,8 @@ nav {
   text-decoration: none;
   color: var(--text-bright);
   text-transform: uppercase;
-  text-shadow: 0 0 22px var(--accent-glow);
+  animation: vhsLogoGlitch 7s infinite;
   transition: text-shadow 0.3s;
-}
-
-.nav-logo:hover {
-  text-shadow: 0 0 32px var(--accent-glow), 0 0 60px var(--accent-dim);
 }
 
 .nav-links {
@@ -118,13 +162,12 @@ nav {
 .nav-links a::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: 0; left: 0;
   right: 100%;
   height: 1px;
   background: var(--accent);
   box-shadow: 0 0 6px var(--accent);
-  transition: right 0.25s ease;
+  transition: right 0.28s ease;
 }
 
 .nav-links a:hover {
@@ -133,52 +176,56 @@ nav {
 }
 
 .nav-links a:hover::after,
-.nav-links a.active::after {
-  right: 0;
-}
+.nav-links a.active::after { right: 0; }
 
-.nav-links a.active {
-  color: var(--text-bright);
-}
+.nav-links a.active { color: var(--text-bright); }
 
-/* ── Page title ── */
+/* =============================================
+   PAGE TITLE
+   ============================================= */
+
 .page-title {
   font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.32em;
+  font-size: 0.78rem;
+  letter-spacing: 0.38em;
   text-transform: uppercase;
   color: var(--accent);
   margin-bottom: 3rem;
-  padding-bottom: 1rem;
+  padding-bottom: 1.1rem;
   border-bottom: 1px solid var(--border);
-  text-shadow: 0 0 20px var(--accent-glow);
+  animation: vhsTitleGlitch 9s infinite;
   position: relative;
 }
 
-/* Accent bar under page title */
 .page-title::after {
   content: '';
   position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 48px;
-  height: 1px;
+  bottom: -1px; left: 0;
+  width: 52px; height: 1px;
   background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  animation: vhsGlowPulse 2.8s ease-in-out infinite;
 }
 
-/* ── Gallery (Projects & Weapons shared img styles) ── */
-/* CRITICAL: images are NEVER filtered — they display in true color */
+/* =============================================
+   IMAGE RULES — NO FILTER EVER
+   ============================================= */
+
+/* All uploaded artwork / photos: original colors strictly preserved */
 .gallery-item img,
 .weapon-card img,
 .bio-photo,
 .contact-img,
-.exhibition-item img {
+.exhibition-item img,
+.lightbox-img {
   display: block;
-  /* NO filter, NO hue-rotate, NO saturate — original colors preserved */
+  /* Absolutely NO filter, NO hue-rotate, NO saturate — true color always */
 }
 
-/* ── Gallery (Projects) ── */
+/* =============================================
+   GALLERY (PROJECTS)
+   ============================================= */
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -197,22 +244,17 @@ nav {
 .gallery-item::before {
   content: '';
   position: absolute;
-  inset: 0;
-  z-index: 2;
+  inset: 0; z-index: 2;
   border: 1px solid transparent;
   pointer-events: none;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.gallery-item:hover {
-  transform: translateY(-2px);
-}
+.gallery-item:hover { transform: translateY(-3px); }
 
 .gallery-item:hover::before {
   border-color: var(--accent-dim);
-  box-shadow:
-    inset 0 0 30px rgba(80, 60, 200, 0.06),
-    0 4px 30px rgba(80, 60, 200, 0.14);
+  box-shadow: inset 0 0 30px rgba(80,60,200,0.06), 0 6px 32px rgba(80,60,200,0.16);
 }
 
 .gallery-item img {
@@ -260,27 +302,29 @@ nav {
   text-transform: uppercase;
   padding: 0.85rem 3.2rem;
   cursor: pointer;
-  transition: color 0.25s, border-color 0.25s, box-shadow 0.25s, text-shadow 0.25s;
+  transition: all 0.25s;
 }
 
 .btn-load-more:hover {
   border-color: var(--accent);
   color: var(--accent);
   text-shadow: 0 0 12px var(--accent-glow);
-  box-shadow: 0 0 20px rgba(100, 80, 255, 0.12), inset 0 0 20px rgba(100, 80, 255, 0.04);
+  box-shadow: 0 0 22px rgba(100,80,255,0.12), inset 0 0 22px rgba(100,80,255,0.04);
 }
 
-/* ── Lightbox ── */
+/* =============================================
+   LIGHTBOX
+   ============================================= */
+
 .lightbox {
   display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(3, 3, 12, 0.97);
+  position: fixed; inset: 0;
+  background: rgba(2,2,10,0.97);
   z-index: 9999;
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
 }
 
 .lightbox.open { display: flex; }
@@ -299,32 +343,28 @@ nav {
   max-width: 100%;
   object-fit: contain;
   /* NO filter — artwork in true color */
-  box-shadow: 0 0 80px rgba(70, 50, 180, 0.18), 0 0 0 1px var(--border);
+  box-shadow: 0 0 80px rgba(60,40,180,0.20), 0 0 0 1px var(--border);
 }
 
 .lightbox-info {
   font-family: var(--mono);
   color: var(--text-dim);
   font-size: 0.72rem;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.10em;
   margin-top: 1.2rem;
   text-align: center;
-  line-height: 1.8;
+  line-height: 1.9;
 }
 
 .lightbox-close {
-  position: fixed;
-  top: 1.5rem;
-  right: 2rem;
+  position: fixed; top: 1.5rem; right: 2rem;
   color: var(--text-dim);
   font-family: var(--mono);
   font-size: 1.6rem;
   cursor: pointer;
-  background: none;
-  border: none;
+  background: none; border: none;
   line-height: 1;
   transition: color 0.2s, text-shadow 0.2s;
-  letter-spacing: 0;
 }
 
 .lightbox-close:hover {
@@ -333,14 +373,12 @@ nav {
 }
 
 .lightbox-prev, .lightbox-next {
-  position: fixed;
-  top: 50%;
+  position: fixed; top: 50%;
   transform: translateY(-50%);
   color: var(--text-dim);
   font-size: 2rem;
   cursor: pointer;
-  background: none;
-  border: none;
+  background: none; border: none;
   transition: color 0.2s, text-shadow 0.2s;
   padding: 1rem;
   font-family: var(--mono);
@@ -355,7 +393,10 @@ nav {
   text-shadow: 0 0 14px var(--accent-glow);
 }
 
-/* ── Exhibition ── */
+/* =============================================
+   EXHIBITION
+   ============================================= */
+
 .exhibition-list { display: flex; flex-direction: column; gap: 3.5rem; }
 
 .exhibition-item {
@@ -367,22 +408,16 @@ nav {
   position: relative;
 }
 
-/* Purple accent on divider */
 .exhibition-item::after {
   content: '';
   position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 50px;
-  height: 1px;
+  bottom: -1px; left: 0;
+  width: 52px; height: 1px;
   background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
+  box-shadow: 0 0 10px var(--accent);
 }
 
-.exhibition-item:last-child {
-  border-bottom: none;
-}
-
+.exhibition-item:last-child { border-bottom: none; }
 .exhibition-item:last-child::after { display: none; }
 
 .exhibition-item img {
@@ -400,7 +435,7 @@ nav {
   margin-bottom: 0.5rem;
   letter-spacing: 0.04em;
   color: var(--text-bright);
-  text-shadow: 0 0 30px rgba(80, 60, 200, 0.12);
+  animation: vhsHeadingGlitch 5s infinite 0.8s;
 }
 
 .exhibition-meta {
@@ -410,7 +445,7 @@ nav {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-bottom: 1.4rem;
-  text-shadow: 0 0 12px var(--accent-dim);
+  animation: vhsGlowPulse 3.5s ease-in-out infinite;
 }
 
 .exhibition-desc {
@@ -420,7 +455,10 @@ nav {
   line-height: 2;
 }
 
-/* ── Bio ── */
+/* =============================================
+   BIO
+   ============================================= */
+
 .bio-layout {
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -433,18 +471,18 @@ nav {
   aspect-ratio: 3/4;
   object-fit: cover;
   background: var(--bg-3);
-  /* NO filter — personal photo in original color */
-  box-shadow: 0 0 40px rgba(60, 40, 160, 0.12);
+  /* NO filter — personal photo original color */
+  box-shadow: 0 0 50px rgba(50,30,150,0.14);
 }
 
 .bio-content h1 {
   font-family: var(--serif);
-  font-size: 2.2rem;
+  font-size: 2.4rem;
   font-weight: 300;
   letter-spacing: 0.08em;
   margin-bottom: 0.4rem;
   color: var(--text-bright);
-  text-shadow: 0 0 40px rgba(100, 80, 255, 0.15);
+  animation: vhsHeadingGlitch 4s infinite;
 }
 
 .bio-content .bio-subtitle {
@@ -454,12 +492,12 @@ nav {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   margin-bottom: 2.2rem;
-  text-shadow: 0 0 14px var(--accent-dim);
+  animation: vhsGlowPulse 3s ease-in-out infinite;
 }
 
 .bio-text {
   font-family: var(--serif);
-  font-size: 0.96rem;
+  font-size: 0.97rem;
   color: var(--text);
   line-height: 2.1;
   margin-bottom: 1.5rem;
@@ -484,7 +522,10 @@ nav {
   text-shadow: 0 0 12px var(--accent-glow);
 }
 
-/* ── Contact ── */
+/* =============================================
+   CONTACT
+   ============================================= */
+
 .contact-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -507,20 +548,18 @@ nav {
   letter-spacing: 0.06em;
   margin-bottom: 2.2rem;
   color: var(--text-bright);
+  animation: vhsHeadingGlitch 5.5s infinite 1.5s;
 }
 
-.contact-item {
-  margin-bottom: 1.8rem;
-}
+.contact-item { margin-bottom: 1.8rem; }
 
 .contact-label {
   font-family: var(--mono);
   font-size: 0.64rem;
   color: var(--accent);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.20em;
   text-transform: uppercase;
   margin-bottom: 0.4rem;
-  text-shadow: 0 0 10px var(--accent-dim);
 }
 
 .contact-value {
@@ -541,7 +580,10 @@ nav {
   border-color: var(--accent-dim);
 }
 
-/* ── Weapons ── */
+/* =============================================
+   WEAPONS
+   ============================================= */
+
 .weapons-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -559,22 +601,17 @@ nav {
 .weapon-card::before {
   content: '';
   position: absolute;
-  inset: 0;
-  z-index: 2;
+  inset: 0; z-index: 2;
   border: 1px solid transparent;
   pointer-events: none;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.weapon-card:hover {
-  transform: translateY(-2px);
-}
+.weapon-card:hover { transform: translateY(-3px); }
 
 .weapon-card:hover::before {
   border-color: var(--accent-dim);
-  box-shadow:
-    inset 0 0 25px rgba(80, 60, 200, 0.06),
-    0 4px 25px rgba(80, 60, 200, 0.12);
+  box-shadow: inset 0 0 25px rgba(80,60,200,0.06), 0 6px 25px rgba(80,60,200,0.14);
 }
 
 .weapon-card img {
@@ -590,7 +627,7 @@ nav {
 .weapon-card:hover img { transform: scale(1.04); }
 
 .weapon-name {
-  padding: 0.6rem 0.6rem 0.2rem;
+  padding: 0.65rem 0.65rem 0.2rem;
   font-family: var(--serif);
   font-size: 0.9rem;
   font-weight: 400;
@@ -601,7 +638,7 @@ nav {
 }
 
 .weapon-price {
-  padding: 0 0.6rem 0.6rem;
+  padding: 0 0.65rem 0.65rem;
   font-family: var(--mono);
   font-size: 0.66rem;
   color: var(--text-dim);
@@ -609,15 +646,17 @@ nav {
   background: var(--bg-2);
 }
 
-/* ── Home page (index.html) overrides ── */
+/* =============================================
+   HOME PAGE (index.html)
+   ============================================= */
+
 body.home-page {
-  background: #04040c;
+  background: #03030b;
   overflow: hidden;
 }
 
 #home-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
+  position: fixed; top: 0; left: 0; right: 0;
   z-index: 100;
   display: flex;
   justify-content: space-between;
@@ -634,9 +673,9 @@ body.home-page {
   font-size: 0.82rem;
   letter-spacing: 0.22em;
   text-decoration: none;
-  color: rgba(210, 220, 255, 0.92);
+  color: rgba(220, 230, 255, 0.95);
   text-transform: uppercase;
-  text-shadow: 0 0 22px rgba(130, 100, 255, 0.55);
+  animation: vhsLogoGlitch 7s infinite;
 }
 
 #home-nav .nav-links {
@@ -651,22 +690,23 @@ body.home-page {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   text-decoration: none;
-  color: rgba(140, 155, 200, 0.55);
+  color: rgba(140,155,200,0.55);
   transition: color 0.25s, text-shadow 0.25s;
 }
 
 #home-nav .nav-links a:hover {
-  color: rgba(210, 220, 255, 0.95);
-  text-shadow: 0 0 14px rgba(150, 120, 255, 0.65);
+  color: rgba(220,230,255,0.95);
+  text-shadow: 0 0 14px rgba(150,120,255,0.65);
 }
 
 #canvas-container {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
+  position: fixed; inset: 0; z-index: 0;
 }
 
-/* ── Footer ── */
+/* =============================================
+   FOOTER
+   ============================================= */
+
 footer {
   text-align: center;
   padding: 2rem 0;
@@ -678,7 +718,10 @@ footer {
   margin-top: 5rem;
 }
 
-/* ── Responsive ── */
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+
 @media (max-width: 768px) {
   .page-wrapper { padding: 0 1.2rem 3rem; }
   .page-wrapper::before, .page-wrapper::after { display: none; }
