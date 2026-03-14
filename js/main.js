@@ -103,17 +103,37 @@ function applyTextStyles(site) {
   };
 
   const ts = site.textStyles;
+  // 顏色「重置為預設」的識別詞（填這些 = 移除 inline style → 使用 CSS 預設色）
+  const COLOR_RESET = ['', 'default', 'inherit', 'unset', 'none', '預設', 'reset'];
+
   Object.entries(selectorMap).forEach(([key, sel]) => {
     const s = ts[key];
     if (!s) return;
     document.querySelectorAll(sel).forEach(el => {
+      // ── Font-size ──────────────────────────────
       const fs = normLen(s.fontSize);
-      if (fs) el.style.setProperty('font-size', fs, 'important');
-      if (s.color && s.color.trim()) el.style.setProperty('color', s.color.trim(), 'important');
+      if (fs) {
+        el.style.setProperty('font-size', fs, 'important');
+      } else {
+        el.style.removeProperty('font-size');
+      }
+
+      // ── Color ──────────────────────────────────
+      // 空白 / 'default' 等 → 移除 inline color，還原 CSS 預設
+      const col = (s.color || '').trim();
+      if (col && !COLOR_RESET.includes(col.toLowerCase())) {
+        el.style.setProperty('color', col, 'important');
+      } else {
+        el.style.removeProperty('color');
+      }
+
+      // ── Transform translate(x, y) ──────────────
       const x = normLen(s.x) || '0px';
       const y = normLen(s.y) || '0px';
       if (x !== '0px' || y !== '0px') {
         el.style.setProperty('transform', `translate(${x}, ${y})`, 'important');
+      } else {
+        el.style.removeProperty('transform');
       }
     });
   });

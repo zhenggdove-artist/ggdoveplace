@@ -296,7 +296,7 @@ collections:
                       - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false, hint: "如 2.8rem / 48px（留空使用預設）" }
                       - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false, hint: "正數→右  負數→左，如 20px / -10px" }
                       - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false, hint: "正數→下  負數→上，如 10px / -5px" }
-                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - { label: "文字顏色 Color (留空 = 預設色，填 hex 如 #ff0000)", name: color, widget: string, default: "", required: false, hint: "留空或清除 = 使用網站預設顏色。填 #rrggbb 或 CSS 顏色名稱。rgb() 也可以。" }
                       - label: "崩文字效果 Zalgo"
                         name: zalgo
                         widget: object
@@ -316,7 +316,7 @@ collections:
                       - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false, hint: "如 1.8rem / 36px" }
                       - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false }
                       - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false }
-                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - { label: "文字顏色 Color (留空 = 預設色，填 hex 如 #ff0000)", name: color, widget: string, default: "", required: false, hint: "留空或清除 = 使用網站預設顏色。填 #rrggbb 或 CSS 顏色名稱。rgb() 也可以。" }
                       - label: "崩文字效果 Zalgo"
                         name: zalgo
                         widget: object
@@ -336,7 +336,7 @@ collections:
                       - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false }
                       - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false }
                       - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false }
-                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - { label: "文字顏色 Color (留空 = 預設色，填 hex 如 #ff0000)", name: color, widget: string, default: "", required: false, hint: "留空或清除 = 使用網站預設顏色。填 #rrggbb 或 CSS 顏色名稱。rgb() 也可以。" }
                       - label: "崩文字效果 Zalgo"
                         name: zalgo
                         widget: object
@@ -356,7 +356,7 @@ collections:
                       - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false }
                       - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false }
                       - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false }
-                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - { label: "文字顏色 Color (留空 = 預設色，填 hex 如 #ff0000)", name: color, widget: string, default: "", required: false, hint: "留空或清除 = 使用網站預設顏色。填 #rrggbb 或 CSS 顏色名稱。rgb() 也可以。" }
                       - label: "崩文字效果 Zalgo"
                         name: zalgo
                         widget: object
@@ -376,7 +376,7 @@ collections:
                       - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false }
                       - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false }
                       - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false }
-                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - { label: "文字顏色 Color (留空 = 預設色，填 hex 如 #ff0000)", name: color, widget: string, default: "", required: false, hint: "留空或清除 = 使用網站預設顏色。填 #rrggbb 或 CSS 顏色名稱。rgb() 也可以。" }
                       - label: "崩文字效果 Zalgo"
                         name: zalgo
                         widget: object
@@ -396,7 +396,7 @@ collections:
                       - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false }
                       - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false }
                       - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false }
-                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - { label: "文字顏色 Color (留空 = 預設色，填 hex 如 #ff0000)", name: color, widget: string, default: "", required: false, hint: "留空或清除 = 使用網站預設顏色。填 #rrggbb 或 CSS 顏色名稱。rgb() 也可以。" }
                       - label: "崩文字效果 Zalgo"
                         name: zalgo
                         widget: object
