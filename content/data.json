@@ -1,30 +1,30 @@
 {
   "site": {
-    "title": "GGdove",
-    "subtitle": "名為鴿子的一隻迅猛龍",
-    "description": "Portfolio of Zheng Jun Peng",
-    "galleryLayout": "masonry",
-    "imageSize": "large",
-    "captionStyle": "below",
-    "imageAspect": "4/3",
-    "galleryGap": "normal",
-    "hoverEffect": "scale",
     "fonts": {
       "heading": "georgia",
       "accent": "courier-new"
     },
-    "scrollAnim": "fade-up",
+    "galleryGap": "normal",
+    "captionStyle": "below",
+    "hoverEffect": "scale",
+    "imageAspect": "4/3",
     "animSpeed": "normal",
+    "subtitle": "名為鴿子的一隻迅猛龍",
+    "title": "GGdove",
     "animStagger": true,
+    "galleryLayout": "masonry",
+    "description": "Portfolio of Zheng Jun Peng",
+    "imageSize": "large",
     "zalgoEffect": {
       "enabled": true,
-      "targets": "headings",
-      "intensity": 0.3,
+      "targets": "all",
+      "intensity": 1,
       "up": true,
       "mid": false,
       "down": false,
       "interval": 2500
-    }
+    },
+    "scrollAnim": "fade-up"
   },
   "bio": {
     "name": "鄭君朋 Zheng Jun Peng",
