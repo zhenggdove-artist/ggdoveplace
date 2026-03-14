@@ -511,6 +511,97 @@
   });
   CMS.registerPreviewTemplate('visual', VHSPreview);
   CMS.registerPreviewTemplate('visual_params', VHSPreview);
+
+  // ── Exhibition Preview ────────────────────────
+  var ExhibitionPreview = createClass({
+    render: function() {
+      var entry = this.props.entry;
+      var list  = entry.getIn(['data', 'exhibition']);
+      if (!list) return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } }, 'No exhibition items yet.');
+      var items = list.toJS ? list.toJS() : [];
+      return h('div', null,
+        items.map(function(e, i) {
+          var subpages = e.subpages || [];
+          return h('div', { key: i, style: {
+            display: 'grid', gridTemplateColumns: 'minmax(160px,260px) 1fr',
+            gap: '2rem', alignItems: 'start',
+            marginBottom: '2.5rem', paddingBottom: '2.5rem',
+            borderBottom: '1px solid rgba(120,100,200,0.15)'
+          }},
+            e.image ? h('img', {
+              src: e.image, alt: e.title || '', loading: 'lazy',
+              style: { width: '100%', aspectRatio: '4/3', objectFit: 'cover', background: '#110d28' }
+            }) : h('div', { style: { width: '100%', aspectRatio: '4/3', background: '#0d0820' } }),
+            h('div', null,
+              h('h2', { style: { fontFamily: 'Georgia,serif', fontWeight: 400, fontSize: '1.25rem', color: '#eee8ff', margin: '0 0 0.4rem' } }, e.title || ''),
+              h('div', { style: { fontFamily: 'Courier New,monospace', fontSize: '0.68rem', color: '#7755ff', letterSpacing: '0.1em', marginBottom: '0.7rem' } },
+                [e.year, e.venue, e.location].filter(Boolean).join('  ·  ')),
+              e.description ? h('p', { style: { color: '#c8c0e8', fontSize: '0.88rem', lineHeight: 1.7, margin: '0 0 0.8rem' } }, e.description) : null,
+              subpages.length ? h('div', { style: { fontFamily: 'Courier New,monospace', fontSize: '0.7rem', color: '#7755ff', letterSpacing: '0.1em' } },
+                '▸ ' + subpages.length + ' sub-page' + (subpages.length > 1 ? 's' : '') + ': ' +
+                subpages.map(function(sp) { return sp.title || '(untitled)'; }).join(', ')
+              ) : null
+            )
+          );
+        })
+      );
+    }
+  });
+  CMS.registerPreviewTemplate('exhibition', ExhibitionPreview);
+  CMS.registerPreviewTemplate('exhibition_data', ExhibitionPreview);
+
+  // ── Custom Pages Preview ──────────────────────
+  var CustomPagesPreview = createClass({
+    render: function() {
+      var entry = this.props.entry;
+      var list  = entry.getIn(['data', 'customPages']);
+      if (!list) return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } }, 'No custom pages yet. Add one below to create a new nav item.');
+      var pages = list.toJS ? list.toJS() : [];
+      if (!pages.length) return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } }, 'No custom pages yet.');
+      return h('div', null,
+        pages.map(function(p, i) {
+          var images = p.images || [];
+          return h('div', { key: i, style: {
+            marginBottom: '2.5rem', paddingBottom: '2.5rem',
+            borderBottom: '1px solid rgba(120,100,200,0.15)'
+          }},
+            h('div', { style: { display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '0.8rem' } },
+              h('span', { style: { fontFamily: 'Courier New,monospace', fontSize: '0.68rem', color: '#7755ff', background: 'rgba(120,85,255,0.12)', padding: '0.2rem 0.55rem', borderRadius: '2px' } }, 'nav: ' + (p.navLabel || p.id || '?')),
+              h('span', { style: { fontFamily: 'Courier New,monospace', fontSize: '0.68rem', color: '#4a4060' } }, '  /custom-page.html?id=' + (p.id || ''))
+            ),
+            h('h2', { style: { fontFamily: 'Georgia,serif', fontWeight: 400, fontSize: '1.4rem', color: '#eee8ff', margin: '0 0 0.8rem' } }, p.title || p.navLabel || ''),
+            p.body ? h('p', { style: { color: '#c8c0e8', fontSize: '0.88rem', lineHeight: 1.7, margin: '0 0 1rem', whiteSpace: 'pre-wrap' } }, p.body.slice(0, 300) + (p.body.length > 300 ? '…' : '')) : null,
+            images.length ? h('div', { style: { display: 'flex', gap: '0.7rem', flexWrap: 'wrap', marginTop: '0.5rem' } },
+              images.map(function(img, j) {
+                return h('img', { key: j, src: img.src || '', alt: img.caption || '', loading: 'lazy',
+                  style: { width: '120px', height: '90px', objectFit: 'cover', background: '#0d0820' } });
+              })
+            ) : null
+          );
+        })
+      );
+    }
+  });
+  CMS.registerPreviewTemplate('custom_pages', CustomPagesPreview);
+  CMS.registerPreviewTemplate('custom_pages_data', CustomPagesPreview);
+
+  // ── Unsaved-changes warning ───────────────────
+  // Decap CMS sets document.title when there are unsaved changes (prepends an asterisk *).
+  // We watch for that and warn the user if they try to navigate away.
+  (function() {
+    var _dirty = false;
+    var titleObserver = new MutationObserver(function() {
+      _dirty = document.title.startsWith('*');
+    });
+    titleObserver.observe(document.querySelector('title') || document.head, { subtree: true, childList: true, characterData: true });
+
+    window.addEventListener('beforeunload', function(e) {
+      if (_dirty) {
+        e.preventDefault();
+        e.returnValue = '你有未儲存的變更。確定要離開嗎？\nYou have unsaved changes. Leave anyway?';
+      }
+    });
+  })();
   </script>
 </body>
 </html>

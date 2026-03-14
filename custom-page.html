@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGdove</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav id="main-nav"></nav>
+    <div id="custom-page-wrap" class="custom-page-wrap"></div>
+  </div>
+
+  <footer><p>© GGdove</p></footer>
+
+  <script src="js/vhs-effect.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    loadData().then(() => {
+      // Active page: match custom-page ID
+      const id = new URLSearchParams(window.location.search).get('id');
+      renderHeader('custom-' + id);
+      renderCustomPage();
+      initVHS();
+    });
+  </script>
+</body>
+</html>

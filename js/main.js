@@ -227,12 +227,18 @@ function renderHeader(activePage) {
   if (!nav || !siteData) return;
   // Allow CMS to override each nav label; fall back to defaults
   const nl = (siteData.site && siteData.site.navLabels) || {};
+  const customPages = (siteData.customPages || []).map(p => ({
+    id:   'custom-' + p.id,
+    label: p.navLabel || p.title || p.id,
+    href: 'custom-page.html?id=' + encodeURIComponent(p.id)
+  }));
   const pages = [
-    { id: 'projects',   label: nl.works      || 'Works',      href: 'index.html'      },
+    { id: 'projects',   label: nl.works      || 'Works',       href: 'index.html'      },
     { id: 'exhibition', label: nl.exhibition  || 'Exhibition',  href: 'exhibition.html' },
     { id: 'weapons',    label: nl.weapons     || 'Weapons',     href: 'weapons.html'    },
     { id: 'bio',        label: nl.bio         || 'Bio',         href: 'bio.html'        },
-    { id: 'contact',    label: nl.contact     || 'Contact',     href: 'contact.html'    }
+    { id: 'contact',    label: nl.contact     || 'Contact',     href: 'contact.html'    },
+    ...customPages
   ];
   nav.innerHTML = `
     <a class="nav-logo" href="index.html">${siteData.site.title}</a>
@@ -398,17 +404,169 @@ function renderExhibition() {
   const list = document.getElementById('exhibition-list');
   if (!list || !siteData) return;
   siteData.exhibition.forEach(e => {
+    const hasSubpages = e.subpages && e.subpages.length > 0;
+    const detailUrl   = 'exhibition-detail.html?id=' + encodeURIComponent(e.id);
     const el = document.createElement('div');
     el.className = 'exhibition-item';
     el.innerHTML = `
-      <img src="${e.image}" alt="${e.title}" loading="lazy">
+      ${e.image ? `<img src="${e.image}" alt="${e.title || ''}" loading="lazy">` : ''}
       <div class="exhibition-details">
-        <h2>${e.title}</h2>
+        <h2>${e.title || ''}</h2>
         <div class="exhibition-meta">${[e.year, e.venue, e.location].filter(Boolean).join('  ·  ')}</div>
         <p class="exhibition-desc">${e.description || ''}</p>
+        ${hasSubpages
+          ? `<a class="exhibition-more-link" href="${detailUrl}">More →</a>`
+          : ''}
       </div>`;
     list.appendChild(el);
   });
+}
+
+// ── Exhibition Detail ───────────────────────────
+// Renders exhibition-detail.html — reads ?id= from URL, shows cover + sub-pages as tabs
+function renderExhibitionDetail() {
+  const wrap = document.getElementById('exhibition-detail-wrap');
+  if (!wrap || !siteData) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const id     = Number(params.get('id'));
+  const exh    = (siteData.exhibition || []).find(e => e.id === id);
+
+  if (!exh) {
+    wrap.innerHTML = '<p class="detail-error">Exhibition not found.</p>';
+    return;
+  }
+
+  const subpages = exh.subpages || [];
+
+  // Cover section
+  let html = `
+    <div class="detail-cover">
+      ${exh.image ? `<img class="detail-cover-img" src="${exh.image}" alt="${exh.title || ''}">` : ''}
+      <div class="detail-cover-info">
+        <h1 class="detail-title">${exh.title || ''}</h1>
+        <div class="detail-meta">${[exh.year, exh.venue, exh.location].filter(Boolean).join('  ·  ')}</div>
+        ${exh.description ? `<p class="detail-desc">${exh.description}</p>` : ''}
+      </div>
+    </div>`;
+
+  if (subpages.length > 0) {
+    // Tab navigation
+    html += `<div class="subpage-tabs">
+      ${subpages.map((sp, i) =>
+        `<button class="subpage-tab${i === 0 ? ' active' : ''}" data-tab="${i}">${sp.title || ('Part ' + (i + 1))}</button>`
+      ).join('')}
+    </div>`;
+
+    // Tab content panels
+    html += `<div class="subpage-panels">`;
+    subpages.forEach((sp, i) => {
+      const bodyHtml = markdownToHtml(sp.body || '');
+      const images   = sp.images || [];
+      html += `<div class="subpage-panel${i === 0 ? ' active' : ''}" data-panel="${i}">
+        <div class="subpage-body">${bodyHtml}</div>
+        ${images.length ? `<div class="subpage-images">
+          ${images.map(img => `<figure class="subpage-figure">
+            <img src="${img.src}" alt="${img.caption || ''}" loading="lazy">
+            ${img.caption ? `<figcaption>${img.caption}</figcaption>` : ''}
+          </figure>`).join('')}
+        </div>` : ''}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  wrap.innerHTML = html;
+
+  // Tab switching
+  wrap.querySelectorAll('.subpage-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = +btn.dataset.tab;
+      wrap.querySelectorAll('.subpage-tab').forEach(b => b.classList.remove('active'));
+      wrap.querySelectorAll('.subpage-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      wrap.querySelector('.subpage-panel[data-panel="' + idx + '"]').classList.add('active');
+    });
+  });
+}
+
+// ── Custom Page ─────────────────────────────────
+// Renders custom-page.html — reads ?id= from URL, shows title + body + images
+function renderCustomPage() {
+  const wrap = document.getElementById('custom-page-wrap');
+  if (!wrap || !siteData) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const id     = params.get('id');
+  const page   = (siteData.customPages || []).find(p => p.id === id);
+
+  if (!page) {
+    wrap.innerHTML = '<p class="detail-error">Page not found.</p>';
+    return;
+  }
+
+  const bodyHtml = markdownToHtml(page.body || '');
+  const images   = page.images || [];
+
+  wrap.innerHTML = `
+    <h1 class="page-title">${page.title || page.navLabel || ''}</h1>
+    <div class="custom-page-body">${bodyHtml}</div>
+    ${images.length ? `<div class="custom-page-images">
+      ${images.map(img => `<figure class="subpage-figure">
+        <img src="${img.src}" alt="${img.caption || ''}" loading="lazy">
+        ${img.caption ? `<figcaption>${img.caption}</figcaption>` : ''}
+      </figure>`).join('')}
+    </div>` : ''}`;
+}
+
+// ── Markdown → HTML ─────────────────────────────
+// Minimal renderer — supports headings, bold, italic, links, line breaks, paragraphs
+function markdownToHtml(md) {
+  if (!md) return '';
+  let html = md
+    // Escape raw HTML entities first
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    // Headings
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    // Bold + italic combo
+    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    // Bold
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // Italic
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // Inline code
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    // Links [text](url)
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    // HR
+    .replace(/^---$/gm, '<hr>')
+    // Line breaks within paragraphs (two spaces + newline)
+    .replace(/  \n/g, '<br>');
+
+  // Wrap consecutive non-heading/hr lines into <p> blocks
+  const lines = html.split('\n');
+  const out   = [];
+  let buf     = [];
+
+  function flushBuf() {
+    if (buf.length) { out.push('<p>' + buf.join('<br>') + '</p>'); buf = []; }
+  }
+
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      flushBuf();
+    } else if (/^<(h[1-3]|hr|ul|ol|li|blockquote)/.test(trimmed)) {
+      flushBuf();
+      out.push(trimmed);
+    } else {
+      buf.push(trimmed);
+    }
+  });
+  flushBuf();
+  return out.join('\n');
 }
 
 // ── Bio ────────────────────────────────────────

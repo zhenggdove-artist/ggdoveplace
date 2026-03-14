@@ -42,6 +42,71 @@ collections:
               - { label: Name,  name: name,  widget: string, required: false }
               - { label: Price, name: price, widget: string, required: false }
 
+  - name: exhibition
+    label: Exhibition (展覽)
+    files:
+      - label: Exhibition Data
+        name: exhibition_data
+        file: content/data.json
+        fields:
+          - label: Exhibition 展覽列表
+            name: exhibition
+            widget: list
+            summary: "{{fields.title}} — {{fields.year}}"
+            fields:
+              - { label: ID,          name: id,          widget: number }
+              - { label: Title 標題,   name: title,       widget: string, required: false }
+              - { label: Year 年份,    name: year,        widget: string, required: false }
+              - { label: Venue 場地,   name: venue,       widget: string, required: false }
+              - { label: Location 地點, name: location,   widget: string, required: false }
+              - { label: Image 封面圖,  name: image,       widget: image,  required: false }
+              - { label: Description 簡介, name: description, widget: text, required: false }
+              - label: Sub-pages 子頁面
+                name: subpages
+                widget: list
+                required: false
+                summary: "{{fields.title}}"
+                fields:
+                  - { label: "Sub-page Title 子頁標題", name: title,  widget: string }
+                  - label: "Body Content 內文"
+                    name: body
+                    widget: markdown
+                    required: false
+                  - label: "Images 圖片列表"
+                    name: images
+                    widget: list
+                    required: false
+                    fields:
+                      - { label: Image, name: src,     widget: image }
+                      - { label: Caption 說明, name: caption, widget: string, required: false }
+
+  - name: custom_pages
+    label: Custom Pages (自訂頁面)
+    files:
+      - label: Custom Pages Data
+        name: custom_pages_data
+        file: content/data.json
+        fields:
+          - label: Custom Pages 自訂頁面
+            name: customPages
+            widget: list
+            summary: "{{fields.navLabel}} ({{fields.id}})"
+            fields:
+              - { label: "ID (slug, 英文小寫+連字號)", name: id,       widget: string }
+              - { label: "Nav Label 導航文字",         name: navLabel, widget: string }
+              - { label: "Page Title 頁面標題",         name: title,    widget: string, required: false }
+              - label: "Body Content 內文"
+                name: body
+                widget: markdown
+                required: false
+              - label: "Images 圖片列表"
+                name: images
+                widget: list
+                required: false
+                fields:
+                  - { label: Image, name: src,     widget: image }
+                  - { label: Caption 說明, name: caption, widget: string, required: false }
+
   - name: bio
     label: Bio (簡介)
     files:
