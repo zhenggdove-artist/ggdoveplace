@@ -438,30 +438,167 @@ function renderSlideshow(projects, container) {
 }
 
 // ── Exhibition ─────────────────────────────────
+// ── Media helpers ───────────────────────────────
+
+// Extract all image/video sources from all subpages of an exhibition
+function collectExhibitionMedia(exh) {
+  const items = [];
+  if (exh.image) items.push({ src: exh.image, caption: '', video: exh.video || '' });
+  (exh.subpages || []).forEach(sp => {
+    (sp.images || []).forEach(img => items.push(img));
+  });
+  return items;
+}
+
+// Detect if a string is a video URL and return embed URL, else null
+function videoEmbedUrl(url) {
+  if (!url) return null;
+  // YouTube
+  let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  if (m) return 'https://www.youtube.com/embed/' + m[1] + '?rel=0&modestbranding=1';
+  // Vimeo
+  m = url.match(/vimeo\.com\/(\d+)/);
+  if (m) return 'https://player.vimeo.com/video/' + m[1] + '?title=0&byline=0';
+  // Direct video file
+  if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url)) return url;
+  return null;
+}
+
+// Render a single media item: video iframe/player or <img>
+function renderMediaItem(item, cls) {
+  const embedUrl = videoEmbedUrl(item.video || '');
+  if (embedUrl) {
+    // Direct video file
+    if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
+      return `<div class="${cls || 'media-item'} media-video">
+        <video src="${embedUrl}" controls preload="metadata" playsinline></video>
+        ${item.caption ? `<figcaption>${item.caption}</figcaption>` : ''}
+      </div>`;
+    }
+    return `<div class="${cls || 'media-item'} media-video">
+      <iframe src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>
+      ${item.caption ? `<figcaption>${item.caption}</figcaption>` : ''}
+    </div>`;
+  }
+  return `<figure class="${cls || 'media-item'}">
+    <img src="${item.src || ''}" alt="${item.caption || ''}" loading="lazy">
+    ${item.caption ? `<figcaption>${item.caption}</figcaption>` : ''}
+  </figure>`;
+}
+
+// Build and mount a slideshow into `container` from `slides` array [{src,video,caption}]
+// Returns cleanup function.
+function mountSlideshow(container, slides, height) {
+  if (!slides.length) return () => {};
+  container.classList.add('ex-slideshow');
+  container.style.height = height || '480px';
+
+  let cur = 0;
+  let timer = null;
+
+  const track = document.createElement('div');
+  track.className = 'ex-slideshow-track';
+  slides.forEach((sl, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'ex-slide' + (i === 0 ? ' active' : '');
+    const embedUrl = videoEmbedUrl(sl.video || '');
+    if (embedUrl && !/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
+      slide.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+    } else if (embedUrl) {
+      slide.innerHTML = `<video src="${embedUrl}" controls preload="metadata" playsinline></video>`;
+    } else if (sl.src) {
+      slide.innerHTML = `<img src="${sl.src}" alt="${sl.caption || ''}" loading="lazy">`;
+    }
+    track.appendChild(slide);
+  });
+  container.appendChild(track);
+
+  // Prev / Next arrows
+  const prev = document.createElement('button');
+  prev.className = 'ex-slide-btn ex-slide-prev';
+  prev.innerHTML = '&#8249;';
+  const next = document.createElement('button');
+  next.className = 'ex-slide-btn ex-slide-next';
+  next.innerHTML = '&#8250;';
+  container.appendChild(prev);
+  container.appendChild(next);
+
+  // Dots
+  const dots = document.createElement('div');
+  dots.className = 'ex-slide-dots';
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'ex-slide-dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dots.appendChild(d);
+  });
+  container.appendChild(dots);
+
+  // Caption strip
+  const cap = document.createElement('div');
+  cap.className = 'ex-slide-caption';
+  container.appendChild(cap);
+
+  function goTo(n) {
+    track.children[cur].classList.remove('active');
+    dots.children[cur].classList.remove('active');
+    cur = (n + slides.length) % slides.length;
+    track.children[cur].classList.add('active');
+    dots.children[cur].classList.add('active');
+    cap.textContent = slides[cur].caption || '';
+    resetTimer();
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    if (slides.length > 1) timer = setInterval(() => goTo(cur + 1), 5000);
+  }
+
+  prev.addEventListener('click', () => goTo(cur - 1));
+  next.addEventListener('click', () => goTo(cur + 1));
+  container.addEventListener('mouseenter', () => clearInterval(timer));
+  container.addEventListener('mouseleave', resetTimer);
+
+  cap.textContent = slides[0].caption || '';
+  resetTimer();
+  return () => clearInterval(timer);
+}
+
+// ── Exhibition List ──────────────────────────────
 function renderExhibition() {
   const list = document.getElementById('exhibition-list');
   if (!list || !siteData) return;
   siteData.exhibition.forEach(e => {
     const hasSubpages = e.subpages && e.subpages.length > 0;
     const detailUrl   = 'exhibition-detail.html?id=' + encodeURIComponent(e.id);
+    const allMedia    = collectExhibitionMedia(e);
     const el = document.createElement('div');
     el.className = 'exhibition-item';
-    el.innerHTML = `
-      ${e.image ? `<img src="${e.image}" alt="${e.title || ''}" loading="lazy">` : ''}
-      <div class="exhibition-details">
-        <h2>${e.title || ''}</h2>
-        <div class="exhibition-meta">${[e.year, e.venue, e.location].filter(Boolean).join('  ·  ')}</div>
-        <p class="exhibition-desc">${e.description || ''}</p>
-        ${hasSubpages
-          ? `<a class="exhibition-more-link" href="${detailUrl}">More →</a>`
-          : ''}
-      </div>`;
+
+    // Slideshow cover or single image
+    const coverWrap = document.createElement('div');
+    coverWrap.className = 'exhibition-cover-wrap';
+    if (allMedia.length > 1) {
+      mountSlideshow(coverWrap, allMedia, e.slideshowHeight || '360px');
+    } else if (e.image) {
+      coverWrap.innerHTML = `<img src="${e.image}" alt="${e.title || ''}" loading="lazy">`;
+    }
+
+    const info = document.createElement('div');
+    info.className = 'exhibition-details';
+    info.innerHTML = `
+      <h2>${e.title || ''}</h2>
+      <div class="exhibition-meta">${[e.year, e.venue, e.location].filter(Boolean).join('  ·  ')}</div>
+      <p class="exhibition-desc">${e.description || ''}</p>
+      ${hasSubpages ? `<a class="exhibition-more-link" href="${detailUrl}">More →</a>` : ''}`;
+
+    el.appendChild(coverWrap);
+    el.appendChild(info);
     list.appendChild(el);
   });
 }
 
 // ── Exhibition Detail ───────────────────────────
-// Renders exhibition-detail.html — reads ?id= from URL, shows cover + sub-pages as tabs
 function renderExhibitionDetail() {
   const wrap = document.getElementById('exhibition-detail-wrap');
   if (!wrap || !siteData) return;
@@ -475,57 +612,75 @@ function renderExhibitionDetail() {
     return;
   }
 
-  const subpages = exh.subpages || [];
+  const subpages  = exh.subpages || [];
+  const allMedia  = collectExhibitionMedia(exh);
+  const slideH    = exh.slideshowHeight || '480px';
 
-  // Cover section
-  let html = `
-    <div class="detail-cover">
-      ${exh.image ? `<img class="detail-cover-img" src="${exh.image}" alt="${exh.title || ''}">` : ''}
-      <div class="detail-cover-info">
-        <h1 class="detail-title">${exh.title || ''}</h1>
-        <div class="detail-meta">${[exh.year, exh.venue, exh.location].filter(Boolean).join('  ·  ')}</div>
-        ${exh.description ? `<p class="detail-desc">${exh.description}</p>` : ''}
-      </div>
-    </div>`;
+  // ── Cover section: slideshow on the left ──
+  const coverDiv = document.createElement('div');
+  coverDiv.className = 'detail-cover';
 
-  if (subpages.length > 0) {
-    // Tab navigation
-    html += `<div class="subpage-tabs">
-      ${subpages.map((sp, i) =>
-        `<button class="subpage-tab${i === 0 ? ' active' : ''}" data-tab="${i}">${sp.title || ('Part ' + (i + 1))}</button>`
-      ).join('')}
-    </div>`;
-
-    // Tab content panels
-    html += `<div class="subpage-panels">`;
-    subpages.forEach((sp, i) => {
-      const bodyHtml = markdownToHtml(sp.body || '');
-      const images   = sp.images || [];
-      html += `<div class="subpage-panel${i === 0 ? ' active' : ''}" data-panel="${i}">
-        <div class="subpage-body">${bodyHtml}</div>
-        ${images.length ? `<div class="subpage-images">
-          ${images.map(img => `<figure class="subpage-figure">
-            <img src="${img.src}" alt="${img.caption || ''}" loading="lazy">
-            ${img.caption ? `<figcaption>${img.caption}</figcaption>` : ''}
-          </figure>`).join('')}
-        </div>` : ''}
-      </div>`;
-    });
-    html += `</div>`;
+  const coverMediaWrap = document.createElement('div');
+  coverMediaWrap.className = 'detail-cover-media';
+  if (allMedia.length > 0) {
+    mountSlideshow(coverMediaWrap, allMedia, slideH);
   }
 
-  wrap.innerHTML = html;
+  const infoDiv = document.createElement('div');
+  infoDiv.className = 'detail-cover-info';
+  infoDiv.innerHTML = `
+    <h1 class="detail-title">${exh.title || ''}</h1>
+    <div class="detail-meta">${[exh.year, exh.venue, exh.location].filter(Boolean).join('  ·  ')}</div>
+    ${exh.description ? `<p class="detail-desc">${exh.description}</p>` : ''}`;
 
-  // Tab switching
-  wrap.querySelectorAll('.subpage-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const idx = +btn.dataset.tab;
-      wrap.querySelectorAll('.subpage-tab').forEach(b => b.classList.remove('active'));
-      wrap.querySelectorAll('.subpage-panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      wrap.querySelector('.subpage-panel[data-panel="' + idx + '"]').classList.add('active');
+  coverDiv.appendChild(coverMediaWrap);
+  coverDiv.appendChild(infoDiv);
+  wrap.appendChild(coverDiv);
+
+  // ── Sub-page tabs ──
+  if (subpages.length > 0) {
+    const tabNav = document.createElement('div');
+    tabNav.className = 'subpage-tabs';
+    tabNav.innerHTML = subpages.map((sp, i) =>
+      `<button class="subpage-tab${i === 0 ? ' active' : ''}" data-tab="${i}">${sp.title || ('Part ' + (i + 1))}</button>`
+    ).join('');
+    wrap.appendChild(tabNav);
+
+    const panels = document.createElement('div');
+    panels.className = 'subpage-panels';
+    subpages.forEach((sp, i) => {
+      const panel = document.createElement('div');
+      panel.className = 'subpage-panel' + (i === 0 ? ' active' : '');
+      panel.dataset.panel = i;
+
+      const bodyHtml = markdownToHtml(sp.body || '');
+      panel.innerHTML = `<div class="subpage-body">${bodyHtml}</div>`;
+
+      const imgs = sp.images || [];
+      if (imgs.length) {
+        const grid = document.createElement('div');
+        grid.className = 'subpage-images';
+        imgs.forEach(img => {
+          grid.innerHTML += renderMediaItem(img, 'subpage-figure');
+        });
+        panel.appendChild(grid);
+      }
+
+      panels.appendChild(panel);
     });
-  });
+    wrap.appendChild(panels);
+
+    // Tab switching
+    wrap.querySelectorAll('.subpage-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = +btn.dataset.tab;
+        wrap.querySelectorAll('.subpage-tab').forEach(b => b.classList.remove('active'));
+        wrap.querySelectorAll('.subpage-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        wrap.querySelector('.subpage-panel[data-panel="' + idx + '"]').classList.add('active');
+      });
+    });
+  }
 }
 
 // ── Custom Page ─────────────────────────────────

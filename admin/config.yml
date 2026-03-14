@@ -64,6 +64,8 @@ collections:
               - { label: Venue 場地,   name: venue,       widget: string, required: false }
               - { label: Location 地點, name: location,   widget: string, required: false }
               - { label: Image 封面圖,  name: image,       widget: image,  required: false }
+              - { label: "封面影片 Video URL (YouTube/Vimeo/mp4)", name: video, widget: string, required: false }
+              - { label: "輪播高度 Slideshow Height (e.g. 480px)", name: slideshowHeight, widget: string, default: "480px", required: false }
               - { label: Description 簡介, name: description, widget: text, required: false }
               - label: Sub-pages 子頁面
                 name: subpages
@@ -76,13 +78,15 @@ collections:
                     name: body
                     widget: markdown
                     required: false
-                  - label: "Images 圖片列表"
+                  - label: "圖片 ／ 影片列表 Images & Videos"
                     name: images
                     widget: list
                     required: false
+                    summary: "{{fields.caption}} {{fields.src}}"
                     fields:
-                      - { label: Image, name: src,     widget: image }
-                      - { label: Caption 說明, name: caption, widget: string, required: false }
+                      - { label: "Image 圖片", name: src, widget: image, required: false }
+                      - { label: "Caption 說明", name: caption, widget: string, required: false }
+                      - { label: "Video URL 影片 (YouTube/Vimeo/mp4，填了會顯示影片而非圖片)", name: video, widget: string, required: false }
 
   - name: custom_pages
     label: Custom Pages (自訂頁面)
@@ -103,13 +107,15 @@ collections:
                 name: body
                 widget: markdown
                 required: false
-              - label: "Images 圖片列表"
+              - label: "圖片 ／ 影片列表 Images & Videos"
                 name: images
                 widget: list
                 required: false
+                summary: "{{fields.caption}} {{fields.src}}"
                 fields:
-                  - { label: Image, name: src,     widget: image }
-                  - { label: Caption 說明, name: caption, widget: string, required: false }
+                  - { label: "Image 圖片", name: src, widget: image, required: false }
+                  - { label: "Caption 說明", name: caption, widget: string, required: false }
+                  - { label: "Video URL 影片 (YouTube/Vimeo/mp4)", name: video, widget: string, required: false }
 
   - name: bio
     label: Bio (簡介)
