@@ -36,7 +36,7 @@
       "up": true,
       "mid": true,
       "down": true,
-      "interval": 3
+      "interval": 0.05
     },
     "scrollAnim": "fade-up"
   },
