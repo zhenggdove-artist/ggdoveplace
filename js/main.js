@@ -22,11 +22,6 @@ async function loadData() {
   siteData   = data;
   visualData = visual;
   applyFonts(siteData.site);
-  // 延遲到所有 render 函式完成後（macrotask）才套用文字樣式與 Zalgo
-  setTimeout(() => {
-    applyTextStyles(siteData.site);
-    applyZalgo(siteData.site);
-  }, 0);
   return siteData;
 }
 
@@ -85,7 +80,16 @@ function _coerceBool(v, def) {
 }
 
 // ── 逐元素文字樣式套用 ─────────────────────────
+// ── 單位正規化：純數字自動補 px（如使用者輸入 200 → 200px）
+function normLen(val) {
+  if (!val) return val;
+  const v = String(val).trim();
+  if (v === '' || v === '0') return '0px';
+  return /^-?\d+\.?\d*$/.test(v) ? v + 'px' : v;
+}
+
 // 從 site.textStyles 讀取每個元素的 fontSize / x / y / color 並套用
+// 使用 el.style.setProperty 搭配 !important 確保覆蓋所有 CSS 規則（含 !important）
 function applyTextStyles(site) {
   if (!site || !site.textStyles) return;
 
@@ -103,12 +107,13 @@ function applyTextStyles(site) {
     const s = ts[key];
     if (!s) return;
     document.querySelectorAll(sel).forEach(el => {
-      if (s.fontSize && s.fontSize.trim()) el.style.fontSize = s.fontSize.trim();
-      if (s.color    && s.color.trim())    el.style.color    = s.color.trim();
-      const x = (s.x || '0px').trim();
-      const y = (s.y || '0px').trim();
+      const fs = normLen(s.fontSize);
+      if (fs) el.style.setProperty('font-size', fs, 'important');
+      if (s.color && s.color.trim()) el.style.setProperty('color', s.color.trim(), 'important');
+      const x = normLen(s.x) || '0px';
+      const y = normLen(s.y) || '0px';
       if (x !== '0px' || y !== '0px') {
-        el.style.transform = `translate(${x}, ${y})`;
+        el.style.setProperty('transform', `translate(${x}, ${y})`, 'important');
       }
     });
   });

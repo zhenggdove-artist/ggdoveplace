@@ -4,8 +4,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Content Manager — GGdove</title>
+  <style>
+    /* ── CMS 工作流說明橫幅 ── */
+    #cms-workflow-banner {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 99999;
+      background: #1a0e2e; border-bottom: 2px solid #7755ff;
+      padding: 0.45rem 1.2rem; display: flex; align-items: center;
+      gap: 1.2rem; font-family: 'Courier New', monospace; font-size: 0.72rem;
+      color: #c8c0e8; letter-spacing: 0.04em; pointer-events: none;
+    }
+    #cms-workflow-banner .wf-save  { color: #55ddaa; font-weight: bold; }
+    #cms-workflow-banner .wf-pub   { color: #ff9944; font-weight: bold; }
+    #cms-workflow-banner .wf-sep   { color: #3a2860; }
+    #cms-workflow-banner .wf-note  { color: #6a6080; }
+    /* 推開 Decap CMS 本體以免被橫幅遮住 */
+    #nc-root { margin-top: 34px !important; }
+  </style>
 </head>
 <body>
+  <!-- 工作流提示橫幅 -->
+  <div id="cms-workflow-banner">
+    <span class="wf-save">💾 Save = 草稿（Draft）</span>
+    <span class="wf-sep">│</span>
+    <span class="wf-pub">🚀 Publish = 推送上線</span>
+    <span class="wf-sep">│</span>
+    <span class="wf-note">圖片上傳後需 Publish 才會出現在網站</span>
+    <span class="wf-sep">│</span>
+    <span class="wf-note">Publish 後網站約 1–2 分鐘重建完成</span>
+  </div>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
   // ── Inject site CSS into preview iframe ──

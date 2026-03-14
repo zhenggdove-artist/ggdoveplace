@@ -457,20 +457,28 @@ nav {
 .gallery-grid.hover-none .gallery-item:hover img               { transform: none; }
 .gallery-grid.hover-none .gallery-item:hover::before           { border-color: transparent; box-shadow: none; }
 
-/* ── Scroll animation base ── */
+/* ── Scroll animation base ──
+   使用 CSS 自訂屬性分離「位移進場」與「使用者設定的 translate(x,y)」，
+   避免 applyTextStyles 的 transform 被 animation 覆蓋。
+   --anim-tx/ty = 入場偏移（動畫用），預設 0，
+   --user-tx/ty = 使用者設定的 XY 位移（由 applyTextStyles 設定）。
+   兩者合併在 transform，互不干擾。
+── */
 .anim-ready {
+  --anim-tx: 0px; --anim-ty: 0px; --anim-scale: 1;
   opacity: 0;
+  transform: translate(var(--anim-tx), var(--anim-ty)) scale(var(--anim-scale));
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
-.anim-ready.anim-fade-up    { transform: translateY(28px); }
-.anim-ready.anim-fade-in    { /* opacity only, no transform shift */ }
-.anim-ready.anim-zoom-in    { transform: scale(0.87); }
-.anim-ready.anim-slide-left { transform: translateX(40px); }
-.anim-ready.anim-slide-right{ transform: translateX(-40px); }
+.anim-ready.anim-fade-up    { --anim-ty: 28px;  }
+.anim-ready.anim-fade-in    { /* opacity only */ }
+.anim-ready.anim-zoom-in    { --anim-scale: 0.87; }
+.anim-ready.anim-slide-left { --anim-tx: 40px;  }
+.anim-ready.anim-slide-right{ --anim-tx: -40px; }
 
 .anim-ready.anim-visible {
   opacity: 1;
-  transform: none !important;
+  --anim-tx: 0px; --anim-ty: 0px; --anim-scale: 1;
 }
 
 /* ── Animation speed variants ── */
