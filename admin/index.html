@@ -76,10 +76,18 @@
   }
 
   // ── Works Preview ─────────────────────────────
+  // 共用：解析圖片 URL（支援新上傳的 blob 與已上線的路徑）
+  function resolveImg(getAsset, src) {
+    if (!src) return '';
+    try { var a = getAsset(src); return (a && (a.url || a.toString())) || src; }
+    catch(e) { return src; }
+  }
+
   var WorksPreview = createClass({
     render: function() {
-      var entry    = this.props.entry;
-      var projects = entry.getIn(['data', 'projects']);
+      var entry     = this.props.entry;
+      var getAsset  = this.props.getAsset;
+      var projects  = entry.getIn(['data', 'projects']);
       if (!projects) {
         return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } },
           'No projects yet.');
@@ -91,7 +99,7 @@
           list.map(function(p, i) {
             return h('div', { key: i, className: 'gallery-item' },
               h('img', {
-                src: p.image || '',
+                src: resolveImg(getAsset, p.image),
                 alt: p.title || ('Work ' + (p.id || (i + 1))),
                 loading: 'lazy',
                 style: { width: '100%', aspectRatio: '4/3', objectFit: 'cover', background: '#110d28', display: 'block' }
@@ -139,12 +147,13 @@
   // ── Bio Preview ───────────────────────────────
   var BioPreview = createClass({
     render: function() {
-      var entry = this.props.entry;
-      var bio   = entry.getIn(['data', 'bio']);
+      var entry    = this.props.entry;
+      var getAsset = this.props.getAsset;
+      var bio      = entry.getIn(['data', 'bio']);
       if (!bio) return h('div', null, 'No bio data.');
       var b = bio.toJS ? bio.toJS() : bio;
       return h('div', { style: { display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'wrap', padding: '1rem 0' } },
-        h('img', { src: b.photo || '', alt: b.name || '',
+        h('img', { src: resolveImg(getAsset, b.photo), alt: b.name || '',
           style: { width: '220px', height: '280px', objectFit: 'cover', background: '#110d28', flexShrink: 0 } }),
         h('div', { style: { flex: 1, minWidth: '200px' } },
           h('h1', { style: { fontFamily: 'Georgia,serif', fontSize: '1.8rem', fontWeight: 400, color: '#eee8ff', margin: '0 0 0.3rem' } }, b.name || ''),
@@ -160,12 +169,13 @@
   // ── Contact Preview ───────────────────────────
   var ContactPreview = createClass({
     render: function() {
-      var entry   = this.props.entry;
-      var contact = entry.getIn(['data', 'contact']);
+      var entry    = this.props.entry;
+      var getAsset = this.props.getAsset;
+      var contact  = entry.getIn(['data', 'contact']);
       if (!contact) return h('div', null, 'No contact data.');
       var c = contact.toJS ? contact.toJS() : contact;
       return h('div', { style: { display: 'flex', gap: '2rem', flexWrap: 'wrap', padding: '1rem 0', alignItems: 'flex-start' } },
-        h('img', { src: c.image || '', alt: 'Contact',
+        h('img', { src: resolveImg(getAsset, c.image), alt: 'Contact',
           style: { width: '260px', height: '320px', objectFit: 'cover', background: '#110d28', flexShrink: 0 } }),
         h('div', { style: { flex: 1, minWidth: '200px', fontFamily: 'Courier New,monospace', fontSize: '0.82rem', lineHeight: 2 } },
           h('h2', { style: { color: '#eee8ff', fontFamily: 'Georgia,serif', fontWeight: 400, margin: '0 0 1rem' } }, 'Get in Touch'),
@@ -239,14 +249,32 @@
         return generateZalgo(text, upOn, midOn, downOn, inten);
       };
 
-      // Build style for a named text element
+      // normLen: 純數字自動補 px（與 main.js 保持一致）
+      var normLen = function(val) {
+        if (!val) return '';
+        var v = String(val).trim();
+        if (!v || v === '0') return '0px';
+        return /^-?\d+\.?\d*$/.test(v) ? v + 'px' : v;
+      };
+      var COLOR_RESET_P = ['', 'default', 'inherit', 'unset', 'none', '預設', 'reset'];
+
+      // Build style for a named text element（支援 useDefaultColor + normLen）
       var elSty = function(key, base) {
         var el  = ts[key] || {};
         var out = Object.assign({}, base);
-        if (el.fontSize && el.fontSize.trim()) out.fontSize  = el.fontSize.trim();
-        if (el.color    && el.color.trim())    out.color     = el.color.trim();
-        var tx = (el.x || '0px').trim();
-        var ty = (el.y || '0px').trim();
+        // font-size
+        var fs = normLen(el.fontSize);
+        if (fs) out.fontSize = fs;
+        // color（尊重 useDefaultColor）
+        var col = (el.color || '').trim();
+        var useDefColor = el.useDefaultColor === true || el.useDefaultColor === 'true'
+                       || (el.useDefaultColor === undefined && (!col || COLOR_RESET_P.indexOf(col.toLowerCase()) >= 0));
+        if (!useDefColor && col && COLOR_RESET_P.indexOf(col.toLowerCase()) < 0) {
+          out.color = col;
+        }
+        // x / y
+        var tx = normLen(el.x) || '0px';
+        var ty = normLen(el.y) || '0px';
         if (tx !== '0px' || ty !== '0px') out.transform = 'translate(' + tx + ',' + ty + ')';
         out.display = 'inline-block';
         return out;
@@ -268,30 +296,34 @@
 
       // Nav links style
       var navLinksEl  = ts['navLinks'] || {};
-      var navLinksTx  = (navLinksEl.x || '0px').trim();
-      var navLinksTy  = (navLinksEl.y || '0px').trim();
+      var nlTx  = normLen(navLinksEl.x) || '0px';
+      var nlTy  = normLen(navLinksEl.y) || '0px';
+      var nlCol = (navLinksEl.color || '').trim();
+      var nlUseDefault = navLinksEl.useDefaultColor === true || navLinksEl.useDefaultColor === 'true'
+                      || (navLinksEl.useDefaultColor === undefined && (!nlCol || COLOR_RESET_P.indexOf(nlCol.toLowerCase()) >= 0));
       var navLinksSty = {
         fontFamily: accentFont,
-        fontSize:   navLinksEl.fontSize || '0.72rem',
-        color:      navLinksEl.color    || '#c8c0e8',
+        fontSize:   normLen(navLinksEl.fontSize) || '0.72rem',
+        color:      (!nlUseDefault && nlCol) ? nlCol : '#c8c0e8',
         letterSpacing: '0.14em', textTransform: 'uppercase',
         display: 'inline-flex', gap: '1.4rem', flexWrap: 'wrap',
-        transform: (navLinksTx !== '0px' || navLinksTy !== '0px')
-          ? 'translate(' + navLinksTx + ',' + navLinksTy + ')' : 'none'
+        transform: (nlTx !== '0px' || nlTy !== '0px') ? 'translate(' + nlTx + ',' + nlTy + ')' : 'none'
       };
 
       // Page title style
       var pageTitleEl  = ts['pageTitle'] || {};
-      var pageTitleTx  = (pageTitleEl.x || '0px').trim();
-      var pageTitleTy  = (pageTitleEl.y || '0px').trim();
+      var ptTx  = normLen(pageTitleEl.x) || '0px';
+      var ptTy  = normLen(pageTitleEl.y) || '0px';
+      var ptCol = (pageTitleEl.color || '').trim();
+      var ptUseDefault = pageTitleEl.useDefaultColor === true || pageTitleEl.useDefaultColor === 'true'
+                      || (pageTitleEl.useDefaultColor === undefined && (!ptCol || COLOR_RESET_P.indexOf(ptCol.toLowerCase()) >= 0));
       var pageTitleSty = {
         fontFamily: accentFont, fontWeight: 400,
-        fontSize:   pageTitleEl.fontSize || '0.7rem',
-        color:      pageTitleEl.color    || '#6a6080',
+        fontSize:   normLen(pageTitleEl.fontSize) || '0.7rem',
+        color:      (!ptUseDefault && ptCol) ? ptCol : '#6a6080',
         letterSpacing: '0.25em', textTransform: 'uppercase',
         display: 'block', margin: '0 0 1.2rem',
-        transform: (pageTitleTx !== '0px' || pageTitleTy !== '0px')
-          ? 'translate(' + pageTitleTx + ',' + pageTitleTy + ')' : 'none'
+        transform: (ptTx !== '0px' || ptTy !== '0px') ? 'translate(' + ptTx + ',' + ptTy + ')' : 'none'
       };
 
       var bioH1Sty = elSty('bioH1', {
@@ -657,21 +689,23 @@
   // ── Exhibition Preview ────────────────────────
   var ExhibitionPreview = createClass({
     render: function() {
-      var entry = this.props.entry;
-      var list  = entry.getIn(['data', 'exhibition']);
+      var entry    = this.props.entry;
+      var getAsset = this.props.getAsset;
+      var list     = entry.getIn(['data', 'exhibition']);
       if (!list) return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } }, 'No exhibition items yet.');
       var items = list.toJS ? list.toJS() : [];
       return h('div', null,
         items.map(function(e, i) {
           var subpages = e.subpages || [];
+          var imgSrc   = resolveImg(getAsset, e.image);
           return h('div', { key: i, style: {
             display: 'grid', gridTemplateColumns: 'minmax(160px,260px) 1fr',
             gap: '2rem', alignItems: 'start',
             marginBottom: '2.5rem', paddingBottom: '2.5rem',
             borderBottom: '1px solid rgba(120,100,200,0.15)'
           }},
-            e.image ? h('img', {
-              src: e.image, alt: e.title || '', loading: 'lazy',
+            imgSrc ? h('img', {
+              src: imgSrc, alt: e.title || '', loading: 'lazy',
               style: { width: '100%', aspectRatio: '4/3', objectFit: 'cover', background: '#110d28' }
             }) : h('div', { style: { width: '100%', aspectRatio: '4/3', background: '#0d0820' } }),
             h('div', null,
@@ -695,8 +729,9 @@
   // ── Custom Pages Preview ──────────────────────
   var CustomPagesPreview = createClass({
     render: function() {
-      var entry = this.props.entry;
-      var list  = entry.getIn(['data', 'customPages']);
+      var entry    = this.props.entry;
+      var getAsset = this.props.getAsset;
+      var list     = entry.getIn(['data', 'customPages']);
       if (!list) return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } }, 'No custom pages yet. Add one below to create a new nav item.');
       var pages = list.toJS ? list.toJS() : [];
       if (!pages.length) return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } }, 'No custom pages yet.');
@@ -715,7 +750,7 @@
             p.body ? h('p', { style: { color: '#c8c0e8', fontSize: '0.88rem', lineHeight: 1.7, margin: '0 0 1rem', whiteSpace: 'pre-wrap' } }, p.body.slice(0, 300) + (p.body.length > 300 ? '…' : '')) : null,
             images.length ? h('div', { style: { display: 'flex', gap: '0.7rem', flexWrap: 'wrap', marginTop: '0.5rem' } },
               images.map(function(img, j) {
-                return h('img', { key: j, src: img.src || '', alt: img.caption || '', loading: 'lazy',
+                return h('img', { key: j, src: resolveImg(getAsset, img.src), alt: img.caption || '', loading: 'lazy',
                   style: { width: '120px', height: '90px', objectFit: 'cover', background: '#0d0820' } });
               })
             ) : null
