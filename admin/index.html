@@ -76,11 +76,27 @@
   }
 
   // ── Works Preview ─────────────────────────────
-  // 共用：解析圖片 URL（支援新上傳的 blob 與已上線的路徑）
+  // 共用：解析圖片 URL（支援 blob URL、HTTPS、相對路徑、Decap v3 AssetProxy）
   function resolveImg(getAsset, src) {
     if (!src) return '';
-    try { var a = getAsset(src); return (a && (a.url || a.toString())) || src; }
-    catch(e) { return src; }
+    // 已是完整 URL（blob: / https: / http:）→ 直接用
+    if (/^(blob:|https?:)/.test(src)) return src;
+    // 嘗試透過 getAsset 取得 blob 或 CDN URL
+    try {
+      var a = getAsset(src);
+      if (!a) return src;
+      if (typeof a === 'string') return a || src;
+      // ImmutableJS Map（Decap v2 style）
+      if (typeof a.get === 'function') {
+        var u = a.get('url'); if (u) return u;
+      }
+      // Plain object（Decap v3 AssetProxy）
+      if (a.url) return a.url;
+      // toString fallback（blob: URL）
+      var s = a.toString();
+      if (s && s !== '[object Object]') return s;
+    } catch(e) {}
+    return src;
   }
 
   var WorksPreview = createClass({
