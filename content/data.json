@@ -20,9 +20,9 @@
       "targets": "all",
       "intensity": 1,
       "up": true,
-      "mid": false,
-      "down": false,
-      "interval": 2500
+      "mid": true,
+      "down": true,
+      "interval": 3000
     },
     "scrollAnim": "fade-up"
   },
