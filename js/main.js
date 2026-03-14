@@ -119,9 +119,11 @@ function applyTextStyles(site) {
       }
 
       // ── Color ──────────────────────────────────
-      // 空白 / 'default' 等 → 移除 inline color，還原 CSS 預設
+      // useDefaultColor=true 或欄位為空 → removeProperty → 還原 CSS 預設色
       const col = (s.color || '').trim();
-      if (col && !COLOR_RESET.includes(col.toLowerCase())) {
+      const useDefColor = s.useDefaultColor === true || s.useDefaultColor === 'true'
+                       || (s.useDefaultColor === undefined && (!col || COLOR_RESET.includes(col.toLowerCase())));
+      if (!useDefColor && col && !COLOR_RESET.includes(col.toLowerCase())) {
         el.style.setProperty('color', col, 'important');
       } else {
         el.style.removeProperty('color');
