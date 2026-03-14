@@ -4,9 +4,7 @@ backend:
   branch: main
   base_url: https://ggdove-cms-auth.onrender.com
 
-# Editorial Workflow：Save = 即時存草稿（不觸發重新建置）
-# 累積多個草稿後，按 Publish 一次推送上線
-publish_mode: editorial_workflow
+# 直接儲存模式：Save = 直接推送到 main，圖片上傳即時生效
 
 media_folder: images/uploads
 public_folder: /ggdoveplace/images/uploads
