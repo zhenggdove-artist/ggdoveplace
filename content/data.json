@@ -1,5 +1,12 @@
 {
   "site": {
+    "navLabels": {
+      "works": "Works",
+      "exhibition": "Exhibition",
+      "weapons": "Relics",
+      "bio": "Bio",
+      "contact": "Contact"
+    },
     "fonts": {
       "heading": "georgia",
       "accent": "courier-new"
@@ -29,16 +36,9 @@
       "up": true,
       "mid": true,
       "down": true,
-      "interval": 3.0
+      "interval": 3
     },
-    "scrollAnim": "fade-up",
-    "navLabels": {
-      "works": "Works",
-      "exhibition": "Exhibition",
-      "weapons": "Weapons",
-      "bio": "Bio",
-      "contact": "Contact"
-    }
+    "scrollAnim": "fade-up"
   },
   "bio": {
     "name": "鄭君朋 Zheng Jun Peng",
