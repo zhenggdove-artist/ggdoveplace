@@ -14,31 +14,6 @@
     "galleryGap": "normal",
     "captionStyle": "below",
     "hoverEffect": "scale",
-    "imageAspect": "4/3",
-    "animSpeed": "normal",
-    "subtitle": "名為鴿子的一隻迅猛龍",
-    "title": "GGdove",
-    "animStagger": true,
-    "galleryLayout": "masonry",
-    "description": "Portfolio of Zheng Jun Peng",
-    "imageSize": "large",
-    "zalgoEffect": {
-      "enabled": true,
-      "targets": [
-        "page-title",
-        "bio-h1",
-        "exhibition-h2",
-        "contact-h2",
-        "nav-logo",
-        "nav-links"
-      ],
-      "intensity": 1,
-      "up": true,
-      "mid": true,
-      "down": true,
-      "interval": 0.05
-    },
-    "scrollAnim": "fade-up",
     "textStyles": {
       "pageTitle": {
         "fontSize": "",
@@ -97,7 +72,7 @@
         }
       },
       "navLogo": {
-        "fontSize": "",
+        "fontSize": "60",
         "x": "0px",
         "y": "0px",
         "color": "",
@@ -107,7 +82,7 @@
           "mid": true,
           "down": true,
           "intensity": 1,
-          "interval": 3
+          "interval": 0.05
         }
       },
       "navLinks": {
@@ -124,7 +99,32 @@
           "interval": 3
         }
       }
-    }
+    },
+    "imageAspect": "4/3",
+    "animSpeed": "normal",
+    "subtitle": "名為鴿子的一隻迅猛龍",
+    "title": "GGdove",
+    "animStagger": true,
+    "galleryLayout": "masonry",
+    "description": "Portfolio of Zheng Jun Peng",
+    "imageSize": "large",
+    "zalgoEffect": {
+      "enabled": true,
+      "targets": [
+        "page-title",
+        "bio-h1",
+        "exhibition-h2",
+        "contact-h2",
+        "nav-logo",
+        "nav-links"
+      ],
+      "intensity": 1,
+      "up": true,
+      "mid": true,
+      "down": true,
+      "interval": 0.05
+    },
+    "scrollAnim": "fade-up"
   },
   "bio": {
     "name": "鄭君朋 Zheng Jun Peng",
@@ -344,13 +344,6 @@
   ],
   "exhibition": [
     {
-      "id": 1,
-      "title": "儀式模組01 Ritual Module-01",
-      "year": "2023",
-      "venue": "和平島公園",
-      "location": "基隆，台灣",
-      "description": "數據主義史觀下的庶民雜音——模擬人類學方法記錄和平島居民的生活軌跡，將文字紀錄輸入人工智能模型，令其虛構不被大歷史脈絡所記載的庶民軼事，根據人工智能指定之方法執行儀式。",
-      "image": "https://static.wixstatic.com/media/3a97a0_4309f9e2a60643a38aefc8b6a139b00af000.jpg/v1/fill/w_570,h_868,al_c,q_85,enc_avif,quality_auto/3a97a0_4309f9e2a60643a38aefc8b6a139b00af000.jpg",
       "subpages": [
         {
           "title": "作品概述 Overview",
@@ -442,17 +435,17 @@
           ]
         }
       ],
+      "venue": "和平島公園",
       "slideshowHeight": "480px",
-      "video": ""
+      "location": "基隆，台灣",
+      "title": "儀式模組01 Ritual Module-01",
+      "video": "",
+      "id": 1,
+      "image": "https://static.wixstatic.com/media/3a97a0_4309f9e2a60643a38aefc8b6a139b00af000.jpg/v1/fill/w_570,h_868,al_c,q_85,enc_avif,quality_auto/3a97a0_4309f9e2a60643a38aefc8b6a139b00af000.jpg",
+      "description": "數據主義史觀下的庶民雜音——模擬人類學方法記錄和平島居民的生活軌跡，將文字紀錄輸入人工智能模型，令其虛構不被大歷史脈絡所記載的庶民軼事，根據人工智能指定之方法執行儀式。",
+      "year": "2023"
     },
     {
-      "id": 2,
-      "title": "儀式模組02 Ritual Module-02",
-      "year": "2023",
-      "venue": "台北松山菸廠",
-      "location": "台北，台灣",
-      "description": "藝術家透過執行一由人工智能指定、擬造的出土儀式，將加載於石板的數據資訊浸染於土地，使數據獲得某種祭祀功能的靈光與對照，以對抗快消文化與虛擬力量。",
-      "image": "https://static.wixstatic.com/media/3a97a0_9c047b4e200949a0bb30111f27464edef000.jpg/v1/fill/w_902,h_570,al_c,q_85,enc_avif,quality_auto/3a97a0_9c047b4e200949a0bb30111f27464edef000.jpg",
       "subpages": [
         {
           "title": "作品概述 Overview",
@@ -609,8 +602,15 @@
           ]
         }
       ],
+      "venue": "台北松山菸廠",
       "slideshowHeight": "480px",
-      "video": ""
+      "location": "台北，台灣",
+      "title": "儀式模組02 Ritual Module-02",
+      "video": "",
+      "id": 2,
+      "image": "https://static.wixstatic.com/media/3a97a0_9c047b4e200949a0bb30111f27464edef000.jpg/v1/fill/w_902,h_570,al_c,q_85,enc_avif,quality_auto/3a97a0_9c047b4e200949a0bb30111f27464edef000.jpg",
+      "description": "藝術家透過執行一由人工智能指定、擬造的出土儀式，將加載於石板的數據資訊浸染於土地，使數據獲得某種祭祀功能的靈光與對照，以對抗快消文化與虛擬力量。",
+      "year": "2023"
     }
   ],
   "weapons": [
