@@ -16,10 +16,10 @@
     "hoverEffect": "scale",
     "textStyles": {
       "pageTitle": {
-        "fontSize": "",
+        "fontSize": "200",
         "x": "0px",
         "y": "0px",
-        "color": "",
+        "color": "#f70000",
         "zalgo": {
           "enabled": true,
           "up": true,
