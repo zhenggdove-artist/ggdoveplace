@@ -22,8 +22,11 @@ async function loadData() {
   siteData   = data;
   visualData = visual;
   applyFonts(siteData.site);
-  // Defer Zalgo until all render functions have run (next macrotask)
-  setTimeout(() => applyZalgo(siteData.site), 0);
+  // 延遲到所有 render 函式完成後（macrotask）才套用文字樣式與 Zalgo
+  setTimeout(() => {
+    applyTextStyles(siteData.site);
+    applyZalgo(siteData.site);
+  }, 0);
   return siteData;
 }
 
@@ -51,7 +54,8 @@ const ZALGO_DOWN = [
   '\u034e','\u0353','\u0354','\u0355','\u0356','\u0359','\u035a','\u0323'
 ];
 
-let _zalgoTimer = null;
+// 每個文字元素各自的 Zalgo 計時器（key = 元素名稱）
+const _zalgoTimers = {};
 
 function generateZalgo(text, { up = true, mid = false, down = false, intensity = 0.3 } = {}) {
   const maxMarks = Math.ceil(intensity * 15);
@@ -80,70 +84,104 @@ function _coerceBool(v, def) {
   return def;
 }
 
-function applyZalgo(site) {
-  const cfg = site && site.zalgoEffect;
-  if (!cfg) return;
+// ── 逐元素文字樣式套用 ─────────────────────────
+// 從 site.textStyles 讀取每個元素的 fontSize / x / y / color 並套用
+function applyTextStyles(site) {
+  if (!site || !site.textStyles) return;
 
-  // Handle string-serialised boolean from CMS
-  const enabled = _coerceBool(cfg.enabled, true);
-  if (!enabled) return;
-
-  const opts = {
-    up:        _coerceBool(cfg.up,   true),
-    mid:       _coerceBool(cfg.mid,  false),
-    down:      _coerceBool(cfg.down, false),
-    intensity: isNaN(Number(cfg.intensity)) ? 0.3 : Number(cfg.intensity)
-  };
-  // Interval is now stored in SECONDS in data.json (e.g. 2.5 = every 2.5s).
-  // Multiply by 1000 to get ms; clamp to a minimum of 50ms.
-  const interval = Math.max(50, (isNaN(Number(cfg.interval)) ? 2.5 : Number(cfg.interval)) * 1000);
-
-  // Map target keys (used by the CMS multi-select) to CSS selectors
   const selectorMap = {
-    'page-title':    '.page-title',
-    'bio-h1':        '.bio-content h1',
-    'exhibition-h2': '.exhibition-details h2',
-    'contact-h2':    '.contact-info h2',
-    'nav-logo':      '.nav-logo',
-    'nav-links':     '.nav-links a'
+    'pageTitle':    '.page-title',
+    'bioH1':        '.bio-content h1',
+    'exhibitionH2': '.exhibition-details h2',
+    'contactH2':    '.contact-info h2',
+    'navLogo':      '.nav-logo',
+    'navLinks':     '.nav-links a'
   };
 
-  // Handle both new array format (multi-select) and legacy string values
-  let selectors;
-  if (Array.isArray(cfg.targets)) {
-    selectors = cfg.targets.map(t => selectorMap[t]).filter(Boolean);
-  } else if (cfg.targets === 'all') {
-    selectors = Object.values(selectorMap);
-  } else if (cfg.targets === 'nav') {
-    selectors = ['.nav-logo', '.nav-links a'];
-  } else {
-    // 'headings' or any unrecognised string → default headings only
-    selectors = ['.page-title', '.bio-content h1', '.exhibition-details h2', '.contact-info h2'];
-  }
+  const ts = site.textStyles;
+  Object.entries(selectorMap).forEach(([key, sel]) => {
+    const s = ts[key];
+    if (!s) return;
+    document.querySelectorAll(sel).forEach(el => {
+      if (s.fontSize && s.fontSize.trim()) el.style.fontSize = s.fontSize.trim();
+      if (s.color    && s.color.trim())    el.style.color    = s.color.trim();
+      const x = (s.x || '0px').trim();
+      const y = (s.y || '0px').trim();
+      if (x !== '0px' || y !== '0px') {
+        el.style.transform = `translate(${x}, ${y})`;
+      }
+    });
+  });
+}
 
-  function reZalgo() {
-    selectors.forEach(sel => {
+// ── 逐元素 Zalgo 效果套用 ───────────────────────
+// 每個元素有獨立計時器、獨立設定；優先讀 textStyles[key].zalgo，
+// 若無則退回全域 zalgoEffect（相容舊版 data.json）
+function applyZalgo(site) {
+  if (!site) return;
+
+  // 清除上次留下的所有計時器（換頁時重新套用用）
+  Object.keys(_zalgoTimers).forEach(k => {
+    clearInterval(_zalgoTimers[k]);
+    delete _zalgoTimers[k];
+  });
+
+  const globalCfg  = site.zalgoEffect  || null;
+  const textStyles = site.textStyles   || {};
+
+  // 新版：以 textStylesKey → CSS selector 對應
+  const tsMap = {
+    'pageTitle':    { sel: '.page-title',            legacyTarget: 'page-title'    },
+    'bioH1':        { sel: '.bio-content h1',         legacyTarget: 'bio-h1'        },
+    'exhibitionH2': { sel: '.exhibition-details h2',  legacyTarget: 'exhibition-h2' },
+    'contactH2':    { sel: '.contact-info h2',        legacyTarget: 'contact-h2'    },
+    'navLogo':      { sel: '.nav-logo',               legacyTarget: 'nav-logo'      },
+    'navLinks':     { sel: '.nav-links a',            legacyTarget: 'nav-links'     }
+  };
+
+  Object.entries(tsMap).forEach(([key, { sel, legacyTarget }]) => {
+    // 1. 優先用 per-element 設定
+    const perEl = textStyles[key] && textStyles[key].zalgo;
+
+    // 2. 無 per-element 時退回全域
+    let cfg = null;
+    if (perEl) {
+      cfg = perEl;
+    } else if (globalCfg && _coerceBool(globalCfg.enabled, true)) {
+      const targets = globalCfg.targets;
+      const inTargets = Array.isArray(targets)
+        ? targets.includes(legacyTarget)
+        : (targets === 'all');
+      if (inTargets) cfg = globalCfg;
+    }
+    if (!cfg) return;
+
+    const enabled = _coerceBool(cfg.enabled, true);
+    if (!enabled) return;
+
+    const opts = {
+      up:        _coerceBool(cfg.up,   true),
+      mid:       _coerceBool(cfg.mid,  false),
+      down:      _coerceBool(cfg.down, false),
+      intensity: isNaN(Number(cfg.intensity)) ? 0.3 : Number(cfg.intensity)
+    };
+    const interval = Math.max(50, (isNaN(Number(cfg.interval)) ? 2.5 : Number(cfg.interval)) * 1000);
+
+    function reZalgo() {
       document.querySelectorAll(sel).forEach(el => {
-        // Preserve original clean text on first run only
         if (!el.dataset.zalgoOrig) el.dataset.zalgoOrig = el.textContent;
-
-        // Wrap in a Georgia span so Unicode combining marks render as
-        // proper VERTICAL diacritics — monospace/CJK fallback fonts
-        // misrender them as full-width horizontal characters instead.
+        // Georgia wrap — monospace/CJK 字型不支援組合符號，會渲染成方塊
         const span = document.createElement('span');
         span.style.fontFamily = 'Georgia, "Times New Roman", "Noto Serif", serif';
         span.textContent = generateZalgo(el.dataset.zalgoOrig, opts);
         el.innerHTML = '';
         el.appendChild(span);
       });
-    });
-  }
+    }
 
-  reZalgo();
-  // Start living timer only once per page load
-  if (!_zalgoTimer) {
-    _zalgoTimer = setInterval(reZalgo, interval);
-  }
+    reZalgo();
+    _zalgoTimers[key] = setInterval(reZalgo, interval);
+  });
 }
 
 // ── Apply font settings ─────────────────────────

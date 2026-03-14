@@ -256,33 +256,70 @@
             : 'DISABLED';
 
           return h('div', { style: { background: '#08040f', padding: '1.4rem', border: '1px solid ' + (zEnabled ? '#3a1840' : '#1e1840') } },
-            // Header row
             h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' } },
               h('div', { style: { color: '#6a6080', fontFamily: '"Courier New",monospace', fontSize: '0.66rem', letterSpacing: '0.18em', textTransform: 'uppercase' } },
                 'Z\u0327\u034ba\u0366l\u0308g\u034ao\u0309 Preview'),
               h('div', { style: { color: markerCol, fontFamily: '"Courier New",monospace', fontSize: '0.62rem', letterSpacing: '0.1em' } }, statusTxt)
             ),
-            // Sample heading rows
             h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '2rem 3rem', lineHeight: 3.5, overflow: 'visible' } },
               samples.map(function(txt, i) {
                 var sizes  = ['1.8rem', '0.9rem', '1.5rem', '0.9rem', '0.9rem'];
                 var colors = ['#eee8ff', '#7755ff', '#eee8ff', '#7755ff', '#7755ff'];
                 return h('span', { key: i, style: {
-                  fontFamily: headingFont,
-                  fontSize:   sizes[i],
-                  color:      colors[i],
-                  fontWeight: 400,
-                  letterSpacing: '0.04em',
-                  display: 'inline-block',
-                  overflow: 'visible'
+                  fontFamily: headingFont, fontSize: sizes[i], color: colors[i],
+                  fontWeight: 400, letterSpacing: '0.04em', display: 'inline-block', overflow: 'visible'
                 }}, txt);
               })
             ),
-            // Subtle note
             h('div', { style: { marginTop: '0.8rem', color: '#3a3060', fontFamily: '"Courier New",monospace', fontSize: '0.6rem', letterSpacing: '0.1em' } },
               zEnabled
-                ? '\u21bb re\u2010randomises every 2.2s in this preview  \xb7  website interval: ' + zIntervalSec.toFixed(2) + 's'
+                ? '\u21bb re\u2010randomises every 2.2s in preview  \xb7  website interval: ' + zIntervalSec.toFixed(2) + 's'
                 : 'Enable the toggle above to activate Zalgo effect on live site'
+            )
+          );
+        })(),
+
+        // ── textStyles 各元素預覽 ──
+        (function() {
+          var ts = s.textStyles || {};
+          var elemDefs = [
+            { key: 'pageTitle',    label: '頁面大標題 Page Title',   sample: '陳俊朋  Solo Show', size: '2rem' },
+            { key: 'bioH1',        label: 'Bio 姓名 h1',             sample: '鄭俊朋',             size: '1.5rem' },
+            { key: 'exhibitionH2', label: '展覽標題 Exhibition h2',   sample: '個展 Solo Exhibition', size: '1.1rem' },
+            { key: 'contactH2',    label: '聯絡標題 Contact h2',      sample: 'Get in Touch',      size: '1.1rem' },
+            { key: 'navLogo',      label: 'Nav Logo',                sample: 'GGdove',             size: '0.9rem' },
+            { key: 'navLinks',     label: 'Nav Links',               sample: 'Works  ·  Bio  ·  Contact', size: '0.72rem' }
+          ];
+          return h('div', { style: { background: '#06030d', padding: '1.4rem', border: '1px solid #1a1040', marginTop: '1rem' } },
+            h('div', { style: { color: '#6a6080', fontFamily: '"Courier New",monospace', fontSize: '0.66rem', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '1.2rem' } },
+              '文字元素樣式預覽 Text Styles Preview'),
+            h('div', null,
+              elemDefs.map(function(def) {
+                var el = ts[def.key] || {};
+                var zEl = el.zalgo || {};
+                var zOn = zEl.enabled === true || zEl.enabled === 'true';
+                var fs  = el.fontSize || def.size;
+                var col = el.color || '#c8c0e8';
+                var tx  = el.x && el.x !== '0px' ? el.x : null;
+                var ty  = el.y && el.y !== '0px' ? el.y : null;
+                var transformStyle = (tx || ty) ? ('translate(' + (tx || '0px') + ', ' + (ty || '0px') + ')') : 'none';
+                return h('div', { key: def.key, style: {
+                    display: 'flex', alignItems: 'baseline', gap: '1rem',
+                    padding: '0.6rem 0', borderBottom: '1px solid #12102a'
+                  }},
+                  h('div', { style: { minWidth: '190px', color: '#4a4070', fontFamily: '"Courier New",monospace', fontSize: '0.62rem', flexShrink: 0 } }, def.label),
+                  h('div', { style: {
+                    fontFamily: headingFont, fontSize: fs, color: col,
+                    transform: transformStyle, transformOrigin: 'left center',
+                    overflow: 'visible', lineHeight: 2.2
+                  }}, def.sample),
+                  h('div', { style: { marginLeft: 'auto', display: 'flex', gap: '0.4rem', alignItems: 'center', flexShrink: 0 } },
+                    fs !== def.size ? h('span', { style: { fontFamily: '"Courier New",monospace', fontSize: '0.6rem', color: '#7755ff' } }, fs) : null,
+                    col !== '#c8c0e8' ? h('span', { style: { display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: col, border: '1px solid #333' } }) : null,
+                    zOn ? h('span', { style: { fontFamily: '"Courier New",monospace', fontSize: '0.6rem', color: '#ff4466', letterSpacing: '0.1em' } }, 'ZALGO') : null
+                  )
+                );
+              })
             )
           );
         })()
@@ -585,20 +622,180 @@
   CMS.registerPreviewTemplate('custom_pages', CustomPagesPreview);
   CMS.registerPreviewTemplate('custom_pages_data', CustomPagesPreview);
 
-  // ── Unsaved-changes warning ───────────────────
-  // Decap CMS sets document.title when there are unsaved changes (prepends an asterisk *).
-  // We watch for that and warn the user if they try to navigate away.
+  // ── 草稿自動暫存系統 (localStorage) ─────────────
+  // 每次表單輸入後自動把目前所有欄位值暫存到 localStorage；
+  // 當使用者按上一頁再回來時，偵測到草稿並顯示「恢復草稿」橫幅。
   (function() {
-    var _dirty = false;
-    var titleObserver = new MutationObserver(function() {
-      _dirty = document.title.startsWith('*');
+    var DRAFT_PREFIX = 'ggcms-draft:';
+    var _draftKey    = null;
+    var _saveTimer   = null;
+    var _banner      = null;
+    var _dirty       = false;
+
+    // ── 取得目前路由 key ──
+    function routeKey() {
+      return DRAFT_PREFIX + (location.hash || '#/').replace(/[^a-zA-Z0-9_/:=-]/g, '_');
+    }
+
+    // ── 收集表單欄位值 ──
+    function collectFields() {
+      var data = {};
+      document.querySelectorAll(
+        'input[type="text"], input[type="number"], input[type="url"], input[type="email"], textarea'
+      ).forEach(function(el) {
+        var key = el.id || el.name || el.getAttribute('aria-label') || el.placeholder;
+        if (key) data[key] = el.value;
+      });
+      // 也記錄 checkbox / toggle
+      document.querySelectorAll('input[type="checkbox"]').forEach(function(el) {
+        var key = el.id || el.name;
+        if (key) data['__chk__' + key] = el.checked;
+      });
+      return data;
+    }
+
+    // ── 存草稿 ──
+    function saveDraft() {
+      if (!_draftKey) return;
+      var fields = collectFields();
+      if (!Object.keys(fields).length) return;
+      try {
+        localStorage.setItem(_draftKey, JSON.stringify({ ts: Date.now(), fields: fields }));
+      } catch(e) {}
+    }
+
+    // ── 讀取草稿並嘗試恢復值 ──
+    function tryRestoreDraft(key) {
+      var raw;
+      try { raw = localStorage.getItem(key); } catch(e) {}
+      if (!raw) return;
+      var draft;
+      try { draft = JSON.parse(raw); } catch(e) { return; }
+      if (!draft || !draft.fields) return;
+
+      var minAgo = Math.round((Date.now() - draft.ts) / 60000);
+      var timeStr = minAgo < 1 ? '剛才' : minAgo + ' 分鐘前';
+
+      // 顯示恢復橫幅
+      showRestoreBanner(timeStr, function() {
+        // 用 React native setter trick 注入值回表單
+        Object.entries(draft.fields).forEach(function(pair) {
+          var fieldKey = pair[0], val = pair[1];
+          if (fieldKey.startsWith('__chk__')) return; // skip checkbox for now
+          document.querySelectorAll(
+            'input[type="text"], input[type="number"], input[type="url"], input[type="email"], textarea'
+          ).forEach(function(el) {
+            var k = el.id || el.name || el.getAttribute('aria-label') || el.placeholder;
+            if (k === fieldKey) {
+              var proto = Object.getPrototypeOf(el);
+              var setter = Object.getOwnPropertyDescriptor(proto, 'value');
+              if (setter && setter.set) {
+                setter.set.call(el, val);
+                el.dispatchEvent(new Event('input',  { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          });
+        });
+        hideBanner();
+      }, function() {
+        // 捨棄草稿
+        try { localStorage.removeItem(key); } catch(e) {}
+        hideBanner();
+      });
+    }
+
+    // ── 橫幅 UI ──
+    function showRestoreBanner(timeStr, onRestore, onDiscard) {
+      if (_banner) return;
+      _banner = document.createElement('div');
+      _banner.style.cssText = [
+        'position:fixed', 'bottom:0', 'left:0', 'right:0', 'z-index:99999',
+        'background:#1a0d2e', 'border-top:2px solid #7755ff',
+        'padding:0.85rem 1.4rem', 'display:flex', 'align-items:center', 'gap:1.2rem',
+        'font-family:"Courier New",monospace', 'font-size:0.8rem', 'color:#c8c0e8',
+        'box-shadow:0 -4px 20px rgba(80,40,160,0.4)'
+      ].join(';');
+
+      var msg = document.createElement('span');
+      msg.textContent = '⚠️  偵測到 ' + timeStr + ' 的未儲存草稿';
+      msg.style.flex = '1';
+
+      var btnRestore = document.createElement('button');
+      btnRestore.textContent = '恢復草稿';
+      btnRestore.style.cssText = 'background:#7755ff;color:#fff;border:none;padding:0.35rem 0.9rem;cursor:pointer;font-family:inherit;font-size:0.76rem;border-radius:2px;';
+      btnRestore.onclick = onRestore;
+
+      var btnDiscard = document.createElement('button');
+      btnDiscard.textContent = '捨棄';
+      btnDiscard.style.cssText = 'background:none;color:#6a6080;border:1px solid #3a3060;padding:0.35rem 0.9rem;cursor:pointer;font-family:inherit;font-size:0.76rem;border-radius:2px;';
+      btnDiscard.onclick = onDiscard;
+
+      _banner.appendChild(msg);
+      _banner.appendChild(btnRestore);
+      _banner.appendChild(btnDiscard);
+      document.body.appendChild(_banner);
+    }
+
+    function hideBanner() {
+      if (_banner) { _banner.remove(); _banner = null; }
+    }
+
+    // ── 監聽表單輸入，防抖 5 秒後存檔 ──
+    document.addEventListener('input', function(e) {
+      var tag = e.target.tagName;
+      if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') return;
+      _dirty = true;
+      clearTimeout(_saveTimer);
+      _saveTimer = setTimeout(saveDraft, 5000);
+    }, true);
+
+    // ── 路由切換時：儲存目前草稿，並檢查新路由是否有草稿 ──
+    var _lastHash = location.hash;
+    window.addEventListener('hashchange', function() {
+      // 離開時先把未儲存的草稿寫入 localStorage
+      if (_dirty && _draftKey) {
+        saveDraft();
+        _dirty = false;
+      }
+      hideBanner();
+      var newKey = routeKey();
+      _draftKey = newKey;
+      _lastHash = location.hash;
+
+      // 稍等 CMS 渲染完表單再嘗試恢復
+      setTimeout(function() { tryRestoreDraft(newKey); }, 800);
     });
-    titleObserver.observe(document.querySelector('title') || document.head, { subtree: true, childList: true, characterData: true });
+
+    // 初始化
+    _draftKey = routeKey();
+    setTimeout(function() { tryRestoreDraft(_draftKey); }, 1200);
+
+    // 存檔成功後清除草稿（Decap CMS editorial workflow 的 preSave 事件）
+    if (window.CMS && window.CMS.registerEventListener) {
+      window.CMS.registerEventListener({
+        name: 'preSave',
+        handler: function() {
+          _dirty = false;
+          clearTimeout(_saveTimer);
+          if (_draftKey) {
+            try { localStorage.removeItem(_draftKey); } catch(e) {}
+          }
+          hideBanner();
+        }
+      });
+    }
+
+    // ── Beforeunload：關閉瀏覽器時警告 ──
+    var _titleDirty = false;
+    new MutationObserver(function() {
+      _titleDirty = document.title.startsWith('*');
+    }).observe(document.querySelector('title') || document.head, { subtree: true, childList: true, characterData: true });
 
     window.addEventListener('beforeunload', function(e) {
-      if (_dirty) {
+      if (_titleDirty || _dirty) {
         e.preventDefault();
-        e.returnValue = '你有未儲存的變更。確定要離開嗎？\nYou have unsaved changes. Leave anyway?';
+        e.returnValue = '你有未儲存的變更。確定要離開嗎？';
       }
     });
   })();

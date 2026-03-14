@@ -4,6 +4,10 @@ backend:
   branch: main
   base_url: https://ggdove-cms-auth.onrender.com
 
+# Editorial Workflow：Save = 即時存草稿（不觸發重新建置）
+# 累積多個草稿後，按 Publish 一次推送上線
+publish_mode: editorial_workflow
+
 media_folder: images/uploads
 public_folder: /ggdoveplace/images/uploads
 
@@ -272,17 +276,142 @@ collections:
                   - { label: "Weapons 頁名稱",     name: weapons,    widget: string, default: "Weapons",     required: false }
                   - { label: "Bio 頁名稱",          name: bio,        widget: string, default: "Bio",          required: false }
                   - { label: "Contact 頁名稱",     name: contact,    widget: string, default: "Contact",     required: false }
-              - label: "Zalgo 崩文字效果"
+              - label: "文字元素各別設定 Text Element Styles"
+                name: textStyles
+                widget: object
+                collapsed: false
+                hint: "為每個文字元素分別設定大小、位置、顏色與崩文字效果"
+                fields:
+                  - label: "▌頁面大標題 Page Title (.page-title)"
+                    name: pageTitle
+                    widget: object
+                    collapsed: false
+                    fields: &text_element_fields
+                      - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false, hint: "如 2.8rem / 48px（留空使用預設）" }
+                      - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false, hint: "正數→右  負數→左，如 20px / -10px" }
+                      - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false, hint: "正數→下  負數→上，如 10px / -5px" }
+                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - label: "崩文字效果 Zalgo"
+                        name: zalgo
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: true }
+                          - { label: "向上 Up ↑", name: up, widget: boolean, default: true, hint: "字母上方符文刺" }
+                          - { label: "中間 Mid ─", name: mid, widget: boolean, default: false, hint: "字母中間橫向干擾" }
+                          - { label: "向下 Down ↓", name: down, widget: boolean, default: false, hint: "字母下方符文刺" }
+                          - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
+                          - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+                  - label: "▌Bio 姓名標題 Bio h1 (.bio-content h1)"
+                    name: bioH1
+                    widget: object
+                    collapsed: false
+                    fields:
+                      - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false, hint: "如 1.8rem / 36px" }
+                      - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false }
+                      - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false }
+                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - label: "崩文字效果 Zalgo"
+                        name: zalgo
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: false }
+                          - { label: "向上 Up ↑", name: up, widget: boolean, default: true }
+                          - { label: "中間 Mid ─", name: mid, widget: boolean, default: false }
+                          - { label: "向下 Down ↓", name: down, widget: boolean, default: false }
+                          - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
+                          - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+                  - label: "▌展覽標題 Exhibition h2 (.exhibition-details h2)"
+                    name: exhibitionH2
+                    widget: object
+                    collapsed: false
+                    fields:
+                      - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false }
+                      - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false }
+                      - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false }
+                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - label: "崩文字效果 Zalgo"
+                        name: zalgo
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: false }
+                          - { label: "向上 Up ↑", name: up, widget: boolean, default: true }
+                          - { label: "中間 Mid ─", name: mid, widget: boolean, default: false }
+                          - { label: "向下 Down ↓", name: down, widget: boolean, default: false }
+                          - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
+                          - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+                  - label: "▌聯絡標題 Contact h2 (.contact-info h2)"
+                    name: contactH2
+                    widget: object
+                    collapsed: false
+                    fields:
+                      - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false }
+                      - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false }
+                      - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false }
+                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - label: "崩文字效果 Zalgo"
+                        name: zalgo
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: false }
+                          - { label: "向上 Up ↑", name: up, widget: boolean, default: true }
+                          - { label: "中間 Mid ─", name: mid, widget: boolean, default: false }
+                          - { label: "向下 Down ↓", name: down, widget: boolean, default: false }
+                          - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
+                          - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+                  - label: "▌Logo 左上角品牌名 Nav Logo (.nav-logo)"
+                    name: navLogo
+                    widget: object
+                    collapsed: false
+                    fields:
+                      - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false }
+                      - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false }
+                      - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false }
+                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - label: "崩文字效果 Zalgo"
+                        name: zalgo
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: false }
+                          - { label: "向上 Up ↑", name: up, widget: boolean, default: true }
+                          - { label: "中間 Mid ─", name: mid, widget: boolean, default: false }
+                          - { label: "向下 Down ↓", name: down, widget: boolean, default: false }
+                          - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
+                          - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+                  - label: "▌Nav 導航連結文字 (.nav-links a)"
+                    name: navLinks
+                    widget: object
+                    collapsed: false
+                    fields:
+                      - { label: "字體大小 Font Size", name: fontSize, widget: string, default: "", required: false }
+                      - { label: "水平偏移 X", name: x, widget: string, default: "0px", required: false }
+                      - { label: "垂直偏移 Y", name: y, widget: string, default: "0px", required: false }
+                      - { label: "文字顏色 Color", name: color, widget: color, default: "", required: false }
+                      - label: "崩文字效果 Zalgo"
+                        name: zalgo
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: false }
+                          - { label: "向上 Up ↑", name: up, widget: boolean, default: true }
+                          - { label: "中間 Mid ─", name: mid, widget: boolean, default: false }
+                          - { label: "向下 Down ↓", name: down, widget: boolean, default: false }
+                          - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
+                          - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+              - label: "Zalgo 崩文字效果（全域預設）"
                 name: zalgoEffect
                 widget: object
                 collapsed: true
-                hint: "對標題文字施加 Unicode 崩潰符文，配合 VHS 故障美學"
+                hint: "⚠️ 舊版全域設定，建議改用上方「文字元素各別設定」。若上方有設定，此處設定會被覆蓋忽略。"
                 fields:
                   - label: "啟用 Enabled"
                     name: enabled
                     widget: boolean
                     default: true
-                    hint: "開啟後，標題文字會帶有崩潰式符文痕跡（Zalgo）"
                   - label: "套用位置 Targets（可多選）"
                     name: targets
                     widget: select
@@ -295,7 +424,6 @@ collections:
                       - { label: "Logo 左上角品牌名", value: "nav-logo" }
                       - { label: "Nav 導航連結文字", value: "nav-links" }
                     default: ["page-title", "nav-logo"]
-                    hint: "可同時勾選多個位置，崩文字效果將套用在所有勾選的元素上"
                   - label: "強度 Intensity"
                     name: intensity
                     widget: number
@@ -304,23 +432,10 @@ collections:
                     max: 1.0
                     step: 0.05
                     default: 0.3
-                    hint: "0.05=輕微顫動  0.3=明顯崩潰  0.8+=完全失控"
-                  - label: "向上延伸 Up Marks"
-                    name: up
-                    widget: boolean
-                    default: true
-                    hint: "字母上方的符文刺（推薦開啟，視覺最明顯）"
-                  - label: "中間干擾 Mid Marks"
-                    name: mid
-                    widget: boolean
-                    default: false
-                    hint: "字母中間穿插的橫向干擾符號"
-                  - label: "向下延伸 Down Marks"
-                    name: down
-                    widget: boolean
-                    default: false
-                    hint: "字母下方的符文刺（與向上同時開啟效果更混沌）"
-                  - label: "刷新間隔 Refresh Interval（秒）"
+                  - { label: "向上 Up", name: up,   widget: boolean, default: true }
+                  - { label: "中間 Mid", name: mid,  widget: boolean, default: false }
+                  - { label: "向下 Down", name: down, widget: boolean, default: false }
+                  - label: "刷新間隔（秒）"
                     name: interval
                     widget: number
                     value_type: float
@@ -328,7 +443,6 @@ collections:
                     max: 30
                     step: 0.05
                     default: 2.5
-                    hint: "每幾秒重新隨機化一次（0.05=極速抖動 / 0.5=快速 / 2.5=預設 / 10=緩慢）"
 
   - name: visual
     label: Visual Style — VHS Effect (視覺效果)

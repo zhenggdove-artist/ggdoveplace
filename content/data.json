@@ -38,7 +38,93 @@
       "down": true,
       "interval": 0.05
     },
-    "scrollAnim": "fade-up"
+    "scrollAnim": "fade-up",
+    "textStyles": {
+      "pageTitle": {
+        "fontSize": "",
+        "x": "0px",
+        "y": "0px",
+        "color": "",
+        "zalgo": {
+          "enabled": true,
+          "up": true,
+          "mid": true,
+          "down": true,
+          "intensity": 1,
+          "interval": 3
+        }
+      },
+      "bioH1": {
+        "fontSize": "",
+        "x": "0px",
+        "y": "0px",
+        "color": "",
+        "zalgo": {
+          "enabled": true,
+          "up": true,
+          "mid": true,
+          "down": true,
+          "intensity": 1,
+          "interval": 3
+        }
+      },
+      "exhibitionH2": {
+        "fontSize": "",
+        "x": "0px",
+        "y": "0px",
+        "color": "",
+        "zalgo": {
+          "enabled": true,
+          "up": true,
+          "mid": true,
+          "down": true,
+          "intensity": 1,
+          "interval": 3
+        }
+      },
+      "contactH2": {
+        "fontSize": "",
+        "x": "0px",
+        "y": "0px",
+        "color": "",
+        "zalgo": {
+          "enabled": true,
+          "up": true,
+          "mid": true,
+          "down": true,
+          "intensity": 1,
+          "interval": 3
+        }
+      },
+      "navLogo": {
+        "fontSize": "",
+        "x": "0px",
+        "y": "0px",
+        "color": "",
+        "zalgo": {
+          "enabled": true,
+          "up": true,
+          "mid": true,
+          "down": true,
+          "intensity": 1,
+          "interval": 3
+        }
+      },
+      "navLinks": {
+        "fontSize": "",
+        "x": "0px",
+        "y": "0px",
+        "color": "",
+        "zalgo": {
+          "enabled": true,
+          "up": true,
+          "mid": true,
+          "down": true,
+          "intensity": 1,
+          "interval": 3
+        }
+      }
+    }
   },
   "bio": {
     "name": "鄭君朋 Zheng Jun Peng",
