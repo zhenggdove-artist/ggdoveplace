@@ -345,21 +345,65 @@
   "exhibition": [
     {
       "id": 1,
-      "title": "個展 Solo Exhibition",
-      "year": "2024",
-      "venue": "",
-      "location": "",
-      "description": "",
-      "image": "/ggdoveplace/images/project-01.jpg"
+      "title": "儀式模組01 Ritual Module-01",
+      "year": "2023",
+      "venue": "和平島公園",
+      "location": "基隆，台灣",
+      "description": "數據主義史觀下的庶民雜音——模擬人類學方法記錄和平島居民的生活軌跡，將文字紀錄輸入人工智能模型，令其虛構不被大歷史脈絡所記載的庶民軼事，根據人工智能指定之方法執行儀式。",
+      "image": "https://static.wixstatic.com/media/3a97a0_4309f9e2a60643a38aefc8b6a139b00af000.jpg/v1/fill/w_570,h_868,al_c,q_85,enc_avif,quality_auto/3a97a0_4309f9e2a60643a38aefc8b6a139b00af000.jpg",
+      "subpages": [
+        {
+          "title": "作品概述 Overview",
+          "body": "利用數據主義製造的庶民雜音\n\n模擬人類學方法記錄和平島居民的生活軌跡，將文字紀錄輸入予所訓練之人工智能模型，令其虛構不被大歷史脈絡所記載的庶民軼事後，根據人工智能指定之方法執行儀式。\n\n我以人工智能生成的庶民故事為文本（其結果為船難事件）以詩歌體例創作撰寫三首詩歌（紅、白、藍）後分別刻畫製作出各儀式部件——\n\n**擬造的失事船體結構令旗**：在船體結構上以道教黑令旗之形式，撰寫詩歌（紅）。\n\n**船體殘骸科考部件**：模擬科考研究現場，於岸際撿取可能的失事船體上，用於承裝魚貨的保麗龍碎塊，並於碎塊上根據詩歌（白）依序書寫標記序列碼標籤後排列成詩。\n\n**弔祭文部件**：將岸際科考行為所拾取之紙張印載詩歌（藍），用以作為儀式弔祭物件。書寫文字皆以代碼——繁體中文轉譯碼 Big5 code 形式重新拼寫之加密文字所撰寫。\n\n最後這些文字與物件根據人工智能指定操作方法重新組織為一個儀式現場。存在於庶民口述的田野文本與存在於電子數據庫的歷史文本透過人工智能編列的浸禮儀式重新連結土地，使數據獲得某種祭祀功能的靈光與湧現。\n\n作品包含與人工智能對話互動之相關文本——輸入之田野筆記資料、科考現場錄像、道教科儀採集；輸出之庶民故事、儀式操作指南及對於《儀式模組》的研究與藝術評論、船體殘骸擬制令旗、影像及現成物。\n\n---\n\nBy employing anthropological simulation methods, I meticulously document the life trajectories of the residents of Peace Island. These textual records are then fed into a trained AI model, which fabricates folk anecdotes unrecorded by grand historical narratives. Following the AI's specified methods, I conduct ceremonial rituals.\n\nUsing the AI-generated folk stories as my text—resulting in narratives centered around a shipwreck—I compose three poems (Red, White, Blue) in poetic form, each materializing into distinct ritual components: simulated shipwreck command flags, scientific survey debris, and memorial texts. All inscribed text is encoded in Big5 traditional Chinese character codes.\n\nThe work includes texts and interactive dialogues with the AI, field note data inputs, scientific survey videos, collected Taoist ritual elements, AI-generated folk stories, ritual operation guides, studies and critiques of the \"Ritual Module,\" simulated shipwreck signal flags, video recordings, and found objects.",
+          "images": []
+        },
+        {
+          "title": "濱海薩滿儀式部件",
+          "body": "儀式模組01－濱海薩滿儀式部件\n\n**人工智能指引之薩滿儀式執行要點**\n\n**準備階段**：薩滿會身穿深色的斗笠和象徵石礁的面具，代表的是不變和堅韌的靈性。薩滿將手持浮球和漂流木法仗，象徵天地元氣和生命的流動。漁網輕輕地覆蓋在肩頸及背部，代表對生命的連結和尊重。\n\n**清淨儀式**：薩滿會在海岸邊點燃香火，用來淨化空間，並擊鼓以引導靈魂。此步驟對應夜幕降臨，海浪擊打著海岸的時刻，因為在道教中，音樂和聲音被認為可以調和宇宙的氣息。\n\n**行走與祈禱**：薩滿將倚著海浪的聲音，繞行著船難的殘骸三周，象徵對生命週期的尊重和對失去生命的靈魂的哀悼。行走的過程也象徵著靈魂的旅程。\n\n**鞠躬敬意**：薩滿會深深鞠躬，表示對於失去的生命的敬意和尊重。在道教中，鞠躬是一種表達謙卑和尊重的行為。\n\n**祭文與釋放**：薩滿將取出祭文，浸泡於海水中，將其放入海中，象徵著靈魂返回大自然，與宇宙合一。此步驟也表示讓過去的生命與海洋再次融為一體，符合道教中「天人合一」的理念。\n\n在此儀式過程中，薩滿尊重生命的流動和不變，也尊重生與死的自然規律。透過此儀式，薩滿追憶那些船難中失去生命的靈魂，並將他們的靈魂安放於大海之中，讓他們能與自然融合，找到安息之地。",
+          "images": []
+        },
+        {
+          "title": "船體殘骸科考部件",
+          "body": "儀式模組01－船體殘骸科考部件\n\n**從海洋邊緣回望：一種後人類主義的視角**\n\n藝術家在海邊拾取被人類丟棄的保麗龍，每一片保麗龍都黏貼上一張標籤，標籤上寫著看似序列碼的英文與數字，如「A-7DA」。\n\n這些序列碼並非隨意的組合，而是台灣的繁體中文電腦內碼 Big5 CODE，而「A-7DA」即代表「我」之意。\n\n用序列碼編織了一首詩，並將其黏貼在被撿拾的保麗龍上。將詩句如同序列碼般一一排列在這些海洋垃圾上，詩歌則以被捕上漁船的「魚」視角為主導，將邊緣的物質與邊緣的語言相結合，為邊緣之物做詩。\n\n藝術家運用了當代藝術中最常見的「再現」手法，透過模擬數位考古的方式，把看似平常的行為轉變成一場深入人心的藝術表演。他用保麗龍和序列碼來表現我們對環境的破壞，和我們該如何看待這些文明軌跡。\n\n每一個序列碼都是一種文明記憶的符號，將海洋垃圾轉化為一種文明的再現，用最直觀的方式告訴我們，這些被遺忘的垃圾其實就是我們的文化記憶的碎片，每一片保麗龍都象徵著人類行為對環境的忽視。",
+          "images": []
+        },
+        {
+          "title": "吳道士部件",
+          "body": "儀式模組01－吳道士部件\n\n在道教觀念中，「道」是宇宙的最高原則，萬物的根源。這種哲學思想認為，道本身超越並潛藏在萬物之中，它既無形無象，又無所不在、無所不包。由於道被視為萬物的起源與終點，以及一切運行的規律，所以在某種程度上，可以說道在「位階」上是高於自然的。\n\n然而，這種說法需要被理解為是一種象徵性或者哲學性的表述。道教並非將「道」理解為一種具有意識或者意願的存在，「道」更像是一種超越性的原則或者規律。同時，道教的目的是引導人們認識到「道」的存在，並與之和諧共處，通過修煉與「道」合一，達到超越常人生死的目標。\n\n儘管從某種角度來說，道的「位階」似乎高於自然，但在道教的實踐中，「道」和「自然」是緊密相連的，人們需要遵循自然的規律，進而感悟到「道」的存在。",
+          "images": []
+        }
+      ]
     },
     {
       "id": 2,
-      "title": "聯展 Group Exhibition",
+      "title": "儀式模組02 Ritual Module-02",
       "year": "2023",
-      "venue": "",
-      "location": "",
-      "description": "",
-      "image": "/ggdoveplace/images/project-02.jpg"
+      "venue": "台北松山菸廠",
+      "location": "台北，台灣",
+      "description": "藝術家透過執行一由人工智能指定、擬造的出土儀式，將加載於石板的數據資訊浸染於土地，使數據獲得某種祭祀功能的靈光與對照，以對抗快消文化與虛擬力量。",
+      "image": "https://static.wixstatic.com/media/3a97a0_9c047b4e200949a0bb30111f27464edef000.jpg/v1/fill/w_902,h_570,al_c,q_85,enc_avif,quality_auto/3a97a0_9c047b4e200949a0bb30111f27464edef000.jpg",
+      "subpages": [
+        {
+          "title": "作品概述 Overview",
+          "body": "儀式模組02 Ritual Module-02\n\n藝術家透過執行一由人工智能指定、擬造的出土儀式，將加載於石板的數據資訊浸染於土地，使數據獲得某種祭祀功能的靈光與對照。\n\n在此一出土儀式中，藝術家有意製造某種對抗快消文化和虛擬力量。面對僅僅作為快速消費的數據概念，藝術家試圖透過這一儀式，使之沉澱。在這數碼主導的社會，每個數據字節和資訊像滾石一般瞬間消失，藝術家的擬造出土儀式成了一種詩意的阻力，一種反抗不受控制的數據洪流的緩衝。\n\n與人工智能告解室的即時、可印、可分享的特質相對，這一出土儀式將數據賦予了一種時間性和地緣性。這些數據不再是輕易可得的，它們被賦予了一種「靈光」——一種與土地、歷史和文化相連結的重量。\n\n當這些被重新賦予靈光的數據出土時，它們變得如同古老的文明遺跡或宗教聖物，被賦予了一種神秘和權威。透過這一出土儀式，在這個一切都被數字化、量化、快速消費的世界裡，藝術的勞動使「靈光」再次成為可見與可能。\n\n---\n\nThrough a ritual crafted by artificial intelligence, the artist immerses stone tablets laden with data into the earth, seeking to endow data with a certain ceremonial luminescence. The work deliberately resists fast-consumption culture—where data bytes vanish instantaneously—creating a poetic resistance against the uncontrolled flood of data.\n\nUnlike the confessional room's immediacy and shareability, this unearthing ritual grants data a sense of temporality and locality. When these re-illuminated data artifacts are unearthed, they become akin to ancient relics, endowed with mystery and authority. Through this ritual, in a world where everything is digitized and rapidly consumed, the labor of art makes 'aura' visible and possible once more.",
+          "images": []
+        },
+        {
+          "title": "告解室部件",
+          "body": "儀式模組02－告解室部件\n\n觀者透過進入告解室，與以人工智能為神父的裝置進行告解，對話後獲得一份額的智能籤詩。\n\n**獲取一份定時定量的智慧**\n\n藝術家透過編輯設定人工智能，擬制了一個人工智能的告解室，能對前來告解的人提出至高智慧的回覆並印出載有回復的信條以供閱讀。智慧被定量、被分割、被打包。智慧小語卡就像是一種即食的心靈雞湯，人們將這些從告解室獲得的文字拍照打卡上傳，文字與藝術書寫成了藝術家所擬造、可供消費的形式。\n\n在這盛行快消文化、虛擬實境的時代，藝術家透過人工智能的告解室對「真理」做了一場諷刺的重演。在這個告解室中，告解不再是心靈探訪或靈魂的洗滌，而是像快餐一樣快速消費的商品，可隨時列印、拍照打卡、上傳到社交網站的標的。\n\n我們得問，當真理和智慧被輕易地印出、分發、消費，它們還剩下多少價值？這不是質疑人工智慧的能力，而是質疑我們對於真理和智慧的渴求是否還保有其初衷。藝術家以極端的方式將這個問題呈現在我們面前：當智慧和真理變得如此便利和低廉，它們是否還能保持其應有的尊嚴？\n\n這樣的告解室，在某種程度上，放大了我們對快速消費文化的依賴和對真理的冷漠。藝術家透過這個裝置，將真理削弱成一場網紅秀、一個熱門標籤、一句快速消費的口號。真理被打碼、經過濾，最後成為了被拆解、被消費的碎片。",
+          "images": []
+        },
+        {
+          "title": "告解室影像",
+          "body": "儀式模組02－告解室影像\n\n螢幕中影像反覆出現魚鰓作動、工廠工人作業、老香煙廣告所編造的海濱派對幻象。",
+          "images": []
+        },
+        {
+          "title": "菸廠場員部件 ＆ 研究文檔",
+          "body": "儀式模組02－菸廠場員部件 ＆ 研究文檔部件\n\n**菸廠場員部件**\n\n模擬人類學方法訪談所得之田野文本影像疊合，訪談對象多為 1950 至 1980 年間在職之菸廠員工。於此訪談文本及相關文獻得以摺疊對照昔日與今日的勞動情境，並輸入予藝術家所建構之人工智能模組，與之進行對話，作為建構其他部件之基礎。\n\n模擬人類學方法記錄人們在地的情感軌跡，將文字紀錄輸入予所訓練之人工智能模型，令其追朔形構五十餘篇虛構的菸廠工人日記，並由藝術家截選手抄於手抄紙上。以這些虛構的日記為文本，藝術家與人工智能進行互動對話後分別製造了勞動告解室部件、勞動碑部件、研究文本部件、出土儀式部件。\n\n---\n\n**研究文檔部件**\n\n藝術家將台北松山菸廠的大歷史脈絡、模擬人類學方法田野所獲之人物誌筆記、素材圖像輸入所訓練的 AI 模型，生成石板的出土儀式指南、對作品之藝術評論，為藝術家與人工智能模組互動後產生之若干研究文檔。",
+          "images": []
+        }
+      ]
     }
   ],
   "weapons": [
