@@ -196,7 +196,7 @@ collections:
                 widget: boolean
                 default: true
                 hint: "圖片依序進場（而非全部同時出現）"
-              - label: "Zalgo 崩文字效果 ̴̢̠̟̰̣̱̊̀͊̊ͅ"
+              - label: "Zalgo 崩文字效果"
                 name: zalgoEffect
                 widget: object
                 collapsed: true

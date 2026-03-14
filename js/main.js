@@ -12,9 +12,12 @@ const INITIAL_SHOW = 9;
 
 // ── Load data ──────────────────────────────────
 async function loadData() {
+  // cache:'no-cache' sends a conditional request so browser always gets the
+  // latest version after a CMS publish — without this, stale cached data.json
+  // would make site settings changes appear to have no effect.
   const [data, visual] = await Promise.all([
-    fetch(DATA_URL).then(r => r.json()),
-    fetch(VISUAL_URL).then(r => r.json()).catch(() => ({}))
+    fetch(DATA_URL,   { cache: 'no-cache' }).then(r => r.json()),
+    fetch(VISUAL_URL, { cache: 'no-cache' }).then(r => r.json()).catch(() => ({}))
   ]);
   siteData   = data;
   visualData = visual;
@@ -59,6 +62,9 @@ function generateZalgo(text, { up = true, mid = false, down = false, intensity =
   for (let i = 0; i < text.length; i++) {
     out += text[i];
     if (/\s/.test(text[i])) continue;
+    // Skip CJK / Asian scripts — combining marks don't render as vertical
+    // diacritics on CJK glyphs and cause tofu-box artifacts on Windows
+    if (text.charCodeAt(i) >= 0x2E80) continue;
     if (up)   for (let j = rndN(minMarks, maxMarks); j--;) out += rnd(ZALGO_UP);
     if (mid)  for (let j = rndN(minMarks, maxMarks); j--;) out += rnd(ZALGO_MID);
     if (down) for (let j = rndN(minMarks, maxMarks); j--;) out += rnd(ZALGO_DOWN);
@@ -66,15 +72,27 @@ function generateZalgo(text, { up = true, mid = false, down = false, intensity =
   return out;
 }
 
+// Coerce CMS-serialised values (Decap CMS sometimes sends booleans/numbers as strings)
+function _coerceBool(v, def) {
+  if (typeof v === 'boolean') return v;
+  if (v === 'true')  return true;
+  if (v === 'false') return false;
+  return def;
+}
+
 function applyZalgo(site) {
   const cfg = site && site.zalgoEffect;
-  if (!cfg || !cfg.enabled) return;
+  if (!cfg) return;
+
+  // Handle string-serialised boolean from CMS
+  const enabled = _coerceBool(cfg.enabled, true);
+  if (!enabled) return;
 
   const opts = {
-    up:        cfg.up        !== false,
-    mid:       !!cfg.mid,
-    down:      !!cfg.down,
-    intensity: typeof cfg.intensity === 'number' ? cfg.intensity : 0.3
+    up:        _coerceBool(cfg.up,   true),
+    mid:       _coerceBool(cfg.mid,  false),
+    down:      _coerceBool(cfg.down, false),
+    intensity: isNaN(Number(cfg.intensity)) ? 0.3 : Number(cfg.intensity)
   };
   const interval = (Number(cfg.interval) >= 100 ? Number(cfg.interval) : 2500);
 
@@ -87,9 +105,17 @@ function applyZalgo(site) {
   function reZalgo() {
     selectors.forEach(sel => {
       document.querySelectorAll(sel).forEach(el => {
-        // Preserve original clean text on first run
+        // Preserve original clean text on first run only
         if (!el.dataset.zalgoOrig) el.dataset.zalgoOrig = el.textContent;
-        el.textContent = generateZalgo(el.dataset.zalgoOrig, opts);
+
+        // Wrap in a Georgia span so Unicode combining marks render as
+        // proper VERTICAL diacritics — monospace/CJK fallback fonts
+        // misrender them as full-width horizontal characters instead.
+        const span = document.createElement('span');
+        span.style.fontFamily = 'Georgia, "Times New Roman", "Noto Serif", serif';
+        span.textContent = generateZalgo(el.dataset.zalgoOrig, opts);
+        el.innerHTML = '';
+        el.appendChild(span);
       });
     });
   }
