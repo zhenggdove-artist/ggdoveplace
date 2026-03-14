@@ -196,6 +196,58 @@ collections:
                 widget: boolean
                 default: true
                 hint: "圖片依序進場（而非全部同時出現）"
+              - label: "Zalgo 崩文字效果 ̴̢̠̟̰̣̱̊̀͊̊ͅ"
+                name: zalgoEffect
+                widget: object
+                collapsed: true
+                hint: "對標題文字施加 Unicode 崩潰符文，配合 VHS 故障美學"
+                fields:
+                  - label: "啟用 Enabled"
+                    name: enabled
+                    widget: boolean
+                    default: true
+                    hint: "開啟後，標題文字會帶有崩潰式符文痕跡（Zalgo）"
+                  - label: "套用位置 Targets"
+                    name: targets
+                    widget: select
+                    options:
+                      - { label: "標題文字 Headings（Works / Bio / Contact…）", value: "headings" }
+                      - { label: "Nav Logo 導航標誌", value: "nav" }
+                      - { label: "全部 All（標題 + Nav）", value: "all" }
+                    default: "headings"
+                  - label: "強度 Intensity"
+                    name: intensity
+                    widget: number
+                    value_type: float
+                    min: 0.05
+                    max: 1.0
+                    step: 0.05
+                    default: 0.3
+                    hint: "0.05=輕微顫動  0.3=明顯崩潰  0.8+=完全失控"
+                  - label: "向上延伸 Up Marks"
+                    name: up
+                    widget: boolean
+                    default: true
+                    hint: "字母上方的符文刺（推薦開啟，視覺最明顯）"
+                  - label: "中間干擾 Mid Marks"
+                    name: mid
+                    widget: boolean
+                    default: false
+                    hint: "字母中間穿插的橫向干擾符號"
+                  - label: "向下延伸 Down Marks"
+                    name: down
+                    widget: boolean
+                    default: false
+                    hint: "字母下方的符文刺（與向上同時開啟效果更混沌）"
+                  - label: "刷新間隔 Refresh (ms)"
+                    name: interval
+                    widget: number
+                    value_type: int
+                    min: 500
+                    max: 10000
+                    step: 500
+                    default: 2500
+                    hint: "每幾毫秒重新隨機化一次（2500=2.5秒，數字越小字越「抖」）"
 
   - name: visual
     label: Visual Style — VHS Effect (視覺效果)

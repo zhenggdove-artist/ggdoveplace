@@ -15,7 +15,16 @@
     },
     "scrollAnim": "fade-up",
     "animSpeed": "normal",
-    "animStagger": true
+    "animStagger": true,
+    "zalgoEffect": {
+      "enabled": true,
+      "targets": "headings",
+      "intensity": 0.3,
+      "up": true,
+      "mid": false,
+      "down": false,
+      "interval": 2500
+    }
   },
   "bio": {
     "name": "鄭君朋 Zheng Jun Peng",

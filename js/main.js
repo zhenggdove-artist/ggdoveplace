@@ -19,7 +19,86 @@ async function loadData() {
   siteData   = data;
   visualData = visual;
   applyFonts(siteData.site);
+  // Defer Zalgo until all render functions have run (next macrotask)
+  setTimeout(() => applyZalgo(siteData.site), 0);
   return siteData;
+}
+
+// ── Zalgo Text Engine ──────────────────────────
+// Unicode combining-mark pools (ported from zalgo-generator/src/utils/zalgo.ts)
+const ZALGO_UP = [
+  '\u030d','\u030e','\u0304','\u0305','\u033f','\u0311','\u0306','\u0310',
+  '\u0352','\u0357','\u0351','\u0307','\u0308','\u030a','\u0342','\u0343',
+  '\u0344','\u034a','\u034b','\u034c','\u0303','\u0302','\u030c','\u0350',
+  '\u0300','\u0301','\u030b','\u030f','\u0312','\u0313','\u0314','\u033d',
+  '\u0309','\u0363','\u0364','\u0365','\u0366','\u0367','\u0368','\u0369',
+  '\u036a','\u036b','\u036c','\u036d','\u036e','\u036f','\u033e','\u035b',
+  '\u0346','\u031a'
+];
+const ZALGO_MID = [
+  '\u0315','\u031b','\u0340','\u0341','\u0358','\u0321','\u0322','\u0327',
+  '\u0328','\u0334','\u0335','\u0336','\u034f','\u035c','\u035d','\u035e',
+  '\u0360','\u0362','\u0338','\u0337','\u0361','\u0489'
+];
+const ZALGO_DOWN = [
+  '\u0316','\u0317','\u0318','\u0319','\u031c','\u031d','\u031e','\u031f',
+  '\u0320','\u0324','\u0325','\u0326','\u0329','\u032a','\u032b','\u032c',
+  '\u032d','\u032e','\u032f','\u0330','\u0331','\u0332','\u0333','\u0339',
+  '\u033a','\u033b','\u033c','\u0345','\u0347','\u0348','\u0349','\u034d',
+  '\u034e','\u0353','\u0354','\u0355','\u0356','\u0359','\u035a','\u0323'
+];
+
+let _zalgoTimer = null;
+
+function generateZalgo(text, { up = true, mid = false, down = false, intensity = 0.3 } = {}) {
+  const maxMarks = Math.ceil(intensity * 15);
+  const minMarks = Math.max(1, Math.floor(intensity * 3));
+  const rnd  = arr => arr[Math.floor(Math.random() * arr.length)];
+  const rndN = (lo, hi) => Math.floor(Math.random() * (hi - lo + 1)) + lo;
+  let out = '';
+  for (let i = 0; i < text.length; i++) {
+    out += text[i];
+    if (/\s/.test(text[i])) continue;
+    if (up)   for (let j = rndN(minMarks, maxMarks); j--;) out += rnd(ZALGO_UP);
+    if (mid)  for (let j = rndN(minMarks, maxMarks); j--;) out += rnd(ZALGO_MID);
+    if (down) for (let j = rndN(minMarks, maxMarks); j--;) out += rnd(ZALGO_DOWN);
+  }
+  return out;
+}
+
+function applyZalgo(site) {
+  const cfg = site && site.zalgoEffect;
+  if (!cfg || !cfg.enabled) return;
+
+  const opts = {
+    up:        cfg.up        !== false,
+    mid:       !!cfg.mid,
+    down:      !!cfg.down,
+    intensity: typeof cfg.intensity === 'number' ? cfg.intensity : 0.3
+  };
+  const interval = (Number(cfg.interval) >= 100 ? Number(cfg.interval) : 2500);
+
+  const headings = ['.page-title', '.bio-content h1', '.exhibition-details h2', '.contact-info h2'];
+  const navSels  = ['.nav-logo'];
+  const selectors = cfg.targets === 'nav' ? navSels
+                  : cfg.targets === 'all' ? [...headings, ...navSels]
+                  : headings;
+
+  function reZalgo() {
+    selectors.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        // Preserve original clean text on first run
+        if (!el.dataset.zalgoOrig) el.dataset.zalgoOrig = el.textContent;
+        el.textContent = generateZalgo(el.dataset.zalgoOrig, opts);
+      });
+    });
+  }
+
+  reZalgo();
+  // Start living timer only once per page load
+  if (!_zalgoTimer) {
+    _zalgoTimer = setInterval(reZalgo, interval);
+  }
 }
 
 // ── Apply font settings ─────────────────────────

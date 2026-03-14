@@ -20,6 +20,27 @@
     'text-transform:uppercase;color:var(--text-dim);margin:1.5rem 0 1.2rem;font-weight:400;}'
   ].join(''), { raw: true });
 
+  // ── Zalgo engine (for CMS preview) ──────────────────────
+  var ZU = ['\u030d','\u030e','\u0304','\u0305','\u033f','\u0311','\u0306','\u0310','\u0352','\u0357','\u0351','\u0307','\u0308','\u030a','\u0342','\u0343','\u0344','\u034a','\u034b','\u034c','\u0303','\u0302','\u030c','\u0350','\u0300','\u0301','\u030b','\u030f','\u0312','\u0313','\u0314','\u033d','\u0309','\u0363','\u0364','\u0365','\u0366','\u0367','\u0368','\u0369','\u036a','\u036b','\u036c','\u036d','\u036e','\u036f','\u033e','\u035b','\u0346','\u031a'];
+  var ZM = ['\u0315','\u031b','\u0340','\u0341','\u0358','\u0321','\u0322','\u0327','\u0328','\u0334','\u0335','\u0336','\u034f','\u035c','\u035d','\u035e','\u0360','\u0362','\u0338','\u0337','\u0361','\u0489'];
+  var ZD = ['\u0316','\u0317','\u0318','\u0319','\u031c','\u031d','\u031e','\u031f','\u0320','\u0324','\u0325','\u0326','\u0329','\u032a','\u032b','\u032c','\u032d','\u032e','\u032f','\u0330','\u0331','\u0332','\u0333','\u0339','\u033a','\u033b','\u033c','\u0345','\u0347','\u0348','\u0349','\u034d','\u034e','\u0353','\u0354','\u0355','\u0356','\u0359','\u035a','\u0323'];
+
+  function generateZalgo(text, up, mid, down, intensity) {
+    var maxM = Math.ceil(intensity * 15);
+    var minM = Math.max(1, Math.floor(intensity * 3));
+    var rnd  = function(a) { return a[Math.floor(Math.random() * a.length)]; };
+    var rndN = function(lo, hi) { return Math.floor(Math.random() * (hi - lo + 1)) + lo; };
+    var out = '';
+    for (var i = 0; i < text.length; i++) {
+      out += text[i];
+      if (/\s/.test(text[i])) continue;
+      if (up)   for (var j = rndN(minM, maxM); j--;) out += rnd(ZU);
+      if (mid)  for (var j = rndN(minM, maxM); j--;) out += rnd(ZM);
+      if (down) for (var j = rndN(minM, maxM); j--;) out += rnd(ZD);
+    }
+    return out;
+  }
+
   // ── Utility: hex #rrggbb → rgba(r,g,b,a) ──────────────
   function hexToRgba(hex, alpha) {
     if (!hex || hex.length < 7) return 'rgba(0,0,0,' + alpha + ')';
@@ -135,6 +156,12 @@
 
   // ── Site Settings Preview ─────────────────────
   var SiteSettingsPreview = createClass({
+    getInitialState: function() { return { zalgoTick: 0 }; },
+    componentDidMount: function() {
+      var self = this;
+      self._zt = setInterval(function() { self.setState(function(s) { return { zalgoTick: s.zalgoTick + 1 }; }); }, 2200);
+    },
+    componentWillUnmount: function() { clearInterval(this._zt); },
     render: function() {
       var entry = this.props.entry;
       var site  = entry.getIn(['data', 'site']);
@@ -189,7 +216,7 @@
           row('Stagger', s.animStagger ? 'On \u2713' : 'Off', s.animStagger ? '#55ff99' : '#6a6080')
         ),
         // Font preview block
-        h('div', { style: { background: '#0d0820', padding: '1.4rem', border: '1px solid #1e1840' } },
+        h('div', { style: { background: '#0d0820', padding: '1.4rem', border: '1px solid #1e1840', marginBottom: '1.2rem' } },
           h('div', { style: { color: '#6a6080', fontFamily: '"Courier New",monospace', fontSize: '0.66rem', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '1rem' } }, 'Typography Preview'),
           h('p', { style: { fontFamily: headingFont, fontSize: '1.8rem', fontWeight: 400, color: '#eee8ff', margin: '0 0 0.3rem', letterSpacing: '0.04em' } },
             '\u9102\u541b\u670b  Zheng Jun Peng'),
@@ -197,7 +224,63 @@
             'Artist  \xb7  2025  \xb7  Mixed Media'),
           h('p', { style: { fontFamily: headingFont, fontSize: '0.95rem', color: '#c8c0e8', lineHeight: 1.8 } },
             '\u5c55\u89bd\u5176\u8da8\u52bf\u8207\u5be6\u8e10\uff0c\u63a7\u88fd\u4e00\u500b\u7d50\u69cb\u6e05\u6670\u7684\u7531\u5167\u800c\u5916\u7684\u5275\u4f5c\u7cfb\u7d71\u3002')
-        )
+        ),
+
+        // ── Zalgo live preview block ──
+        (function() {
+          var zCfg = s.zalgoEffect || {};
+          var zEnabled = zCfg.enabled !== false;
+          var zIntensity = typeof zCfg.intensity === 'number' ? zCfg.intensity : 0.3;
+          var zUp   = zCfg.up   !== false;
+          var zMid  = !!zCfg.mid;
+          var zDown = !!zCfg.down;
+
+          // Generate sample texts (re-runs every zalgoTick re-render)
+          var samples = zEnabled ? [
+            generateZalgo('GGdove', zUp, zMid, zDown, zIntensity),
+            generateZalgo('WORKS', zUp, zMid, zDown, zIntensity),
+            generateZalgo('\u9102\u541b\u670b', zUp, zMid, zDown, zIntensity),
+            generateZalgo('Bio', zUp, zMid, zDown, zIntensity),
+            generateZalgo('Contact', zUp, zMid, zDown, zIntensity)
+          ] : ['GGdove', 'WORKS', '\u9102\u541b\u670b', 'Bio', 'Contact'];
+
+          var markerCol = zEnabled ? '#ff4466' : '#6a6080';
+          var statusTxt = zEnabled
+            ? ('ON  \u2502  intensity ' + zIntensity.toFixed(2) + '  \u2502  '
+              + (zUp ? 'UP ' : '') + (zMid ? 'MID ' : '') + (zDown ? 'DOWN' : ''))
+            : 'DISABLED';
+
+          return h('div', { style: { background: '#08040f', padding: '1.4rem', border: '1px solid ' + (zEnabled ? '#3a1840' : '#1e1840') } },
+            // Header row
+            h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' } },
+              h('div', { style: { color: '#6a6080', fontFamily: '"Courier New",monospace', fontSize: '0.66rem', letterSpacing: '0.18em', textTransform: 'uppercase' } },
+                'Z\u0327\u034ba\u0366l\u0308g\u034ao\u0309 Preview'),
+              h('div', { style: { color: markerCol, fontFamily: '"Courier New",monospace', fontSize: '0.62rem', letterSpacing: '0.1em' } }, statusTxt)
+            ),
+            // Sample heading rows
+            h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '2rem 3rem', lineHeight: 3.5, overflow: 'visible' } },
+              samples.map(function(txt, i) {
+                var sizes  = ['1.8rem', '0.9rem', '1.5rem', '0.9rem', '0.9rem'];
+                var colors = ['#eee8ff', '#7755ff', '#eee8ff', '#7755ff', '#7755ff'];
+                return h('span', { key: i, style: {
+                  fontFamily: headingFont,
+                  fontSize:   sizes[i],
+                  color:      colors[i],
+                  fontWeight: 400,
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  overflow: 'visible'
+                }}, txt);
+              })
+            ),
+            // Subtle note
+            h('div', { style: { marginTop: '0.8rem', color: '#3a3060', fontFamily: '"Courier New",monospace', fontSize: '0.6rem', letterSpacing: '0.1em' } },
+              zEnabled
+                ? '\u21bb re\u2010randomises every 2.2s in this preview  \xb7  website uses ' + (Number(zCfg.interval) || 2500) + 'ms interval'
+                : 'Enable the toggle above to activate Zalgo effect on live site'
+            )
+          );
+        })()
       );
     }
   });
