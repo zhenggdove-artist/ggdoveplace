@@ -90,6 +90,24 @@ collections:
               - { label: Title,       name: title,       widget: string }
               - { label: Subtitle,    name: subtitle,    widget: string }
               - { label: Description, name: description, widget: string }
+              - label: "Gallery Layout (作品頁版型)"
+                name: galleryLayout
+                widget: select
+                options:
+                  - { label: "Grid 方格（固定比例）", value: "grid" }
+                  - { label: "Masonry 瀑布流（原始比例）", value: "masonry" }
+                  - { label: "Slideshow 幻燈片（一次一張）", value: "slideshow" }
+                default: "grid"
+                hint: "選擇 Works 作品頁的圖片排列方式"
+              - label: "Image Size (圖片大小)"
+                name: imageSize
+                widget: select
+                options:
+                  - { label: "Small 小（160px）", value: "small" }
+                  - { label: "Medium 中（280px）", value: "medium" }
+                  - { label: "Large 大（420px）", value: "large" }
+                default: "medium"
+                hint: "每張圖片的最小寬度，影響一行可以放幾張"
 
   - name: visual
     label: Visual Style — VHS Effect (視覺效果)

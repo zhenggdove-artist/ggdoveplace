@@ -6,7 +6,149 @@
   <title>Content Manager — GGdove</title>
 </head>
 <body>
-  <!-- Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+  // ── Inject site CSS into preview iframe ──
+  CMS.registerPreviewStyle('https://zhenggdove-artist.github.io/ggdoveplace/css/style.css');
+  CMS.registerPreviewStyle([
+    ':root{--bg:#06030f;--bg-2:#0d0820;--bg-3:#110d28;',
+    '--text:#c8c0e8;--text-bright:#eee8ff;--text-dim:#6a6080;',
+    '--accent:#7755ff;--accent-dim:#4433bb;--accent-glow:rgba(120,90,255,0.35);',
+    '--border:#1e1840;--serif:"Georgia",serif;--mono:"Courier New",monospace;}',
+    'body{background:var(--bg);color:var(--text);font-family:var(--serif);margin:0;padding:1rem 2rem;}',
+    'h2.page-title{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.25em;',
+    'text-transform:uppercase;color:var(--text-dim);margin:1.5rem 0 1.2rem;font-weight:400;}'
+  ].join(''), { raw: true });
+
+  // ── Works Preview ─────────────────────────────
+  var WorksPreview = createClass({
+    render: function() {
+      var entry    = this.props.entry;
+      var projects = entry.getIn(['data', 'projects']);
+      if (!projects) {
+        return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } },
+          'No projects yet.');
+      }
+      var list = projects.toJS ? projects.toJS() : [];
+      return h('div', null,
+        h('h2', { className: 'page-title' }, 'Works — Live Preview'),
+        h('div', { className: 'gallery-grid layout-grid size-medium', style: { marginTop: '1rem' } },
+          list.map(function(p, i) {
+            return h('div', { key: i, className: 'gallery-item' },
+              h('img', {
+                src: p.image || '',
+                alt: p.title || ('Work ' + (p.id || (i + 1))),
+                loading: 'lazy',
+                style: { width: '100%', aspectRatio: '4/3', objectFit: 'cover', background: '#110d28', display: 'block' }
+              }),
+              h('div', { className: 'gallery-caption' },
+                h('h3', null, p.title || ''),
+                h('p', null, [p.year, p.medium].filter(Boolean).join('  \xb7  '))
+              )
+            );
+          })
+        )
+      );
+    }
+  });
+  CMS.registerPreviewTemplate('projects', WorksPreview);
+
+  // ── Weapons Preview ───────────────────────────
+  var WeaponsPreview = createClass({
+    render: function() {
+      var entry   = this.props.entry;
+      var weapons = entry.getIn(['data', 'weapons']);
+      if (!weapons) return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } }, 'No weapons yet.');
+      var list = weapons.toJS ? weapons.toJS() : [];
+      return h('div', null,
+        h('h2', { className: 'page-title' }, 'Weapons — Live Preview'),
+        h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.4rem', marginTop: '1rem' } },
+          list.map(function(w, i) {
+            return h('div', { key: i, style: { background: '#0d0820', overflow: 'hidden' } },
+              h('img', { src: w.image || '', alt: w.name || '', loading: 'lazy',
+                style: { width: '100%', aspectRatio: '1/1', objectFit: 'cover', display: 'block', background: '#110d28' } }),
+              h('div', { style: { padding: '0.6rem 0.7rem' } },
+                h('div', { style: { color: '#eee8ff', fontFamily: 'Georgia,serif', fontSize: '0.9rem' } }, w.name || ''),
+                w.price ? h('div', { style: { color: '#7755ff', fontFamily: 'Courier New,monospace', fontSize: '0.72rem', marginTop: '0.2rem' } }, w.price) : null
+              )
+            );
+          })
+        )
+      );
+    }
+  });
+  CMS.registerPreviewTemplate('weapons', WeaponsPreview);
+
+  // ── Bio Preview ───────────────────────────────
+  var BioPreview = createClass({
+    render: function() {
+      var entry = this.props.entry;
+      var bio   = entry.getIn(['data', 'bio']);
+      if (!bio) return h('div', null, 'No bio data.');
+      var b = bio.toJS ? bio.toJS() : bio;
+      return h('div', { style: { display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'wrap', padding: '1rem 0' } },
+        h('img', { src: b.photo || '', alt: b.name || '',
+          style: { width: '220px', height: '280px', objectFit: 'cover', background: '#110d28', flexShrink: 0 } }),
+        h('div', { style: { flex: 1, minWidth: '200px' } },
+          h('h1', { style: { fontFamily: 'Georgia,serif', fontSize: '1.8rem', fontWeight: 400, color: '#eee8ff', margin: '0 0 0.3rem' } }, b.name || ''),
+          h('p',  { style: { fontFamily: 'Courier New,monospace', fontSize: '0.72rem', color: '#7755ff', letterSpacing: '0.12em', margin: '0 0 1rem' } }, b.subtitle || ''),
+          h('p',  { style: { lineHeight: 1.75, color: '#c8c0e8', fontSize: '0.92rem' } }, b.text || '')
+        )
+      );
+    }
+  });
+  CMS.registerPreviewTemplate('bio', BioPreview);
+
+  // ── Contact Preview ───────────────────────────
+  var ContactPreview = createClass({
+    render: function() {
+      var entry   = this.props.entry;
+      var contact = entry.getIn(['data', 'contact']);
+      if (!contact) return h('div', null, 'No contact data.');
+      var c = contact.toJS ? contact.toJS() : contact;
+      return h('div', { style: { display: 'flex', gap: '2rem', flexWrap: 'wrap', padding: '1rem 0', alignItems: 'flex-start' } },
+        h('img', { src: c.image || '', alt: 'Contact',
+          style: { width: '260px', height: '320px', objectFit: 'cover', background: '#110d28', flexShrink: 0 } }),
+        h('div', { style: { flex: 1, minWidth: '200px', fontFamily: 'Courier New,monospace', fontSize: '0.82rem', lineHeight: 2 } },
+          h('h2', { style: { color: '#eee8ff', fontFamily: 'Georgia,serif', fontWeight: 400, margin: '0 0 1rem' } }, 'Get in Touch'),
+          c.email     ? h('div', null, h('span', { style: { color: '#6a6080' } }, 'Email: '),    h('span', { style: { color: '#7755ff' } }, c.email)) : null,
+          c.instagram ? h('div', null, h('span', { style: { color: '#6a6080' } }, 'IG: '),       h('span', { style: { color: '#7755ff' } }, c.instagram)) : null,
+          c.location  ? h('div', null, h('span', { style: { color: '#6a6080' } }, 'Location: '), h('span', { style: { color: '#c8c0e8' } }, c.location)) : null
+        )
+      );
+    }
+  });
+  CMS.registerPreviewTemplate('contact', ContactPreview);
+
+  // ── Site Settings Preview ─────────────────────
+  var SiteSettingsPreview = createClass({
+    render: function() {
+      var entry = this.props.entry;
+      var site  = entry.getIn(['data', 'site']);
+      if (!site) return h('div', null, 'No site settings.');
+      var s = site.toJS ? site.toJS() : site;
+      var layoutLabel = { grid: 'Grid \u65b9\u683c', masonry: 'Masonry \u7011\u5e03\u6d41', slideshow: 'Slideshow \u5e7b\u71c8\u7247' };
+      var sizeLabel   = { small: 'Small \u5c0f', medium: 'Medium \u4e2d', large: 'Large \u5927' };
+      var row = function(label, val, color) {
+        return h('div', { style: { display: 'flex', gap: '0.8rem', padding: '0.3rem 0', borderBottom: '1px solid #1e1840' } },
+          h('span', { style: { color: '#6a6080', minWidth: '140px' } }, label),
+          h('span', { style: { color: color || '#c8c0e8' } }, val || '—')
+        );
+      };
+      return h('div', null,
+        h('h2', { className: 'page-title' }, 'Site Settings — Live Preview'),
+        h('div', { style: { background: '#0d0820', padding: '1.5rem', border: '1px solid #1e1840', fontFamily: 'Courier New,monospace', fontSize: '0.82rem' } },
+          row('Title', s.title, '#eee8ff'),
+          row('Subtitle', s.subtitle),
+          row('Description', s.description),
+          h('div', { style: { height: '0.8rem' } }),
+          row('Gallery Layout', layoutLabel[s.galleryLayout] || s.galleryLayout, '#7755ff'),
+          row('Image Size', sizeLabel[s.imageSize] || s.imageSize, '#7755ff')
+        )
+      );
+    }
+  });
+  CMS.registerPreviewTemplate('site_settings', SiteSettingsPreview);
+  </script>
 </body>
 </html>

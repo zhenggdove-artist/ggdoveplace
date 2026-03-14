@@ -2,7 +2,9 @@
   "site": {
     "title": "GGdove",
     "subtitle": "名為鴿子的一隻迅猛龍",
-    "description": "Portfolio of Zheng Jun Peng"
+    "description": "Portfolio of Zheng Jun Peng",
+    "galleryLayout": "grid",
+    "imageSize": "medium"
   },
   "bio": {
     "name": "鄭君朋 Zheng Jun Peng",

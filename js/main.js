@@ -82,15 +82,26 @@ function showLightbox(index) {
 
 // ── Projects ───────────────────────────────────
 function renderProjects() {
-  const grid = document.getElementById('projects-grid');
+  const grid    = document.getElementById('projects-grid');
   const moreBtn = document.getElementById('btn-load-more');
   if (!grid || !siteData) return;
 
-  const projects = siteData.projects;
-  lightboxItems = projects.map(p => ({
-    image: p.image, title: p.title, year: p.year,
-    medium: p.medium, dimensions: p.dimensions
-  }));
+  const projects  = siteData.projects;
+  const layout    = (siteData.site && siteData.site.galleryLayout)  || 'grid';
+  const imageSize = (siteData.site && siteData.site.imageSize)       || 'medium';
+
+  grid.className = 'gallery-grid layout-' + layout + ' size-' + imageSize;
+
+  lightboxItems = projects.map(function(p) {
+    return { image: p.image, title: p.title, year: p.year,
+             medium: p.medium, dimensions: p.dimensions };
+  });
+
+  if (layout === 'slideshow') {
+    if (moreBtn) moreBtn.style.display = 'none';
+    renderSlideshow(projects, grid);
+    return;
+  }
 
   let shown = Math.min(INITIAL_SHOW, projects.length);
 
@@ -120,6 +131,54 @@ function renderProjects() {
       renderItems(shown);
     });
   }
+}
+
+// ── Slideshow ──────────────────────────────────
+function renderSlideshow(projects, container) {
+  let current = 0;
+
+  function update() {
+    const p = projects[current];
+    container.innerHTML = `
+      <div class="slideshow-wrap">
+        <div class="slideshow-slide" onclick="showLightbox(${current})">
+          <img src="${p.image}" alt="${p.title || ''}" loading="lazy">
+          <div class="slideshow-caption">
+            <h3>${p.title || ''}</h3>
+            <p>${[p.year, p.medium].filter(Boolean).join('  ·  ')}</p>
+            <span class="slideshow-counter">${current + 1} / ${projects.length}</span>
+          </div>
+        </div>
+        <div class="slideshow-controls">
+          <button class="ss-btn" id="ss-prev">&#8249;</button>
+          <div class="ss-dots">
+            ${projects.map((_, i) =>
+              `<button class="ss-dot${i === current ? ' active' : ''}" data-i="${i}"></button>`
+            ).join('')}
+          </div>
+          <button class="ss-btn" id="ss-next">&#8250;</button>
+        </div>
+      </div>`;
+
+    container.querySelector('#ss-prev').onclick = e => {
+      e.stopPropagation(); current = (current - 1 + projects.length) % projects.length; update();
+    };
+    container.querySelector('#ss-next').onclick = e => {
+      e.stopPropagation(); current = (current + 1) % projects.length; update();
+    };
+    container.querySelectorAll('.ss-dot').forEach(btn => {
+      btn.onclick = e => { e.stopPropagation(); current = +btn.dataset.i; update(); };
+    });
+  }
+
+  update();
+
+  document.addEventListener('keydown', e => {
+    const lb = document.getElementById('lightbox');
+    if (lb && lb.classList.contains('open')) return;
+    if (e.key === 'ArrowLeft')  { current = (current - 1 + projects.length) % projects.length; update(); }
+    if (e.key === 'ArrowRight') { current = (current + 1) % projects.length; update(); }
+  });
 }
 
 // ── Exhibition ─────────────────────────────────
