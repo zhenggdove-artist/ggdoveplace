@@ -94,13 +94,32 @@ function applyZalgo(site) {
     down:      _coerceBool(cfg.down, false),
     intensity: isNaN(Number(cfg.intensity)) ? 0.3 : Number(cfg.intensity)
   };
-  const interval = (Number(cfg.interval) >= 100 ? Number(cfg.interval) : 2500);
+  // Interval is now stored in SECONDS in data.json (e.g. 2.5 = every 2.5s).
+  // Multiply by 1000 to get ms; clamp to a minimum of 50ms.
+  const interval = Math.max(50, (isNaN(Number(cfg.interval)) ? 2.5 : Number(cfg.interval)) * 1000);
 
-  const headings = ['.page-title', '.bio-content h1', '.exhibition-details h2', '.contact-info h2'];
-  const navSels  = ['.nav-logo'];
-  const selectors = cfg.targets === 'nav' ? navSels
-                  : cfg.targets === 'all' ? [...headings, ...navSels]
-                  : headings;
+  // Map target keys (used by the CMS multi-select) to CSS selectors
+  const selectorMap = {
+    'page-title':    '.page-title',
+    'bio-h1':        '.bio-content h1',
+    'exhibition-h2': '.exhibition-details h2',
+    'contact-h2':    '.contact-info h2',
+    'nav-logo':      '.nav-logo',
+    'nav-links':     '.nav-links a'
+  };
+
+  // Handle both new array format (multi-select) and legacy string values
+  let selectors;
+  if (Array.isArray(cfg.targets)) {
+    selectors = cfg.targets.map(t => selectorMap[t]).filter(Boolean);
+  } else if (cfg.targets === 'all') {
+    selectors = Object.values(selectorMap);
+  } else if (cfg.targets === 'nav') {
+    selectors = ['.nav-logo', '.nav-links a'];
+  } else {
+    // 'headings' or any unrecognised string → default headings only
+    selectors = ['.page-title', '.bio-content h1', '.exhibition-details h2', '.contact-info h2'];
+  }
 
   function reZalgo() {
     selectors.forEach(sel => {
@@ -206,12 +225,14 @@ function initVHS() {
 function renderHeader(activePage) {
   const nav = document.getElementById('main-nav');
   if (!nav || !siteData) return;
+  // Allow CMS to override each nav label; fall back to defaults
+  const nl = (siteData.site && siteData.site.navLabels) || {};
   const pages = [
-    { id: 'projects',   label: 'Works',      href: 'index.html'      },
-    { id: 'exhibition', label: 'Exhibition',  href: 'exhibition.html' },
-    { id: 'weapons',    label: 'Weapons',     href: 'weapons.html'    },
-    { id: 'bio',        label: 'Bio',         href: 'bio.html'        },
-    { id: 'contact',    label: 'Contact',     href: 'contact.html'    }
+    { id: 'projects',   label: nl.works      || 'Works',      href: 'index.html'      },
+    { id: 'exhibition', label: nl.exhibition  || 'Exhibition',  href: 'exhibition.html' },
+    { id: 'weapons',    label: nl.weapons     || 'Weapons',     href: 'weapons.html'    },
+    { id: 'bio',        label: nl.bio         || 'Bio',         href: 'bio.html'        },
+    { id: 'contact',    label: nl.contact     || 'Contact',     href: 'contact.html'    }
   ];
   nav.innerHTML = `
     <a class="nav-logo" href="index.html">${siteData.site.title}</a>

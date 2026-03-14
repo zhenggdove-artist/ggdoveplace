@@ -17,14 +17,28 @@
     "imageSize": "large",
     "zalgoEffect": {
       "enabled": true,
-      "targets": "all",
+      "targets": [
+        "page-title",
+        "bio-h1",
+        "exhibition-h2",
+        "contact-h2",
+        "nav-logo",
+        "nav-links"
+      ],
       "intensity": 1,
       "up": true,
       "mid": true,
       "down": true,
-      "interval": 3000
+      "interval": 3.0
     },
-    "scrollAnim": "fade-up"
+    "scrollAnim": "fade-up",
+    "navLabels": {
+      "works": "Works",
+      "exhibition": "Exhibition",
+      "weapons": "Weapons",
+      "bio": "Bio",
+      "contact": "Contact"
+    }
   },
   "bio": {
     "name": "鄭君朋 Zheng Jun Peng",

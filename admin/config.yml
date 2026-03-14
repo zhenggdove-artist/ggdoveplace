@@ -196,6 +196,17 @@ collections:
                 widget: boolean
                 default: true
                 hint: "圖片依序進場（而非全部同時出現）"
+              - label: "導航文字 Nav Labels"
+                name: navLabels
+                widget: object
+                collapsed: true
+                hint: "自訂右上角導航列每一項的顯示文字（留空則使用預設英文）"
+                fields:
+                  - { label: "Works 頁名稱",      name: works,      widget: string, default: "Works",      required: false }
+                  - { label: "Exhibition 頁名稱",  name: exhibition, widget: string, default: "Exhibition",  required: false }
+                  - { label: "Weapons 頁名稱",     name: weapons,    widget: string, default: "Weapons",     required: false }
+                  - { label: "Bio 頁名稱",          name: bio,        widget: string, default: "Bio",          required: false }
+                  - { label: "Contact 頁名稱",     name: contact,    widget: string, default: "Contact",     required: false }
               - label: "Zalgo 崩文字效果"
                 name: zalgoEffect
                 widget: object
@@ -207,14 +218,19 @@ collections:
                     widget: boolean
                     default: true
                     hint: "開啟後，標題文字會帶有崩潰式符文痕跡（Zalgo）"
-                  - label: "套用位置 Targets"
+                  - label: "套用位置 Targets（可多選）"
                     name: targets
                     widget: select
+                    multiple: true
                     options:
-                      - { label: "標題文字 Headings（Works / Bio / Contact…）", value: "headings" }
-                      - { label: "Nav Logo 導航標誌", value: "nav" }
-                      - { label: "全部 All（標題 + Nav）", value: "all" }
-                    default: "headings"
+                      - { label: "頁面大標題 Page Titles", value: "page-title" }
+                      - { label: "Bio 姓名 h1", value: "bio-h1" }
+                      - { label: "展覽標題 Exhibition h2", value: "exhibition-h2" }
+                      - { label: "聯絡標題 Contact h2", value: "contact-h2" }
+                      - { label: "Logo 左上角品牌名", value: "nav-logo" }
+                      - { label: "Nav 導航連結文字", value: "nav-links" }
+                    default: ["page-title", "nav-logo"]
+                    hint: "可同時勾選多個位置，崩文字效果將套用在所有勾選的元素上"
                   - label: "強度 Intensity"
                     name: intensity
                     widget: number
@@ -239,15 +255,15 @@ collections:
                     widget: boolean
                     default: false
                     hint: "字母下方的符文刺（與向上同時開啟效果更混沌）"
-                  - label: "刷新間隔 Refresh (ms)"
+                  - label: "刷新間隔 Refresh Interval（秒）"
                     name: interval
                     widget: number
-                    value_type: int
-                    min: 500
-                    max: 10000
-                    step: 500
-                    default: 2500
-                    hint: "每幾毫秒重新隨機化一次（2500=2.5秒，數字越小字越「抖」）"
+                    value_type: float
+                    min: 0.05
+                    max: 30
+                    step: 0.05
+                    default: 2.5
+                    hint: "每幾秒重新隨機化一次（0.05=極速抖動 / 0.5=快速 / 2.5=預設 / 10=緩慢）"
 
   - name: visual
     label: Visual Style — VHS Effect (視覺效果)

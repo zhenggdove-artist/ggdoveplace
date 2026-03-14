@@ -34,6 +34,7 @@
     for (var i = 0; i < text.length; i++) {
       out += text[i];
       if (/\s/.test(text[i])) continue;
+      if (text.charCodeAt(i) >= 0x2E80) continue; // skip CJK
       if (up)   for (var j = rndN(minM, maxM); j--;) out += rnd(ZU);
       if (mid)  for (var j = rndN(minM, maxM); j--;) out += rnd(ZM);
       if (down) for (var j = rndN(minM, maxM); j--;) out += rnd(ZD);
@@ -229,11 +230,15 @@
         // ── Zalgo live preview block ──
         (function() {
           var zCfg = s.zalgoEffect || {};
-          var zEnabled = zCfg.enabled !== false;
-          var zIntensity = typeof zCfg.intensity === 'number' ? zCfg.intensity : 0.3;
-          var zUp   = zCfg.up   !== false;
-          var zMid  = !!zCfg.mid;
-          var zDown = !!zCfg.down;
+          var zEnabled = zCfg.enabled !== false && zCfg.enabled !== 'false';
+          var zIntensity = isNaN(Number(zCfg.intensity)) ? 0.3 : Number(zCfg.intensity);
+          var zUp   = zCfg.up !== false && zCfg.up !== 'false';
+          var zMid  = zCfg.mid === true || zCfg.mid === 'true';
+          var zDown = zCfg.down === true || zCfg.down === 'true';
+          // interval now in seconds (fallback 2.5s if old ms value > 100)
+          var zIntervalSec = isNaN(Number(zCfg.interval)) ? 2.5
+                           : Number(zCfg.interval) >= 100 ? Number(zCfg.interval) / 1000
+                           : Number(zCfg.interval);
 
           // Generate sample texts (re-runs every zalgoTick re-render)
           var samples = zEnabled ? [
@@ -276,7 +281,7 @@
             // Subtle note
             h('div', { style: { marginTop: '0.8rem', color: '#3a3060', fontFamily: '"Courier New",monospace', fontSize: '0.6rem', letterSpacing: '0.1em' } },
               zEnabled
-                ? '\u21bb re\u2010randomises every 2.2s in this preview  \xb7  website uses ' + (Number(zCfg.interval) || 2500) + 'ms interval'
+                ? '\u21bb re\u2010randomises every 2.2s in this preview  \xb7  website interval: ' + zIntervalSec.toFixed(2) + 's'
                 : 'Enable the toggle above to activate Zalgo effect on live site'
             )
           );
@@ -287,204 +292,219 @@
   CMS.registerPreviewTemplate('site_settings', SiteSettingsPreview);
   CMS.registerPreviewTemplate('settings', SiteSettingsPreview);
 
-  // ── VHS Visual Effect Preview ─────────────────
+  // ── VHS Visual Effect Preview ────────────────────────────────────
+  // Faithfully mirrors vhs-effect.js layer stack (z-order):
+  //   photo (untouched)
+  //   vhs-edge   box-shadow inset — NO backdropFilter (removed in real engine)
+  //   vhs-tint   flat color, normal opacity — NO blend mode
+  //   vhs-vignette  radial-gradient ellipse 76%×72%, opacity=vignetteOpacity
+  //   vhs-canvas (screen blend): glow, grain, scanlines, chromatic, artifacts, rolling bar
+  // ────────────────────────────────────────────────────────────────
   var VHSPreview = createClass({
     getInitialState: function() {
-      return { tick: 0, barY: -80, barActive: false };
+      return { tick: 0, barY: -55, barActive: false, barOp: 0.5, barH: 25 };
     },
     componentDidMount: function() {
       var self = this;
-      self._tick = 0; self._barY = -80; self._barActive = false;
-      self._interval = setInterval(function() {
-        self._tick++;
-        // Rolling bar: activates every 120 ticks (~12s), scrolls down
-        if (!self._barActive && self._tick % 120 === 0) {
-          self._barActive = true; self._barY = -6;
+      self._t = 0; self._barY = -55; self._barActive = false;
+      self._barTimer = 0; self._barOp = 0.5; self._barH = 25; self._barSpd = 3;
+      self._iv = setInterval(function() {
+        self._t++;
+        self._barTimer++;
+        if (!self._barActive && self._barTimer > 110 + ((self._t * 73) % 110)) {
+          self._barActive = true;
+          self._barY   = -55;
+          self._barH   = 22 + ((self._t * 37) % 28);
+          self._barOp  = 0.38 + ((self._t * 13) % 100) / 370;
+          self._barSpd = 2.2 + ((self._t * 19) % 100) / 28;
+          self._barTimer = 0;
         }
         if (self._barActive) {
-          self._barY += 6.5;
-          if (self._barY > 110) self._barActive = false;
+          self._barY += self._barSpd;
+          if (self._barY > 115) self._barActive = false;
         }
-        self.setState({ tick: self._tick, barY: self._barY, barActive: self._barActive });
-      }, 100); // 10 fps
+        self.setState({ tick: self._t, barY: self._barY, barActive: self._barActive,
+                        barOp: self._barOp, barH: self._barH });
+      }, 100);
     },
-    componentWillUnmount: function() { clearInterval(this._interval); },
+    componentWillUnmount: function() { clearInterval(this._iv); },
     render: function() {
       var entry = this.props.entry;
+
+      // Read params — defaults match vhs-effect.js defaults object
       var enabled    = entry.getIn(['data', 'enabled']) !== false;
-      var vigOp      = +(entry.getIn(['data', 'vignetteOpacity'])    || 0.82);
-      var vigColor   =   entry.getIn(['data', 'vignetteColor'])      || '#060116';
-      var overCol    =   entry.getIn(['data', 'overlayColor'])       || '#0b0428';
-      var overOp     = +(entry.getIn(['data', 'overlayOpacity'])     || 0.30);
-      var edgeSize   = +(entry.getIn(['data', 'edgeBlurSize'])       || 70);
-      var edgeBlur   = +(entry.getIn(['data', 'edgeBlurAmount'])     || 7);
-      var rollingBar =   entry.getIn(['data', 'rollingBarEnabled']) !== false;
-      var grainOp    = +(entry.getIn(['data', 'grainOpacity'])       || 0.07);
-      var scanOp     = +(entry.getIn(['data', 'scanlinesOpacity'])   || 0.13);
-      var scanSpc    = +(entry.getIn(['data', 'scanlinesSpacing'])   || 3);
-      var artOp      = +(entry.getIn(['data', 'artifactsOpacity'])   || 0.28);
-      var glowInt    = +(entry.getIn(['data', 'glowIntensity'])      || 1.25);
-      var glowCol    =   entry.getIn(['data', 'glowColor'])          || '#7744ff';
-      var chromAb    = +(entry.getIn(['data', 'chromaticAberration'])|| 1.8);
+      var vigOp      = +(entry.getIn(['data', 'vignetteOpacity'])     || 0.82);
+      var vigColor   =   entry.getIn(['data', 'vignetteColor'])       || '#030010';
+      var overCol    =   entry.getIn(['data', 'overlayColor'])        || '#06011a';
+      var overOp     = +(entry.getIn(['data', 'overlayOpacity'])      || 0.12);
+      var edgeSize   = +(entry.getIn(['data', 'edgeBlurSize'])        || 65);
+      var rollingBar =   entry.getIn(['data', 'rollingBarEnabled'])  !== false;
+      var grainOp    = +(entry.getIn(['data', 'grainOpacity'])        || 0.075);
+      var scanOp     = +(entry.getIn(['data', 'scanlinesOpacity'])    || 0.13);
+      var scanSpc    = +(entry.getIn(['data', 'scanlinesSpacing'])    || 3);
+      var artOp      = +(entry.getIn(['data', 'artifactsOpacity'])    || 0.38);
+      var glowInt    = +(entry.getIn(['data', 'glowIntensity'])       || 1.50);
+      var glowCol    =   entry.getIn(['data', 'glowColor'])           || '#5522ff';
+      var chromAb    = +(entry.getIn(['data', 'chromaticAberration']) || 2.2);
 
-      var tick      = this.state.tick;
-      var barY      = this.state.barY;
-      var barActive = this.state.barActive;
+      var tick = this.state.tick, barY = this.state.barY;
+      var barActive = this.state.barActive, barOp = this.state.barOp, barH = this.state.barH;
 
-      // ── Sample image (first project photo) ──
       var sampleImg = 'https://zhenggdove-artist.github.io/ggdoveplace/images/project-01.jpg';
-
-      // ── Shared absolute-fill style ──
       var abs = { position: 'absolute', inset: 0, pointerEvents: 'none' };
 
-      // ── Scanlines ──
-      var scanBg = 'repeating-linear-gradient(to bottom, transparent 0px, transparent ' +
-        (scanSpc - 1) + 'px, rgba(0,0,0,' + scanOp + ') ' + (scanSpc - 1) + 'px, rgba(0,0,0,' + scanOp + ') ' + scanSpc + 'px)';
-
-      // ── Vignette ──
-      var vigBg = 'radial-gradient(ellipse 110% 110% at 50% 50%, transparent 30%, ' +
-        hexToRgba(vigColor, vigOp * 0.55) + ' 62%, ' +
-        hexToRgba(vigColor, vigOp) + ' 100%)';
-
-      // ── Center glow ──
-      var glowBg = 'radial-gradient(ellipse 65% 65% at 50% 50%, ' +
-        hexToRgba(glowCol, Math.min(glowInt * 0.11, 0.38)) + ' 0%, transparent 68%)';
-
-      // ── Chromatic aberration (edge color fringe) ──
-      var chromW  = Math.min(chromAb * 9, 90);
-      var chromOp = Math.min(chromAb / 18, 0.24);
-      var chromBg = 'linear-gradient(to right, rgba(255,55,55,' + chromOp + ') 0%, transparent ' + chromW + 'px),' +
-                    'linear-gradient(to left,  rgba(40,210,255,' + chromOp + ') 0%, transparent ' + chromW + 'px),' +
-                    'linear-gradient(to bottom,rgba(255,55,55,' + (chromOp*0.4) + ') 0%, transparent ' + chromW + 'px),' +
-                    'linear-gradient(to top,   rgba(40,210,255,' + (chromOp*0.4) + ') 0%, transparent ' + chromW + 'px)';
-
-      // ── Grain (SVG feTurbulence, seed cycles with tick for subtle animation) ──
-      var grainSeed = (tick * 3) % 256;
-      var grainSvg  = '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">' +
-        '<filter id="gn"><feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="3" seed="' + grainSeed + '" stitchTiles="stitch"/>' +
-        '<feColorMatrix type="saturate" values="0"/></filter>' +
-        '<rect width="100%" height="100%" filter="url(#gn)"/></svg>';
-
-      // ── VHS artifact bars (pseudo-random per tick) ──
-      var artChildren = [];
-      if (artOp > 0.02) {
-        for (var ai = 0; ai < 5; ai++) {
-          var sv = Math.sin(tick * 0.41 + ai * 2.33) * 0.5 + 0.5;
-          if (sv < artOp) {
-            var sy   = (Math.sin(tick * 0.57 + ai * 1.91) * 0.5 + 0.5) * 82 + 6;
-            var sw   = (Math.sin(tick * 0.27 + ai * 3.07) * 0.5 + 0.5) * 55 + 25;
-            var sh   = Math.abs(Math.sin(tick * 0.49 + ai * 2.61)) * 3 + 1;
-            var sop  = Math.min(artOp * 0.85, 0.7);
-            artChildren.push(h('div', { key: 'art' + ai, style: {
-              position: 'absolute', left: 0, top: sy + '%',
-              width: sw + '%', height: sh + 'px',
-              background: 'rgba(210,200,255,' + sop + ')',
-              mixBlendMode: 'screen', pointerEvents: 'none'
-            }}));
-          }
-        }
-      }
-
-      // ── "DISABLED" screen ──
       if (!enabled) {
         return h('div', { style: { padding: '2rem' } },
-          h('h2', { className: 'page-title' }, 'VHS Effect — DISABLED'),
-          h('div', { style: {
-            position: 'relative', width: '100%', paddingTop: '56.25%',
-            background: '#111128', border: '1px solid #1e1840', overflow: 'hidden'
-          }},
-            h('div', { style: Object.assign({}, abs, {
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: '"Courier New",monospace', fontSize: '0.8rem', color: '#6a6080',
-              letterSpacing: '0.2em'
-            })}, '[ VHS EFFECT OFF ]')
+          h('h2', { className: 'page-title' }, 'VHS Effect \u2014 DISABLED'),
+          h('div', { style: { position: 'relative', width: '100%', paddingTop: '56.25%',
+            background: '#111128', border: '1px solid #1e1840', overflow: 'hidden' } },
+            h('div', { style: Object.assign({}, abs, { display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontFamily: '"Courier New",monospace',
+              fontSize: '0.8rem', color: '#6a6080', letterSpacing: '0.2em' }) },
+              '[ VHS EFFECT OFF ]')
           )
         );
       }
 
-      // ── Full preview ──
-      var containerStyle = {
-        position: 'relative', width: '100%', paddingTop: '56.25%',
-        overflow: 'hidden', background: '#04040c',
-        border: '1px solid #1e1840', marginBottom: '0.8rem'
-      };
+      // LAYER 1: vhs-edge — box-shadow only, NO backdropFilter
+      var edgeShadow = 'inset 0 0 ' + edgeSize + 'px ' + Math.round(edgeSize * 0.55) + 'px ' + vigColor;
 
-      // Build children array for container
-      var kids = [
-        // Base photo
-        h('img', { src: sampleImg, alt: 'preview', style: Object.assign({}, abs, {
-          width: '100%', height: '100%', objectFit: 'cover', opacity: 0.78, display: 'block'
-        })}),
-        // Overlay tint (multiply blend)
-        h('div', { style: Object.assign({}, abs, { background: overCol, opacity: overOp, mixBlendMode: 'multiply' })}),
-        // Scanlines
-        h('div', { style: Object.assign({}, abs, { background: scanBg })}),
-        // Vignette
-        h('div', { style: Object.assign({}, abs, { background: vigBg })}),
-        // Edge shadow / soft focus
-        h('div', { style: Object.assign({}, abs, {
-          boxShadow: 'inset 0 0 ' + edgeSize + 'px ' + Math.round(edgeBlur * 1.5) + 'px rgba(0,0,0,0.88)',
-          backdropFilter: edgeBlur > 0 ? 'blur(' + (edgeBlur * 0.28) + 'px)' : 'none'
-        })}),
-        // Center glow
-        h('div', { style: Object.assign({}, abs, { background: glowBg, mixBlendMode: 'screen' })}),
-        // Chromatic aberration
-        h('div', { style: Object.assign({}, abs, { background: chromBg, mixBlendMode: 'screen' })}),
-        // Grain (animated SVG via dangerouslySetInnerHTML on wrapper div)
-        grainOp > 0 ? h('div', {
-          dangerouslySetInnerHTML: { __html: grainSvg },
-          style: Object.assign({}, abs, { opacity: grainOp, mixBlendMode: 'overlay' })
-        }) : null
-      ];
+      // LAYER 3: vhs-vignette
+      // Real: radial-gradient(ellipse 76% 72% at 50% 50%, transparent 20%,
+      //        vigColor+'bb' 52%, vigColor+'ff' 100%) + opacity:vignetteOpacity
+      // 'bb'=187/255=0.733, 'ff'=1.0
+      var vigBg = 'radial-gradient(ellipse 76% 72% at 50% 50%, transparent 20%, ' +
+        hexToRgba(vigColor, 0.733) + ' 52%, ' + hexToRgba(vigColor, 1.0) + ' 100%)';
 
-      // Append artifact bars
-      for (var aj = 0; aj < artChildren.length; aj++) { kids.push(artChildren[aj]); }
+      // LAYER 4 canvas — ambient glow
+      // Real: globalAlpha=0.35, center=(50%,44%), stops: glowColor+a1hex at 0%, +a2hex at 40%
+      // a1 = min(255, round(eff*14)), a2 = min(255, round(eff*5)), pulse=0.80+0.20*sin(t*0.018)
+      var pulse = 0.80 + 0.20 * Math.sin(tick * 0.018 * Math.PI);
+      var eff   = glowInt * pulse;
+      var ga1   = Math.min(1.0, (0.35 * Math.min(255, Math.round(eff * 14))) / 255);
+      var ga2   = Math.min(1.0, (0.35 * Math.min(255, Math.round(eff * 5)))  / 255);
+      var glowBg = 'radial-gradient(ellipse 116% 58% at 50% 44%, ' +
+        hexToRgba(glowCol, ga1) + ' 0%, ' + hexToRgba(glowCol, ga2) + ' 40%, transparent 100%)';
 
-      // Rolling bar
-      if (rollingBar && barActive) {
-        kids.push(h('div', { key: 'bar', style: {
-          position: 'absolute', left: 0, right: 0,
-          top: barY + '%', height: '3.5%',
-          background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.65) 40%, rgba(0,0,0,0.65) 60%, transparent)',
-          filter: 'blur(0.5px)', pointerEvents: 'none'
-        }}));
+      // Scanlines
+      var sp = Math.max(1, scanSpc | 0);
+      var scanBg = 'repeating-linear-gradient(to bottom,transparent 0px,transparent ' +
+        (sp - 1) + 'px,rgba(0,0,0,' + scanOp + ') ' + (sp - 1) + 'px,rgba(0,0,0,' + scanOp + ') ' + sp + 'px)';
+
+      // Chromatic aberration — matches _drawChromatic()
+      // zone = min(0.26, ca*0.014+0.07),  str = min(0.18, ca*0.022)
+      var zone = Math.min(0.26, chromAb * 0.014 + 0.07);
+      var str  = Math.min(0.18, chromAb * 0.022);
+      var zp   = (zone * 100).toFixed(1), hp = (zone * 50).toFixed(1);
+      var chromBg = [
+        'linear-gradient(to right,  rgba(255,0,45,'  + str.toFixed(4) + ') 0%,rgba(255,0,45,'  + (str*0.4).toFixed(4) + ') ' + hp + '%,transparent ' + zp + '%)',
+        'linear-gradient(to left,   rgba(0,80,255,'  + str.toFixed(4) + ') 0%,rgba(0,80,255,'  + (str*0.4).toFixed(4) + ') ' + hp + '%,transparent ' + zp + '%)',
+        'linear-gradient(to bottom, rgba(180,0,255,' + (str*0.3).toFixed(4) + ') 0%,transparent 12%)'
+      ].join(', ');
+
+      // Grain (SVG feTurbulence, seed changes every ~4 ticks = ~26fps)
+      var gseed = (tick * 7) % 256;
+      var grainSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">' +
+        '<filter id="vgn" x="0%" y="0%" width="100%" height="100%">' +
+        '<feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" seed="' + gseed + '" stitchTiles="stitch"/>' +
+        '<feColorMatrix type="saturate" values="0"/>' +
+        '</filter>' +
+        '<rect width="100%" height="100%" filter="url(#vgn)" opacity="' + grainOp + '"/></svg>';
+
+      // Artifacts — probabilistic, mirroring _drawArtifacts() probabilities
+      var arts = [];
+      if (Math.sin(tick * 0.41 + 1.1) > (1 - artOp * 2.2)) {
+        arts.push(h('div', { key: 'a0', style: { position: 'absolute', left: 0, right: 0,
+          top: ((Math.sin(tick * 0.57 + 1.91) * 0.5 + 0.5) * 82 + 6).toFixed(1) + '%',
+          height: (Math.abs(Math.sin(tick * 0.33)) * 3.5 + 0.5).toFixed(1) + 'px',
+          background: 'rgba(100,130,255,' + (artOp * 0.38).toFixed(3) + ')',
+          mixBlendMode: 'screen', pointerEvents: 'none' } }));
+      }
+      if (Math.sin(tick * 0.73 + 2.7) > (1 - artOp * 1.5)) {
+        arts.push(h('div', { key: 'a1', style: { position: 'absolute', left: 0,
+          top: ((Math.sin(tick * 0.47 + 3.1) * 0.5 + 0.5) * 90 + 5).toFixed(1) + '%',
+          width: ((Math.sin(tick * 0.29 + 0.8) * 0.5 + 0.5) * 55 + 25).toFixed(0) + '%',
+          height: '1px',
+          background: 'rgba(210,218,255,' + (artOp * 0.22).toFixed(3) + ')',
+          mixBlendMode: 'screen', pointerEvents: 'none' } }));
+      }
+      if (Math.sin(tick * 1.13 + 5.2) > (1 - artOp * 1.2)) {
+        arts.push(h('div', { key: 'a2', style: { position: 'absolute', left: 0, right: 0,
+          top: ((Math.sin(tick * 0.61 + 2.4) * 0.5 + 0.5) * 88 + 6).toFixed(1) + '%',
+          height: (2 + (tick % 7)) + 'px',
+          background: 'rgba(50,15,170,' + (artOp * 0.16).toFixed(3) + ')',
+          mixBlendMode: 'screen', pointerEvents: 'none' } }));
       }
 
-      // REC indicator
-      kids.push(h('div', { key: 'rec', style: {
-        position: 'absolute', bottom: '0.5rem', right: '0.65rem',
+      // Canvas-layer children (all under screen blend)
+      var canvasKids = [
+        h('div', { key: 'glow',  style: Object.assign({}, abs, { background: glowBg }) }),
+        grainOp > 0 ? h('div', { key: 'grain', dangerouslySetInnerHTML: { __html: grainSvg }, style: Object.assign({}, abs) }) : null,
+        h('div', { key: 'scan',  style: Object.assign({}, abs, { background: scanBg }) }),
+        h('div', { key: 'chrom', style: Object.assign({}, abs, { background: chromBg }) })
+      ].concat(arts);
+
+      // Rolling bar (inside canvas / screen-blend layer — matches real engine)
+      if (rollingBar && barActive) {
+        canvasKids.push(h('div', { key: 'rbar', style: { position: 'absolute', left: 0, right: 0,
+          top: barY.toFixed(1) + 'px', height: barH.toFixed(0) + 'px',
+          background: 'linear-gradient(to bottom,transparent,rgba(0,0,0,' + barOp.toFixed(2) + ') 25%,rgba(0,0,0,' + barOp.toFixed(2) + ') 75%,transparent)',
+          pointerEvents: 'none' } }));
+        canvasKids.push(h('div', { key: 'rbar-f', style: { position: 'absolute', left: 0, right: 0,
+          top: barY.toFixed(1) + 'px', height: '1.5px',
+          background: 'rgba(180,200,255,' + (barOp * 0.35).toFixed(3) + ')',
+          pointerEvents: 'none' } }));
+      }
+
+      // REC blink + timestamp
+      canvasKids.push(h('div', { key: 'rec', style: { position: 'absolute', bottom: '0.5rem', right: '0.65rem',
         fontFamily: '"Courier New",monospace', fontSize: '0.6rem',
-        color: tick % 10 < 5 ? 'rgba(255,60,60,0.9)' : 'rgba(255,60,60,0.2)',
-        letterSpacing: '0.12em', pointerEvents: 'none', userSelect: 'none'
-      }}, '\u25cf REC'));
-
-      // Timestamp label
-      kids.push(h('div', { key: 'ts', style: {
-        position: 'absolute', bottom: '0.5rem', left: '0.65rem',
+        color: tick % 10 < 5 ? 'rgba(255,60,60,0.9)' : 'rgba(255,60,60,0.15)',
+        letterSpacing: '0.12em', userSelect: 'none' } }, '\u25cf REC'));
+      canvasKids.push(h('div', { key: 'ts', style: { position: 'absolute', bottom: '0.5rem', left: '0.65rem',
         fontFamily: '"Courier New",monospace', fontSize: '0.58rem',
-        color: 'rgba(200,220,255,0.45)', letterSpacing: '0.06em', pointerEvents: 'none'
-      }}, '00:' + String(Math.floor(tick/10) % 60).padStart(2,'0') + ':' + String(tick % 10) + '0'));
+        color: 'rgba(200,220,255,0.45)', letterSpacing: '0.06em' } },
+        '00:' + String(Math.floor(tick / 10) % 60).padStart(2, '0') + ':' + String(tick % 10) + '0'));
 
-      // ── Parameter readout below preview ──
-      var paramStyle = { color: '#7755ff', fontSize: '0.72rem', fontFamily: '"Courier New",monospace' };
-      var dimStyle   = { color: '#6a6080', fontSize: '0.72rem', fontFamily: '"Courier New",monospace' };
+      // Full container
+      var containerStyle = { position: 'relative', width: '100%', paddingTop: '56.25%',
+        overflow: 'hidden', background: '#04040c',
+        border: '1px solid #1e1840', marginBottom: '0.8rem' };
+
+      var kids = [
+        // Base photo — no opacity modification (real engine never touches image opacity)
+        h('img', { key: 'img', src: sampleImg, alt: 'preview',
+          style: Object.assign({}, abs, { width: '100%', height: '100%', objectFit: 'cover', display: 'block' }) }),
+        // vhs-edge: box-shadow only, no backdropFilter
+        h('div', { key: 'edge', style: Object.assign({}, abs, { boxShadow: edgeShadow }) }),
+        // vhs-tint: flat color, opacity only — NO mixBlendMode
+        h('div', { key: 'tint', style: Object.assign({}, abs, { background: overCol, opacity: overOp }) }),
+        // vhs-vignette: radial gradient + vignetteOpacity
+        h('div', { key: 'vig',  style: Object.assign({}, abs, { background: vigBg, opacity: vigOp }) }),
+        // vhs-canvas equivalent: screen blend, all effects inside
+        h('div', { key: 'cvs', style: Object.assign({}, abs, { mixBlendMode: 'screen' }) }, canvasKids)
+      ];
+
+      var pS = { color: '#7755ff', fontSize: '0.72rem', fontFamily: '"Courier New",monospace' };
+      var dS = { color: '#6a6080', fontSize: '0.72rem', fontFamily: '"Courier New",monospace' };
+      var oo = function(v) { return h('span', { style: { color: v ? '#55ff99' : '#6a6080',
+        fontFamily: '"Courier New",monospace', fontSize: '0.72rem' } }, v ? 'ON' : 'OFF'); };
 
       return h('div', null,
-        h('h2', { className: 'page-title' }, 'VHS Effect — Live Preview'),
+        h('h2', { className: 'page-title' }, 'VHS Effect \u2014 Live Preview'),
         h('div', { style: containerStyle }, kids),
-        h('div', { style: { lineHeight: 2.0, marginTop: '0.4rem' } },
-          h('span', { style: dimStyle }, 'Vignette '), h('span', { style: paramStyle }, vigOp.toFixed(2)),
-          h('span', { style: dimStyle }, '  ·  Overlay '), h('span', { style: paramStyle }, overOp.toFixed(2)),
-          h('span', { style: dimStyle }, '  ·  Grain '), h('span', { style: paramStyle }, grainOp.toFixed(3)),
+        h('div', { style: { lineHeight: 2.2, marginTop: '0.5rem' } },
+          h('span', { style: dS }, 'Vignette '),      h('span', { style: pS }, vigOp.toFixed(2)),
+          h('span', { style: dS }, '  \xb7  Overlay '), h('span', { style: pS }, overOp.toFixed(2)),
+          h('span', { style: dS }, '  \xb7  Grain '),   h('span', { style: pS }, grainOp.toFixed(3)),
           h('br', null),
-          h('span', { style: dimStyle }, 'Glow '), h('span', { style: paramStyle }, glowInt.toFixed(2)),
-          h('span', { style: dimStyle }, '  ·  Chroma '), h('span', { style: paramStyle }, chromAb.toFixed(1)),
-          h('span', { style: dimStyle }, '  ·  Scanlines '), h('span', { style: paramStyle }, scanOp.toFixed(2)),
-          h('span', { style: dimStyle }, '  ·  Artifacts '), h('span', { style: paramStyle }, artOp.toFixed(2)),
+          h('span', { style: dS }, 'Glow '),           h('span', { style: pS }, glowInt.toFixed(2)),
+          h('span', { style: dS }, '  \xb7  Chroma '), h('span', { style: pS }, chromAb.toFixed(1)),
+          h('span', { style: dS }, '  \xb7  Scan '),   h('span', { style: pS }, scanOp.toFixed(2)),
+          h('span', { style: dS }, '  \xb7  Artifacts '), h('span', { style: pS }, artOp.toFixed(2)),
           h('br', null),
-          h('span', { style: dimStyle }, 'Rolling Bar '), h('span', { style: { color: rollingBar ? '#55ff99' : '#6a6080', fontFamily: '"Courier New",monospace', fontSize: '0.72rem' } }, rollingBar ? 'ON' : 'OFF'),
-          h('span', { style: dimStyle }, '  ·  Edge Shadow '), h('span', { style: paramStyle }, edgeSize + 'px'),
-          h('span', { style: dimStyle }, '  ·  Edge Blur '), h('span', { style: paramStyle }, edgeBlur + 'px')
+          h('span', { style: dS }, 'Rolling Bar '), oo(rollingBar),
+          h('span', { style: dS }, '  \xb7  Edge '), h('span', { style: pS }, edgeSize + 'px')
         )
       );
     }
