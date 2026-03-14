@@ -4,7 +4,18 @@
     "subtitle": "名為鴿子的一隻迅猛龍",
     "description": "Portfolio of Zheng Jun Peng",
     "galleryLayout": "masonry",
-    "imageSize": "large"
+    "imageSize": "large",
+    "captionStyle": "below",
+    "imageAspect": "4/3",
+    "galleryGap": "normal",
+    "hoverEffect": "scale",
+    "fonts": {
+      "heading": "georgia",
+      "accent": "courier-new"
+    },
+    "scrollAnim": "fade-up",
+    "animSpeed": "normal",
+    "animStagger": true
   },
   "bio": {
     "name": "鄭君朋 Zheng Jun Peng",

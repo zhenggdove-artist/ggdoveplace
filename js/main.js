@@ -18,7 +18,76 @@ async function loadData() {
   ]);
   siteData   = data;
   visualData = visual;
+  applyFonts(siteData.site);
   return siteData;
+}
+
+// ── Apply font settings ─────────────────────────
+function applyFonts(site) {
+  if (!site || !site.fonts) return;
+  const headingMap = {
+    'georgia':     { css: 'Georgia, serif',                 gf: null },
+    'playfair':    { css: '"Playfair Display", serif',      gf: 'Playfair+Display:ital,wght@0,400;0,700;1,400' },
+    'cormorant':   { css: '"Cormorant Garamond", serif',    gf: 'Cormorant+Garamond:ital,wght@0,300;0,400;1,300' },
+    'garamond':    { css: '"EB Garamond", serif',           gf: 'EB+Garamond:ital,wght@0,400;1,400' },
+    'lora':        { css: '"Lora", serif',                  gf: 'Lora:ital,wght@0,400;0,600;1,400' },
+    'baskerville': { css: '"Libre Baskerville", serif',     gf: 'Libre+Baskerville:ital,wght@0,400;0,700;1,400' }
+  };
+  const accentMap = {
+    'courier-new':   { css: '"Courier New", monospace',    gf: null },
+    'space-mono':    { css: '"Space Mono", monospace',     gf: 'Space+Mono:wght@400;700' },
+    'ibm-plex-mono': { css: '"IBM Plex Mono", monospace',  gf: 'IBM+Plex+Mono:wght@400;500' },
+    'courier-prime': { css: '"Courier Prime", monospace',  gf: 'Courier+Prime:ital,wght@0,400;1,400' }
+  };
+  const hFont = headingMap[site.fonts.heading] || headingMap['georgia'];
+  const aFont = accentMap[site.fonts.accent]   || accentMap['courier-new'];
+
+  // Inject Google Fonts if needed
+  const families = [hFont.gf, aFont.gf].filter(Boolean);
+  if (families.length > 0) {
+    const href = 'https://fonts.googleapis.com/css2?family=' + families.join('&family=') + '&display=swap';
+    let link = document.getElementById('gf-dynamic');
+    if (link) { link.href = href; }
+    else {
+      link = document.createElement('link');
+      link.id = 'gf-dynamic'; link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
+    }
+  }
+  document.documentElement.style.setProperty('--serif', hFont.css);
+  document.documentElement.style.setProperty('--mono',  aFont.css);
+}
+
+// ── Apply scroll animations (call after DOM items rendered) ──
+function applyAnimations(site) {
+  if (!site) return;
+  const anim = site.scrollAnim || 'none';
+  if (anim === 'none') return;
+
+  const speed   = site.animSpeed   || 'normal';
+  const stagger = site.animStagger !== false;
+  const classMap = {
+    'fade-up':    'anim-fade-up',
+    'fade-in':    'anim-fade-in',
+    'zoom-in':    'anim-zoom-in',
+    'slide-left': 'anim-slide-left',
+    'slide-right':'anim-slide-right'
+  };
+  const animClass = classMap[anim] || 'anim-fade-up';
+
+  const items = document.querySelectorAll('.gallery-item:not(.anim-ready)');
+  items.forEach((el, i) => {
+    el.classList.add('anim-ready', animClass, 'anim-speed-' + speed);
+    if (stagger) el.style.transitionDelay = (i * 0.06) + 's';
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('anim-visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+  document.querySelectorAll('.anim-ready:not(.anim-visible)').forEach(el => observer.observe(el));
 }
 
 // ── Init VHS effect (call after all rendering) ─
@@ -86,16 +155,32 @@ function renderProjects() {
   const moreBtn = document.getElementById('btn-load-more');
   if (!grid || !siteData) return;
 
-  const projects  = siteData.projects;
-  const layout    = (siteData.site && siteData.site.galleryLayout)  || 'grid';
-  const imageSize = (siteData.site && siteData.site.imageSize)       || 'medium';
+  const projects      = siteData.projects;
+  const site          = siteData.site || {};
+  const layout        = site.galleryLayout  || 'grid';
+  const imageSize     = site.imageSize      || 'medium';
+  const captionStyle  = site.captionStyle   || 'below';
+  const imageAspect   = site.imageAspect    || '4/3';
+  const galleryGap    = site.galleryGap     || 'normal';
+  const hoverEffect   = site.hoverEffect    || 'scale';
 
-  grid.className = 'gallery-grid layout-' + layout + ' size-' + imageSize;
+  // e.g. "4/3" → "aspect-4-3"
+  const aspectClass = 'aspect-' + imageAspect.replace('/', '-');
 
-  lightboxItems = projects.map(function(p) {
-    return { image: p.image, title: p.title, year: p.year,
-             medium: p.medium, dimensions: p.dimensions };
-  });
+  grid.className = [
+    'gallery-grid',
+    'layout-' + layout,
+    'size-'  + imageSize,
+    'caption-' + captionStyle,
+    aspectClass,
+    'gap-'   + galleryGap,
+    'hover-' + hoverEffect
+  ].join(' ');
+
+  lightboxItems = projects.map(p => ({
+    image: p.image, title: p.title, year: p.year,
+    medium: p.medium, dimensions: p.dimensions
+  }));
 
   if (layout === 'slideshow') {
     if (moreBtn) moreBtn.style.display = 'none';
@@ -119,6 +204,7 @@ function renderProjects() {
       el.onclick = () => showLightbox(i);
       grid.appendChild(el);
     });
+    applyAnimations(site);
     if (moreBtn) {
       moreBtn.style.display = count >= projects.length ? 'none' : 'inline-block';
     }

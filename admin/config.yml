@@ -108,6 +108,94 @@ collections:
                   - { label: "Large 大（420px）", value: "large" }
                 default: "medium"
                 hint: "每張圖片的最小寬度，影響一行可以放幾張"
+              - label: "Caption 字幕位置"
+                name: captionStyle
+                widget: select
+                options:
+                  - { label: "Below 下方", value: "below" }
+                  - { label: "Overlay 疊加（hover 才顯示）", value: "overlay" }
+                  - { label: "Hidden 隱藏", value: "hidden" }
+                default: "below"
+                hint: "作品標題與年份的顯示位置"
+              - label: "Image Aspect 圖片比例"
+                name: imageAspect
+                widget: select
+                options:
+                  - { label: "4:3 橫向（預設）", value: "4/3" }
+                  - { label: "1:1 正方形", value: "1/1" }
+                  - { label: "16:9 電影比例", value: "16/9" }
+                  - { label: "3:4 直向", value: "3/4" }
+                  - { label: "Free 原始比例", value: "free" }
+                default: "4/3"
+              - label: "Gallery Gap 圖片間距"
+                name: galleryGap
+                widget: select
+                options:
+                  - { label: "Tight 密（0.5rem）", value: "tight" }
+                  - { label: "Normal 中（1.8rem）", value: "normal" }
+                  - { label: "Wide 疏（3rem）", value: "wide" }
+                default: "normal"
+              - label: "Hover Effect 滑鼠效果"
+                name: hoverEffect
+                widget: select
+                options:
+                  - { label: "Scale 放大", value: "scale" }
+                  - { label: "Brighten 增亮", value: "brighten" }
+                  - { label: "Glow 邊框發光", value: "glow" }
+                  - { label: "None 無", value: "none" }
+                default: "scale"
+              - label: "字型 Typography"
+                name: fonts
+                widget: object
+                collapsed: true
+                fields:
+                  - label: "標題字型 Heading Font"
+                    name: heading
+                    widget: select
+                    options:
+                      - { label: "Georgia（典雅·系統內建）", value: "georgia" }
+                      - { label: "Playfair Display（奢華）", value: "playfair" }
+                      - { label: "Cormorant Garamond（極細緻）", value: "cormorant" }
+                      - { label: "EB Garamond（古典）", value: "garamond" }
+                      - { label: "Lora（現代古典）", value: "lora" }
+                      - { label: "Libre Baskerville（清晰）", value: "baskerville" }
+                    default: "georgia"
+                    hint: "作品標題 / 頁面標題 / 姓名使用的字型"
+                  - label: "裝飾字型 Accent / Mono"
+                    name: accent
+                    widget: select
+                    options:
+                      - { label: "Courier New（系統內建）", value: "courier-new" }
+                      - { label: "Space Mono（科技感）", value: "space-mono" }
+                      - { label: "IBM Plex Mono（精緻）", value: "ibm-plex-mono" }
+                      - { label: "Courier Prime（溫暖）", value: "courier-prime" }
+                    default: "courier-new"
+                    hint: "年份 / 媒材 / 標籤等輔助文字使用的字型"
+              - label: "捲動動畫 Scroll Animation"
+                name: scrollAnim
+                widget: select
+                options:
+                  - { label: "None 無動畫", value: "none" }
+                  - { label: "Fade Up 向上淡入 ↑", value: "fade-up" }
+                  - { label: "Fade In 淡入", value: "fade-in" }
+                  - { label: "Zoom In 放大淡入", value: "zoom-in" }
+                  - { label: "Slide Left 左滑入 ←", value: "slide-left" }
+                  - { label: "Slide Right 右滑入 →", value: "slide-right" }
+                default: "fade-up"
+                hint: "圖片進入畫面時的動畫效果"
+              - label: "動畫速度 Animation Speed"
+                name: animSpeed
+                widget: select
+                options:
+                  - { label: "Slow 慢（0.8s）", value: "slow" }
+                  - { label: "Normal 中（0.5s）", value: "normal" }
+                  - { label: "Fast 快（0.3s）", value: "fast" }
+                default: "normal"
+              - label: "交錯進場 Stagger Effect"
+                name: animStagger
+                widget: boolean
+                default: true
+                hint: "圖片依序進場（而非全部同時出現）"
 
   - name: visual
     label: Visual Style — VHS Effect (視覺效果)
