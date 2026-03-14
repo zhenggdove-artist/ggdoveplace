@@ -16,7 +16,7 @@
     "hoverEffect": "scale",
     "textStyles": {
       "pageTitle": {
-        "fontSize": "200",
+        "fontSize": "150",
         "x": "0px",
         "y": "0px",
         "color": "#f70000",
@@ -28,7 +28,7 @@
           "intensity": 1,
           "interval": 3
         },
-        "useDefaultColor": false
+        "useDefaultColor": true
       },
       "bioH1": {
         "fontSize": "",
