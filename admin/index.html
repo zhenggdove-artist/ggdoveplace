@@ -29,8 +29,85 @@
     <span class="wf-note">儲存後網站約 1–2 分鐘重建完成</span>
     <span class="wf-sep">│</span>
     <span class="wf-note">圖片上傳後點 Save 即生效，無需額外步驟</span>
+    <span class="wf-sep">│</span>
+    <span id="cms-auth-status" style="color:#6a6080;pointer-events:auto;cursor:default;">⏳ 連線中...</span>
   </div>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+  <script>
+  // ── 1. 喚醒 Render OAuth 服務（free tier 15分鐘後休眠）
+  (function wakeRender() {
+    fetch('https://ggdove-cms-auth.onrender.com/', { mode: 'no-cors' })
+      .then(function() { document.getElementById('cms-auth-status').textContent = '✅ 認證服務就緒'; })
+      .catch(function() { document.getElementById('cms-auth-status').textContent = '⚠ 認證服務連線中…'; });
+  })();
+
+  // ── 2. Fetch 攔截器：捕捉所有失敗請求，顯示診斷資訊
+  (function patchFetch() {
+    var _orig = window.fetch;
+    window.fetch = function(input, init) {
+      var url = (typeof input === 'string') ? input : (input && input.url) || String(input);
+      return _orig.apply(this, arguments).catch(function(err) {
+        // 只針對 GitHub API 與 Render Auth 的失敗顯示診斷
+        if (/api\.github\.com|onrender\.com/.test(url)) {
+          showNetError(url, err.message || 'Failed to fetch');
+        }
+        throw err;
+      });
+    };
+
+    function showNetError(url, msg) {
+      var el = document.getElementById('cms-net-err');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'cms-net-err';
+        el.style.cssText = [
+          'position:fixed','top:34px','left:0','right:0','z-index:99997',
+          'background:#1a0010','border-bottom:2px solid #ff4466',
+          'padding:0.5rem 1.2rem','display:flex','align-items:center','gap:0.8rem',
+          'font-family:"Courier New",monospace','font-size:0.68rem','color:#ffaaaa',
+          'flex-wrap:wrap'
+        ].join(';');
+        document.body.appendChild(el);
+        // 把 nc-root 再往下推
+        var r = document.getElementById('nc-root');
+        if (r) r.style.marginTop = '70px';
+      }
+      var short = url
+        .replace('https://api.github.com/repos/zhenggdove-artist/ggdoveplace/contents/', '📁 ')
+        .replace('https://api.github.com/', 'api.github.com/')
+        .replace('https://ggdove-cms-auth.onrender.com', '🔑 render-auth');
+      el.innerHTML =
+        '<span style="color:#ff6688;font-weight:bold">⚠ 儲存失敗</span>' +
+        '<span style="color:#886688">URL：</span><span>' + short + '</span>' +
+        '<span style="color:#886688">錯誤：</span><span>' + msg + '</span>' +
+        '<button onclick="cmsRelogin()" style="background:#ff4466;color:#fff;border:none;padding:3px 10px;cursor:pointer;font-family:inherit;border-radius:2px;flex-shrink:0">🔄 重新登入</button>' +
+        '<button onclick="document.getElementById(\'cms-net-err\').remove()" style="background:none;color:#886688;border:1px solid #553355;padding:3px 8px;cursor:pointer;font-family:inherit;border-radius:2px">✕</button>';
+    }
+  })();
+
+  // ── 3. 重新登入：清除所有 Decap CMS auth 快取
+  window.cmsRelogin = function() {
+    var cleared = [];
+    Object.keys(localStorage).forEach(function(k) {
+      if (/decap|netlify|cms|github|token|auth/i.test(k)) {
+        localStorage.removeItem(k);
+        cleared.push(k);
+      }
+    });
+    Object.keys(sessionStorage).forEach(function(k) {
+      if (/decap|netlify|cms|github|token|auth/i.test(k)) {
+        sessionStorage.removeItem(k);
+      }
+    });
+    console.log('Cleared auth keys:', cleared);
+    // 先喚醒 Render 服務，等它就緒再刷新
+    var status = document.getElementById('cms-auth-status');
+    if (status) status.textContent = '⏳ 正在重設認證...';
+    setTimeout(function() { window.location.reload(); }, 800);
+  };
+  </script>
+
+  <script src="https://unpkg.com/decap-cms@3.9.0/dist/decap-cms.js"></script>
   <script>
   // ── Inject site CSS into preview iframe ──
   CMS.registerPreviewStyle('https://zhenggdove-artist.github.io/ggdoveplace/css/style.css');
