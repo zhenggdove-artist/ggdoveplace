@@ -16,7 +16,7 @@
     "hoverEffect": "scale",
     "textStyles": {
       "pageTitle": {
-        "fontSize": "20",
+        "fontSize": "50",
         "x": "0px",
         "y": "0px",
         "color": "#f70000",
@@ -26,7 +26,7 @@
           "mid": true,
           "down": true,
           "intensity": 1,
-          "interval": 3
+          "interval": 30
         },
         "useDefaultColor": true
       },
@@ -41,7 +41,7 @@
           "mid": true,
           "down": true,
           "intensity": 1,
-          "interval": 3
+          "interval": 30
         },
         "useDefaultColor": true
       },
@@ -56,7 +56,7 @@
           "mid": true,
           "down": true,
           "intensity": 1,
-          "interval": 3
+          "interval": 30
         },
         "useDefaultColor": true
       },
@@ -71,7 +71,7 @@
           "mid": true,
           "down": true,
           "intensity": 1,
-          "interval": 3
+          "interval": 30
         },
         "useDefaultColor": true
       },
@@ -86,7 +86,7 @@
           "mid": true,
           "down": true,
           "intensity": 0.4,
-          "interval": 0.1
+          "interval": 0.05
         },
         "useDefaultColor": true
       },
@@ -101,7 +101,7 @@
           "mid": false,
           "down": true,
           "intensity": 1,
-          "interval": 3
+          "interval": 30
         },
         "useDefaultColor": true
       }
