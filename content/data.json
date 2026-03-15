@@ -123,7 +123,7 @@
         "useDefaultColor": false
       },
       "bio": {
-        "photoWidth": "full",
+        "photoWidth": "medium",
         "transparent": true,
         "useDefaultColor": false
       },
