@@ -16,7 +16,7 @@
     "hoverEffect": "scale",
     "textStyles": {
       "pageTitle": {
-        "fontSize": "200",
+        "fontSize": "20",
         "x": "0px",
         "y": "0px",
         "color": "#f70000",
@@ -28,10 +28,10 @@
           "intensity": 1,
           "interval": 3
         },
-        "useDefaultColor": false
+        "useDefaultColor": true
       },
       "bioH1": {
-        "fontSize": "",
+        "fontSize": "20",
         "x": "0px",
         "y": "0px",
         "color": "",
@@ -76,7 +76,7 @@
         "useDefaultColor": true
       },
       "navLogo": {
-        "fontSize": "60",
+        "fontSize": "30",
         "x": "0px",
         "y": "0px",
         "color": "",
@@ -85,8 +85,8 @@
           "up": true,
           "mid": true,
           "down": true,
-          "intensity": 1,
-          "interval": 0.05
+          "intensity": 0.4,
+          "interval": 0.1
         },
         "useDefaultColor": true
       },
@@ -98,7 +98,7 @@
         "zalgo": {
           "enabled": true,
           "up": true,
-          "mid": true,
+          "mid": false,
           "down": true,
           "intensity": 1,
           "interval": 3
