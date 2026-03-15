@@ -110,7 +110,7 @@
     "siteBackground": {
       "type": "color",
       "color": "#fff3e0",
-      "useDefaultColor": true,
+      "useDefaultColor": false,
       "image": "",
       "video": "",
       "imageSize": "cover",
