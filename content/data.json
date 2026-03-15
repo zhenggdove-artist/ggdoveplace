@@ -107,6 +107,15 @@
       }
     },
     "imageAspect": "4/3",
+    "siteBackground": {
+      "type": "color",
+      "color": "#fff3e0",
+      "useDefaultColor": true,
+      "image": "",
+      "video": "",
+      "imageSize": "cover",
+      "overlayOpacity": 0
+    },
     "animSpeed": "normal",
     "subtitle": "名為鴿子的一隻迅猛龍",
     "title": "GGdove",
@@ -130,16 +139,7 @@
       "down": true,
       "interval": 0.05
     },
-    "scrollAnim": "fade-up",
-    "siteBackground": {
-      "type": "color",
-      "color": "#04040c",
-      "useDefaultColor": true,
-      "image": "",
-      "video": "",
-      "imageSize": "cover",
-      "overlayOpacity": 0
-    }
+    "scrollAnim": "fade-up"
   },
   "bio": {
     "name": "鄭君朋 Zheng Jun Peng",
