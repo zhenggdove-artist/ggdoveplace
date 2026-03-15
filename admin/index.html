@@ -43,11 +43,63 @@
   </div>
 
   <script>
-  // ── 1. 喚醒 Render OAuth 服務（free tier 15分鐘後休眠）
-  (function wakeRender() {
-    fetch('https://ggdove-cms-auth.onrender.com/', { mode: 'no-cors' })
-      .then(function() { document.getElementById('cms-auth-status').textContent = '✅ 認證服務就緒'; })
-      .catch(function() { document.getElementById('cms-auth-status').textContent = '⚠ 認證服務連線中…'; });
+  // ── 1. 直接測試 GitHub API Token 是否有效
+  (function testGitHubToken() {
+    var statusEl = document.getElementById('cms-auth-status');
+    function setStatus(msg, color, clickable) {
+      statusEl.textContent = msg;
+      statusEl.style.color = color || '#6a6080';
+      statusEl.style.pointerEvents = clickable ? 'auto' : 'none';
+      statusEl.style.cursor = clickable ? 'pointer' : 'default';
+      if (clickable) statusEl.onclick = window.cmsRelogin;
+    }
+
+    // 讀取 Decap CMS 存在 localStorage 裡的 token
+    setTimeout(function() {
+      var token = null;
+      var keys = Object.keys(localStorage);
+      for (var i = 0; i < keys.length; i++) {
+        try {
+          var v = JSON.parse(localStorage.getItem(keys[i]));
+          if (v && (v.token || v.access_token)) {
+            token = v.token || v.access_token;
+            break;
+          }
+        } catch(e) {}
+      }
+
+      if (!token) {
+        setStatus('❌ 未找到 Token，請點此重新登入', '#ff6688', true);
+        return;
+      }
+
+      // 用 token 打 GitHub API，確認是否有效且有寫入權限
+      fetch('https://api.github.com/repos/zhenggdove-artist/ggdoveplace', {
+        headers: {
+          'Authorization': 'token ' + token,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      }).then(function(r) {
+        if (r.ok) {
+          return r.json().then(function(d) {
+            var push = d.permissions && d.permissions.push;
+            if (push) {
+              setStatus('✅ GitHub 認證正常，有寫入權限', '#55ddaa');
+            } else {
+              setStatus('⚠ 已登入但無寫入權限（push: false）', '#ffaa44');
+            }
+          });
+        } else if (r.status === 401) {
+          setStatus('❌ Token 已失效，請點此重新登入', '#ff6688', true);
+        } else if (r.status === 403) {
+          setStatus('❌ 權限不足 (403)，請點此重新登入', '#ff6688', true);
+        } else {
+          setStatus('⚠ GitHub API ' + r.status, '#ffaa44');
+        }
+      }).catch(function(err) {
+        setStatus('❌ 無法連接 GitHub API: ' + err.message, '#ff6688', true);
+      });
+    }, 2000);
   })();
 
   // ── 2. Fetch 攔截器：捕捉所有失敗請求，顯示診斷資訊
