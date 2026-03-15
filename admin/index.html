@@ -4,6 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Content Manager — GGdove</title>
+  <!-- 允許 blob: URL 被 fetch/XHR 讀取（圖片上傳必要）-->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
+    connect-src * data: blob:;
+    img-src     * data: blob:;
+    media-src   * data: blob:;
+    worker-src  blob: *;
+    font-src    * data:;
+  ">
   <style>
     /* ── CMS 工作流說明橫幅 ── */
     #cms-workflow-banner {
@@ -42,15 +51,45 @@
   })();
 
   // ── 2. Fetch 攔截器：捕捉所有失敗請求，顯示診斷資訊
+  //       特別針對 blob: URL 提供 XHR fallback（規避 CSP fetch 限制）
   (function patchFetch() {
     var _orig = window.fetch;
+
+    // blob: URL 專用 XHR fallback
+    function fetchBlobViaXHR(url) {
+      return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function() {
+          if (xhr.status === 0 || xhr.status === 200) {
+            // 猜測 mime type（Decap CMS 通常上傳圖片）
+            var ct = xhr.getResponseHeader('Content-Type') || 'application/octet-stream';
+            var blob = new Blob([xhr.response], { type: ct });
+            resolve(new Response(blob, { status: 200, headers: { 'Content-Type': ct } }));
+          } else {
+            reject(new TypeError('XHR blob failed: ' + xhr.status));
+          }
+        };
+        xhr.onerror = function() { reject(new TypeError('XHR blob network error')); };
+        xhr.send();
+      });
+    }
+
     window.fetch = function(input, init) {
       var url = (typeof input === 'string') ? input : (input && input.url) || String(input);
+
+      // blob: URL → 優先嘗試原生 fetch，失敗則用 XHR fallback
+      if (typeof url === 'string' && url.startsWith('blob:')) {
+        return _orig.apply(this, arguments).catch(function(err) {
+          console.warn('[CMS] blob: fetch failed, trying XHR fallback', url, err.message);
+          return fetchBlobViaXHR(url);
+        });
+      }
+
+      // 其他 URL → 捕捉失敗並顯示診斷
       return _orig.apply(this, arguments).catch(function(err) {
-        // 只針對 GitHub API 與 Render Auth 的失敗顯示診斷
-        if (/api\.github\.com|onrender\.com/.test(url)) {
-          showNetError(url, err.message || 'Failed to fetch');
-        }
+        showNetError(url, err.message || 'Failed to fetch');
         throw err;
       });
     };
@@ -68,7 +107,6 @@
           'flex-wrap:wrap'
         ].join(';');
         document.body.appendChild(el);
-        // 把 nc-root 再往下推
         var r = document.getElementById('nc-root');
         if (r) r.style.marginTop = '70px';
       }
@@ -78,8 +116,8 @@
         .replace('https://ggdove-cms-auth.onrender.com', '🔑 render-auth');
       el.innerHTML =
         '<span style="color:#ff6688;font-weight:bold">⚠ 儲存失敗</span>' +
-        '<span style="color:#886688">URL：</span><span>' + short + '</span>' +
-        '<span style="color:#886688">錯誤：</span><span>' + msg + '</span>' +
+        '<span style="color:#886688"> URL：</span><span style="word-break:break-all">' + short + '</span>' +
+        '<span style="color:#886688"> 錯誤：</span><span>' + msg + '</span>' +
         '<button onclick="cmsRelogin()" style="background:#ff4466;color:#fff;border:none;padding:3px 10px;cursor:pointer;font-family:inherit;border-radius:2px;flex-shrink:0">🔄 重新登入</button>' +
         '<button onclick="document.getElementById(\'cms-net-err\').remove()" style="background:none;color:#886688;border:1px solid #553355;padding:3px 8px;cursor:pointer;font-family:inherit;border-radius:2px">✕</button>';
     }
