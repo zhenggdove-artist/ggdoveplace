@@ -88,9 +88,30 @@ function normLen(val) {
   return /^-?\d+\.?\d*$/.test(v) ? v + 'px' : v;
 }
 
+// ── Apply nav hover color ────────────────────────
+function applyNavHoverColor(site) {
+  if (!site) return;
+  const color = (site.navHoverColor || '').trim();
+  if (color && color !== '#eaf2ff') {
+    document.documentElement.style.setProperty('--nav-hover-color', color);
+    // parse hex to create rgba glow
+    const hex = color.replace('#', '');
+    if (hex.length === 6) {
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      document.documentElement.style.setProperty('--nav-hover-glow', `rgba(${r},${g},${b},0.55)`);
+    }
+  } else {
+    document.documentElement.style.removeProperty('--nav-hover-color');
+    document.documentElement.style.removeProperty('--nav-hover-glow');
+  }
+}
+
 // 從 site.textStyles 讀取每個元素的 fontSize / x / y / color 並套用
 // 使用 el.style.setProperty 搭配 !important 確保覆蓋所有 CSS 規則（含 !important）
 function applyTextStyles(site) {
+  applyNavHoverColor(site);
   if (!site || !site.textStyles) return;
 
   const selectorMap = {
@@ -197,12 +218,34 @@ function applyZalgo(site) {
     function reZalgo() {
       document.querySelectorAll(sel).forEach(el => {
         if (!el.dataset.zalgoOrig) el.dataset.zalgoOrig = el.textContent;
-        // Georgia wrap — monospace/CJK 字型不支援組合符號，會渲染成方塊
-        const span = document.createElement('span');
-        span.style.fontFamily = 'Georgia, "Times New Roman", "Noto Serif", serif';
-        span.textContent = generateZalgo(el.dataset.zalgoOrig, opts);
-        el.innerHTML = '';
-        el.appendChild(span);
+
+        // 若尚未建立結構，建立「正常文字 + 背後崩文字」雙層結構
+        if (!el.querySelector('.zalgo-layer')) {
+          el.style.position = 'relative';
+          el.innerHTML = '';
+
+          // 正常文字層（在上面）
+          const normal = document.createElement('span');
+          normal.className = 'zalgo-normal';
+          normal.style.position = 'relative';
+          normal.style.zIndex = '1';
+          normal.textContent = el.dataset.zalgoOrig;
+
+          // 崩文字層（在下面）
+          const zalgoLayer = document.createElement('span');
+          zalgoLayer.className = 'zalgo-layer';
+          zalgoLayer.style.cssText = 'position:absolute;inset:0;z-index:0;pointer-events:none;overflow:visible;';
+          zalgoLayer.style.fontFamily = 'Georgia, "Times New Roman", "Noto Serif", serif';
+
+          el.appendChild(zalgoLayer);
+          el.appendChild(normal);
+        }
+
+        // 只更新崩文字層的內容
+        const layer = el.querySelector('.zalgo-layer');
+        if (layer) {
+          layer.textContent = generateZalgo(el.dataset.zalgoOrig, opts);
+        }
       });
     }
 
@@ -423,7 +466,7 @@ function renderProjects() {
   const galleryGap    = site.galleryGap     || 'normal';
   const hoverEffect   = site.hoverEffect    || 'scale';
 
-  // e.g. "4/3" → "aspect-4-3"
+  // e.g. "4/3" → "aspect-4-3", "auto" → "aspect-auto"
   const aspectClass = 'aspect-' + imageAspect.replace('/', '-');
 
   grid.className = [
@@ -460,6 +503,23 @@ function renderProjects() {
           <h3>${p.title || ''}</h3>
           <p>${[p.year, p.medium].filter(Boolean).join('  ·  ')}</p>
         </div>`;
+      // Auto aspect: detect landscape/portrait on load
+      if (imageAspect === 'auto') {
+        const img = el.querySelector('img');
+        if (img) {
+          img.addEventListener('load', function() {
+            if (this.naturalHeight > this.naturalWidth) {
+              el.classList.add('portrait');
+            }
+          });
+          // handle cached images
+          if (img.complete && img.naturalHeight > 0) {
+            if (img.naturalHeight > img.naturalWidth) {
+              el.classList.add('portrait');
+            }
+          }
+        }
+      }
       el.onclick = () => showLightbox(i);
       grid.appendChild(el);
     });

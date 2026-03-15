@@ -171,14 +171,14 @@ nav {
 }
 
 .nav-links a:hover {
-  color: var(--text-bright);
-  text-shadow: 0 0 14px var(--accent-glow);
+  color: var(--nav-hover-color, var(--text-bright));
+  text-shadow: 0 0 14px var(--nav-hover-glow, var(--accent-glow));
 }
 
 .nav-links a:hover::after,
 .nav-links a.active::after { right: 0; }
 
-.nav-links a.active { color: var(--text-bright); }
+.nav-links a.active { color: var(--nav-hover-color, var(--text-bright)); }
 
 /* =============================================
    PAGE TITLE
@@ -207,6 +207,20 @@ nav {
   background: var(--accent);
   box-shadow: 0 0 10px var(--accent);
   animation: vhsGlowPulse 2.8s ease-in-out infinite;
+}
+
+/* ── 崩文字雙層結構：正常文字在上，崩文字在下 ── */
+.zalgo-normal {
+  position: relative;
+  z-index: 1;
+}
+.zalgo-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: visible;
+  opacity: 0.55;
 }
 
 /* ── 崩文字溢出防擋 ──────────────────────────────
@@ -404,6 +418,14 @@ nav {
   object-fit: cover;
   transition: transform 0.5s ease;
   background: var(--bg-3);
+}
+
+/* ── Auto aspect: detect landscape / portrait per image ── */
+.gallery-grid.aspect-auto .gallery-item img {
+  aspect-ratio: 4/3;
+}
+.gallery-grid.aspect-auto .gallery-item.portrait img {
+  aspect-ratio: 3/4;
 }
 
 .gallery-item:hover img { transform: scale(1.04); }
