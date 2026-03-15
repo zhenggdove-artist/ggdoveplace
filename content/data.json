@@ -33,7 +33,7 @@
       "bioH1": {
         "fontSize": "20",
         "x": "0px",
-        "y": "0px",
+        "y": "-20",
         "color": "",
         "zalgo": {
           "enabled": true,
