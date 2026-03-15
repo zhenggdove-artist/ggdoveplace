@@ -463,9 +463,9 @@
               "video": ""
             },
             {
-              "src": "https://static.wixstatic.com/media/3a97a0_9c047b4e200949a0bb30111f27464edef000.jpg",
+              "src": "/ggdoveplace/images/uploads/出土儀式部件14.jpg",
               "caption": "展覽現場",
-              "video": ""
+              "video": "https://www.youtube.com/watch?v=NYk-xYv4yoE"
             }
           ]
         },
@@ -474,12 +474,12 @@
           "body": "儀式模組02－告解室部件\n\n觀者透過進入告解室，與以人工智能為神父的裝置進行告解，對話後獲得一份額的智能籤詩。\n\n**獲取一份定時定量的智慧**\n\n藝術家透過編輯設定人工智能，擬制了一個人工智能的告解室，能對前來告解的人提出至高智慧的回覆並印出載有回復的信條以供閱讀。智慧被定量、被分割、被打包。智慧小語卡就像是一種即食的心靈雞湯，人們將這些從告解室獲得的文字拍照打卡上傳，文字與藝術書寫成了藝術家所擬造、可供消費的形式。\n\n在這盛行快消文化、虛擬實境的時代，藝術家透過人工智能的告解室對「真理」做了一場諷刺的重演。在這個告解室中，告解不再是心靈探訪或靈魂的洗滌，而是像快餐一樣快速消費的商品，可隨時列印、拍照打卡、上傳到社交網站的標的。\n\n我們得問，當真理和智慧被輕易地印出、分發、消費，它們還剩下多少價值？這不是質疑人工智慧的能力，而是質疑我們對於真理和智慧的渴求是否還保有其初衷。藝術家以極端的方式將這個問題呈現在我們面前：當智慧和真理變得如此便利和低廉，它們是否還能保持其應有的尊嚴？\n\n這樣的告解室，在某種程度上，放大了我們對快速消費文化的依賴和對真理的冷漠。藝術家透過這個裝置，將真理削弱成一場網紅秀、一個熱門標籤、一句快速消費的口號。真理被打碼、經過濾，最後成為了被拆解、被消費的碎片。",
           "images": [
             {
-              "src": "https://static.wixstatic.com/media/3a97a0_4309f9e2a60643a38aefc8b6a139b00af000.jpg",
+              "src": "",
               "caption": "",
-              "video": ""
+              "video": "https://youtu.be/NYk-xYv4yoE"
             },
             {
-              "src": "https://static.wixstatic.com/media/3a97a0_9c047b4e200949a0bb30111f27464edef000.jpg",
+              "src": "/ggdoveplace/images/uploads/出土儀式部件1.jpg",
               "caption": "",
               "video": ""
             },
@@ -614,7 +614,7 @@
       "title": "儀式模組02 Ritual Module-02",
       "video": "",
       "id": 2,
-      "image": "https://static.wixstatic.com/media/3a97a0_9c047b4e200949a0bb30111f27464edef000.jpg/v1/fill/w_902,h_570,al_c,q_85,enc_avif,quality_auto/3a97a0_9c047b4e200949a0bb30111f27464edef000.jpg",
+      "image": "/ggdoveplace/images/uploads/出土儀式部件8.jpg",
       "description": "藝術家透過執行一由人工智能指定、擬造的出土儀式，將加載於石板的數據資訊浸染於土地，使數據獲得某種祭祀功能的靈光與對照，以對抗快消文化與虛擬力量。",
       "year": "2023"
     }
