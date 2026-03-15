@@ -1444,3 +1444,44 @@ footer {
 .contact-layout.contact-narrow  { grid-template-columns: 1fr 3fr; }
 .contact-layout.contact-wide    { grid-template-columns: 3fr 2fr; }
 .contact-layout.contact-full    { grid-template-columns: 1fr; }
+
+/* ── Relic page divider ── */
+.relic-divider {
+  border: none;
+  border-top: 1px solid var(--border, rgba(234,242,255,0.08));
+  margin: 3rem 0;
+}
+
+/* ── CV Contact Strip ── */
+.cv-contact-strip {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border, rgba(234,242,255,0.08));
+}
+.cv-contact-inner {
+  display: flex;
+  gap: 3rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.cv-contact-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+.cv-contact-label {
+  font-family: var(--mono, 'Courier New', monospace);
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim, #7a8a9e);
+}
+.cv-contact-item a {
+  color: var(--text-bright, #eaf2ff);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.cv-contact-item a:hover {
+  color: var(--nav-hover-color, var(--text-bright));
+}

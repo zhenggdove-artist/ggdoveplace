@@ -3,43 +3,210 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GGdove — Works</title>
+  <title>GGdove</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Landing Page ── */
+    body.landing-body {
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .landing-wrap {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* TV GIF */
+    .landing-tv {
+      position: relative;
+      z-index: 2;
+      width: clamp(180px, 28vw, 360px);
+      height: auto;
+      filter: drop-shadow(0 0 40px rgba(255,120,40,0.35));
+    }
+
+    /* SVG curves container */
+    .landing-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .landing-svg a {
+      pointer-events: all;
+    }
+
+    /* Metallic gradient definitions */
+    .curve-shadow {
+      fill: none;
+      stroke: rgba(0,0,0,0.35);
+      filter: url(#blur2);
+    }
+    .curve-body {
+      fill: none;
+    }
+    .curve-highlight {
+      fill: none;
+      stroke: rgba(255,255,255,0.25);
+    }
+
+    /* Navigation text on curves */
+    .landing-nav-text {
+      font-family: var(--mono, 'Courier New', monospace);
+      font-size: 18px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      fill: var(--text-bright, #eaf2ff);
+      cursor: pointer;
+      transition: fill 0.3s, filter 0.3s;
+      text-decoration: none;
+    }
+    .landing-nav-text:hover {
+      fill: var(--nav-hover-color, #eaf2ff);
+      filter: drop-shadow(0 0 8px var(--nav-hover-glow, rgba(234,242,255,0.55)));
+    }
+
+    /* Shimmer animation along paths */
+    @keyframes shimmer {
+      0%   { stroke-dashoffset: 800; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .curve-shimmer {
+      fill: none;
+      stroke: url(#shimmerGrad);
+      stroke-dasharray: 80 720;
+      animation: shimmer 4s linear infinite;
+    }
+
+    /* Glow pulse for TV */
+    @keyframes tvGlow {
+      0%, 100% { filter: drop-shadow(0 0 40px rgba(255,120,40,0.3)); }
+      50%      { filter: drop-shadow(0 0 60px rgba(255,120,40,0.5)); }
+    }
+    .landing-tv {
+      animation: tvGlow 3s ease-in-out infinite;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .landing-nav-text { font-size: 13px; letter-spacing: 3px; }
+      .landing-tv { width: clamp(120px, 40vw, 200px); }
+    }
+  </style>
 </head>
-<body>
-  <div class="page-wrapper">
-    <nav id="main-nav"></nav>
-    <h2 class="page-title">Works</h2>
-    <div class="gallery-grid" id="projects-grid"></div>
-    <div class="load-more-wrap">
-      <button class="btn-load-more" id="btn-load-more">Load More</button>
-    </div>
+<body class="landing-body">
+  <div class="landing-wrap">
+    <!-- TV GIF center -->
+    <img class="landing-tv" src="TV.gif" alt="TV">
+
+    <!-- SVG orbital metallic curves -->
+    <svg class="landing-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <!-- Metallic gradient -->
+        <linearGradient id="metalGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#6a6a6a"/>
+          <stop offset="20%"  stop-color="#d4d4d4"/>
+          <stop offset="40%"  stop-color="#f0f0f0"/>
+          <stop offset="50%"  stop-color="#ffffff"/>
+          <stop offset="60%"  stop-color="#d4d4d4"/>
+          <stop offset="80%"  stop-color="#8a8a8a"/>
+          <stop offset="100%" stop-color="#5a5a5a"/>
+        </linearGradient>
+        <linearGradient id="metalGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#7a7a7a"/>
+          <stop offset="30%"  stop-color="#e0e0e0"/>
+          <stop offset="50%"  stop-color="#ffffff"/>
+          <stop offset="70%"  stop-color="#c0c0c0"/>
+          <stop offset="100%" stop-color="#606060"/>
+        </linearGradient>
+        <!-- Shimmer traveling highlight -->
+        <linearGradient id="shimmerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="transparent"/>
+          <stop offset="45%"  stop-color="rgba(255,255,255,0.6)"/>
+          <stop offset="50%"  stop-color="rgba(255,255,255,0.9)"/>
+          <stop offset="55%"  stop-color="rgba(255,255,255,0.6)"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </linearGradient>
+        <!-- Blur for shadow -->
+        <filter id="blur2"><feGaussianBlur stdDeviation="3"/></filter>
+        <!-- Glow for curves -->
+        <filter id="glow1">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- ═══ Curve 1: Top-left to top-right (CV → RELIC) ═══ -->
+      <path id="curve1" d="M 120,180 C 250,60 750,60 880,180" fill="none"/>
+      <!-- Shadow -->
+      <use href="#curve1" class="curve-shadow" stroke-width="8" transform="translate(2,3)"/>
+      <!-- Body -->
+      <use href="#curve1" class="curve-body" stroke="url(#metalGrad1)" stroke-width="5" filter="url(#glow1)"/>
+      <!-- Highlight -->
+      <use href="#curve1" class="curve-highlight" stroke-width="1.5" stroke-dasharray="12 8"/>
+      <!-- Shimmer -->
+      <use href="#curve1" class="curve-shimmer" stroke-width="4"/>
+
+      <!-- ═══ Curve 2: Top-right to bottom-right (RELIC → EXHIBITION) ═══ -->
+      <path id="curve2" d="M 880,180 C 980,320 980,420 880,530" fill="none"/>
+      <use href="#curve2" class="curve-shadow" stroke-width="8" transform="translate(2,3)"/>
+      <use href="#curve2" class="curve-body" stroke="url(#metalGrad2)" stroke-width="5" filter="url(#glow1)"/>
+      <use href="#curve2" class="curve-highlight" stroke-width="1.5" stroke-dasharray="12 8"/>
+      <use href="#curve2" class="curve-shimmer" stroke-width="4" style="animation-delay:-1s"/>
+
+      <!-- ═══ Curve 3: Bottom-right to bottom-left (EXHIBITION → PLAY) ═══ -->
+      <path id="curve3" d="M 880,530 C 750,650 250,650 120,530" fill="none"/>
+      <use href="#curve3" class="curve-shadow" stroke-width="8" transform="translate(2,3)"/>
+      <use href="#curve3" class="curve-body" stroke="url(#metalGrad1)" stroke-width="5" filter="url(#glow1)"/>
+      <use href="#curve3" class="curve-highlight" stroke-width="1.5" stroke-dasharray="12 8"/>
+      <use href="#curve3" class="curve-shimmer" stroke-width="4" style="animation-delay:-2s"/>
+
+      <!-- ═══ Curve 4: Bottom-left to top-left (PLAY → CV) ═══ -->
+      <path id="curve4" d="M 120,530 C 20,420 20,320 120,180" fill="none"/>
+      <use href="#curve4" class="curve-shadow" stroke-width="8" transform="translate(2,3)"/>
+      <use href="#curve4" class="curve-body" stroke="url(#metalGrad2)" stroke-width="5" filter="url(#glow1)"/>
+      <use href="#curve4" class="curve-highlight" stroke-width="1.5" stroke-dasharray="12 8"/>
+      <use href="#curve4" class="curve-shimmer" stroke-width="4" style="animation-delay:-3s"/>
+
+      <!-- Decorative curl endpoints -->
+      <circle cx="120" cy="180" r="4" fill="#d0d0d0" filter="url(#glow1)"/>
+      <circle cx="880" cy="180" r="4" fill="#d0d0d0" filter="url(#glow1)"/>
+      <circle cx="880" cy="530" r="4" fill="#d0d0d0" filter="url(#glow1)"/>
+      <circle cx="120" cy="530" r="4" fill="#d0d0d0" filter="url(#glow1)"/>
+
+      <!-- ═══ Navigation Labels ═══ -->
+      <!-- CV — top-left -->
+      <a href="bio.html">
+        <text class="landing-nav-text" x="160" y="140" text-anchor="start">CV</text>
+      </a>
+      <!-- RELIC — top-right -->
+      <a href="relic.html">
+        <text class="landing-nav-text" x="840" y="140" text-anchor="end">Relic</text>
+      </a>
+      <!-- EXHIBITION — bottom-right -->
+      <a href="exhibition.html">
+        <text class="landing-nav-text" x="920" y="400" text-anchor="start">Exhibition</text>
+      </a>
+      <!-- PLAY — bottom-left -->
+      <a href="#">
+        <text class="landing-nav-text" x="80" y="400" text-anchor="end">Play</text>
+      </a>
+    </svg>
   </div>
 
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox">
-    <button class="lightbox-close" id="lb-close">×</button>
-    <button class="lightbox-prev" id="lb-prev">‹</button>
-    <button class="lightbox-next" id="lb-next">›</button>
-    <div class="lightbox-inner">
-      <img class="lightbox-img" id="lb-img" src="" alt="">
-      <div class="lightbox-info" id="lb-info"></div>
-    </div>
-  </div>
-
-  <footer><p>© GGdove</p></footer>
-
-  <script src="js/vhs-effect.js"></script>
   <script src="js/main.js"></script>
   <script>
     loadData().then(() => {
-      renderHeader('projects');
-      initLightbox();
-      renderProjects();
-      initVHS();
-    
-      applyTextStyles(siteData.site);
-      applyZalgo(siteData.site);
       applyBackground(siteData.site);
     });
   </script>

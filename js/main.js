@@ -464,11 +464,10 @@ function renderHeader(activePage) {
     href: 'custom-page.html?id=' + encodeURIComponent(p.id)
   }));
   const pages = [
-    { id: 'projects',   label: nl.works      || 'Works',       href: 'index.html'      },
+    { id: 'cv',         label: nl.bio         || 'CV',          href: 'bio.html'        },
+    { id: 'relic',      label: nl.works       || 'Relic',       href: 'relic.html'      },
     { id: 'exhibition', label: nl.exhibition  || 'Exhibition',  href: 'exhibition.html' },
-    { id: 'weapons',    label: nl.weapons     || 'Weapons',     href: 'weapons.html'    },
-    { id: 'bio',        label: nl.bio         || 'Bio',         href: 'bio.html'        },
-    { id: 'contact',    label: nl.contact     || 'Contact',     href: 'contact.html'    },
+    { id: 'play',       label: 'Play',                          href: '#'               },
     ...customPages
   ];
   nav.innerHTML = `
@@ -1029,4 +1028,46 @@ function renderWeapons() {
     el.onclick = () => showLightbox(i);
     grid.appendChild(el);
   });
+}
+
+// ── Relic (combined Works + Weapons) ────────────
+function renderRelic() {
+  // First render Works (projects)
+  renderProjects();
+
+  // Then render Weapons below, with lightbox index offset
+  const grid = document.getElementById('weapons-grid');
+  if (!grid || !siteData) return;
+  const weapons = siteData.weapons;
+  const offset = lightboxItems.length; // projects already added their items
+
+  weapons.forEach((w, i) => {
+    lightboxItems.push({ image: w.image, title: w.name, year: '', medium: '', dimensions: w.price });
+    const el = document.createElement('div');
+    el.className = 'weapon-card';
+    el.innerHTML = `
+      <img src="${w.image}" alt="${w.name}" loading="lazy">
+      <div class="weapon-name">${w.name}</div>
+      ${w.price ? `<div class="weapon-price">${w.price}</div>` : ''}`;
+    el.onclick = () => showLightbox(offset + i);
+    grid.appendChild(el);
+  });
+}
+
+// ── CV Contact Strip ────────────────────────────
+function renderCVContact() {
+  const wrap = document.getElementById('cv-contact');
+  if (!wrap || !siteData) return;
+  const c = siteData.contact;
+  wrap.innerHTML = `
+    <div class="cv-contact-inner">
+      ${c.email ? `<div class="cv-contact-item">
+        <span class="cv-contact-label">Email</span>
+        <a href="mailto:${c.email}">${c.email}</a>
+      </div>` : ''}
+      ${c.instagram ? `<div class="cv-contact-item">
+        <span class="cv-contact-label">Instagram</span>
+        <a href="${c.instagram_url || '#'}" target="_blank">${c.instagram}</a>
+      </div>` : ''}
+    </div>`;
 }
