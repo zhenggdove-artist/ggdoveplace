@@ -150,7 +150,7 @@ collections:
               - { label: Image,         name: image,         widget: image }
 
   - name: site_settings
-    label: Site Settings (網站設定)
+    label: "Site Settings (網站設定)"
     files:
       - label: Settings
         name: settings
@@ -160,16 +160,30 @@ collections:
             name: site
             widget: object
             fields:
-              - { label: Title,       name: title,       widget: string }
-              - { label: Subtitle,    name: subtitle,    widget: string }
-              - { label: Description, name: description, widget: string }
-              - label: "導航 Hover 顏色 Nav Hover Color"
+              # ━━━ 基本資訊 ━━━
+              - { label: "網站名稱 Title", name: title, widget: string }
+              - { label: "副標題 Subtitle", name: subtitle, widget: string }
+              - { label: "簡介 Description", name: description, widget: string }
+              # ━━━ 導航列 Navigation ━━━
+              - label: "🧭 導航 Hover 顏色"
                 name: navHoverColor
                 widget: color
                 default: "#eaf2ff"
                 required: false
-                hint: "滑鼠移到導航文字上時的顏色（預設亮白 #eaf2ff）"
-              - label: "Gallery Layout (作品頁版型)"
+                hint: "滑鼠移到導航文字上時的高亮顏色"
+              - label: "🧭 導航文字 Nav Labels"
+                name: navLabels
+                widget: object
+                collapsed: true
+                hint: "自訂導航列每一項的顯示文字（留空＝預設英文）"
+                fields:
+                  - { label: "Works 頁名稱", name: works, widget: string, default: "Works", required: false }
+                  - { label: "Exhibition 頁名稱", name: exhibition, widget: string, default: "Exhibition", required: false }
+                  - { label: "Weapons 頁名稱", name: weapons, widget: string, default: "Weapons", required: false }
+                  - { label: "Bio 頁名稱", name: bio, widget: string, default: "Bio", required: false }
+                  - { label: "Contact 頁名稱", name: contact, widget: string, default: "Contact", required: false }
+              # ━━━ 作品頁 Works Page ━━━
+              - label: "📄 作品版型 Gallery Layout"
                 name: galleryLayout
                 widget: select
                 options:
@@ -177,8 +191,8 @@ collections:
                   - { label: "Masonry 瀑布流（原始比例）", value: "masonry" }
                   - { label: "Slideshow 幻燈片（一次一張）", value: "slideshow" }
                 default: "grid"
-                hint: "選擇 Works 作品頁的圖片排列方式"
-              - label: "Image Size (圖片大小)"
+                hint: "Works 作品頁的圖片排列方式"
+              - label: "📏 圖片大小 Image Size"
                 name: imageSize
                 widget: select
                 options:
@@ -187,28 +201,27 @@ collections:
                   - { label: "Large 大（420px）", value: "large" }
                   - { label: "X-Large 特大（560px）", value: "xlarge" }
                 default: "medium"
-                hint: "每張圖片的最小寬度，影響一行可以放幾張"
-              - label: "Caption 字幕位置"
-                name: captionStyle
-                widget: select
-                options:
-                  - { label: "Below 下方", value: "below" }
-                  - { label: "Overlay 疊加（hover 才顯示）", value: "overlay" }
-                  - { label: "Hidden 隱藏", value: "hidden" }
-                default: "below"
-                hint: "作品標題與年份的顯示位置"
-              - label: "Image Aspect 圖片比例"
+                hint: "每張圖的最小寬度，越大一行放越少張"
+              - label: "📐 圖片比例 Image Aspect"
                 name: imageAspect
                 widget: select
                 options:
                   - { label: "4:3 橫向（預設）", value: "4/3" }
                   - { label: "1:1 正方形", value: "1/1" }
-                  - { label: "16:9 電影比例", value: "16/9" }
+                  - { label: "16:9 電影", value: "16/9" }
                   - { label: "3:4 直向", value: "3/4" }
                   - { label: "Free 原始比例", value: "free" }
-                  - { label: "Auto 自動偵測（橫圖4:3 / 直圖3:4）", value: "auto" }
+                  - { label: "Auto 自動（橫4:3 / 直3:4）", value: "auto" }
                 default: "4/3"
-              - label: "Gallery Gap 圖片間距"
+              - label: "💬 字幕位置 Caption Style"
+                name: captionStyle
+                widget: select
+                options:
+                  - { label: "Below 圖片下方", value: "below" }
+                  - { label: "Overlay 浮現（hover 顯示）", value: "overlay" }
+                  - { label: "Hidden 隱藏", value: "hidden" }
+                default: "below"
+              - label: "↔ 圖片間距 Gallery Gap"
                 name: galleryGap
                 widget: select
                 options:
@@ -216,16 +229,43 @@ collections:
                   - { label: "Normal 中（1.8rem）", value: "normal" }
                   - { label: "Wide 疏（3rem）", value: "wide" }
                 default: "normal"
-              - label: "Hover Effect 滑鼠效果"
+              - label: "👆 Hover 效果"
                 name: hoverEffect
                 widget: select
                 options:
-                  - { label: "Scale 放大", value: "scale" }
+                  - { label: "Scale 放大浮起", value: "scale" }
                   - { label: "Brighten 增亮", value: "brighten" }
                   - { label: "Glow 邊框發光", value: "glow" }
                   - { label: "None 無", value: "none" }
                 default: "scale"
-              - label: "字型 Typography"
+              # ━━━ 動畫 Animation ━━━
+              - label: "✨ 捲動動畫 Scroll Animation"
+                name: scrollAnim
+                widget: select
+                options:
+                  - { label: "None 無", value: "none" }
+                  - { label: "Fade Up 向上淡入 ↑", value: "fade-up" }
+                  - { label: "Fade In 淡入", value: "fade-in" }
+                  - { label: "Zoom In 放大淡入", value: "zoom-in" }
+                  - { label: "Slide Left 左滑入 ←", value: "slide-left" }
+                  - { label: "Slide Right 右滑入 →", value: "slide-right" }
+                default: "fade-up"
+                hint: "圖片進入畫面時的動畫效果"
+              - label: "⏱ 動畫速度"
+                name: animSpeed
+                widget: select
+                options:
+                  - { label: "Slow 慢（0.8s）", value: "slow" }
+                  - { label: "Normal 中（0.5s）", value: "normal" }
+                  - { label: "Fast 快（0.3s）", value: "fast" }
+                default: "normal"
+              - label: "🔄 交錯進場 Stagger"
+                name: animStagger
+                widget: boolean
+                default: true
+                hint: "圖片依序進場，而非同時出現"
+              # ━━━ 字型 Typography ━━━
+              - label: "🔤 字型設定 Typography"
                 name: fonts
                 widget: object
                 collapsed: true
@@ -252,46 +292,11 @@ collections:
                       - { label: "Courier Prime（溫暖）", value: "courier-prime" }
                     default: "courier-new"
                     hint: "年份 / 媒材 / 標籤等輔助文字使用的字型"
-              - label: "捲動動畫 Scroll Animation"
-                name: scrollAnim
-                widget: select
-                options:
-                  - { label: "None 無動畫", value: "none" }
-                  - { label: "Fade Up 向上淡入 ↑", value: "fade-up" }
-                  - { label: "Fade In 淡入", value: "fade-in" }
-                  - { label: "Zoom In 放大淡入", value: "zoom-in" }
-                  - { label: "Slide Left 左滑入 ←", value: "slide-left" }
-                  - { label: "Slide Right 右滑入 →", value: "slide-right" }
-                default: "fade-up"
-                hint: "圖片進入畫面時的動畫效果"
-              - label: "動畫速度 Animation Speed"
-                name: animSpeed
-                widget: select
-                options:
-                  - { label: "Slow 慢（0.8s）", value: "slow" }
-                  - { label: "Normal 中（0.5s）", value: "normal" }
-                  - { label: "Fast 快（0.3s）", value: "fast" }
-                default: "normal"
-              - label: "交錯進場 Stagger Effect"
-                name: animStagger
-                widget: boolean
-                default: true
-                hint: "圖片依序進場（而非全部同時出現）"
-              - label: "導航文字 Nav Labels"
-                name: navLabels
-                widget: object
-                collapsed: true
-                hint: "自訂右上角導航列每一項的顯示文字（留空則使用預設英文）"
-                fields:
-                  - { label: "Works 頁名稱",      name: works,      widget: string, default: "Works",      required: false }
-                  - { label: "Exhibition 頁名稱",  name: exhibition, widget: string, default: "Exhibition",  required: false }
-                  - { label: "Weapons 頁名稱",     name: weapons,    widget: string, default: "Weapons",     required: false }
-                  - { label: "Bio 頁名稱",          name: bio,        widget: string, default: "Bio",          required: false }
-                  - { label: "Contact 頁名稱",     name: contact,    widget: string, default: "Contact",     required: false }
-              - label: "文字元素各別設定 Text Element Styles"
+              # ━━━ 文字樣式 Text Styles ━━━
+              - label: "✒️ 文字樣式與崩文字 Text & Zalgo"
                 name: textStyles
                 widget: object
-                collapsed: false
+                collapsed: true
                 hint: "為每個文字元素分別設定大小、位置、顏色與崩文字效果"
                 fields:
                   - label: "▌頁面大標題 Page Title (.page-title)"
@@ -420,11 +425,12 @@ collections:
                           - { label: "向下 Down ↓", name: down, widget: boolean, default: false }
                           - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
                           - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
-              - label: "Zalgo 崩文字效果（全域預設）"
+              # ━━━ 舊版 Zalgo（已被上方取代）━━━
+              - label: "⚠️ Zalgo 全域設定（舊版，已被「文字樣式」取代）"
                 name: zalgoEffect
                 widget: object
                 collapsed: true
-                hint: "⚠️ 舊版全域設定，建議改用上方「文字元素各別設定」。若上方有設定，此處設定會被覆蓋忽略。"
+                hint: "此處設定已被上方「文字樣式與崩文字」取代。若上方有設定，此處會被忽略。"
                 fields:
                   - label: "啟用 Enabled"
                     name: enabled
@@ -461,10 +467,11 @@ collections:
                     max: 30
                     step: 0.05
                     default: 2.5
-              - label: "🖼 網站背景 Site Background"
+              # ━━━ 背景 Background ━━━
+              - label: "🎨 網站背景 Site Background"
                 name: siteBackground
                 widget: object
-                collapsed: false
+                collapsed: true
                 hint: "設定整個網站的背景：純色、圖片或影片均可"
                 fields:
                   - label: "背景類型 Type"
@@ -515,11 +522,12 @@ collections:
                     default: 0
                     required: false
                     hint: "在背景圖片/影片上疊加一層半透明黑幕，讓前景文字更易讀"
-              - label: "🖼 圖框設定 Image Frame Settings"
+              # ━━━ 各頁圖框 Frame Settings ━━━
+              - label: "🖼 各頁圖框設定 Frame Settings"
                 name: frameSettings
                 widget: object
                 collapsed: false
-                hint: "設定每個頁面的圖片外框大小與顏色"
+                hint: "設定每個頁面的圖框大小、顏色與文字顏色"
                 fields:
                   - label: "▌Works 作品頁"
                     name: works
@@ -568,6 +576,18 @@ collections:
                         name: transparent
                         widget: boolean
                         default: false
+                      - label: "🎨 名稱文字色 Name Text Color"
+                        name: nameColor
+                        widget: color
+                        default: "#eaf2ff"
+                        required: false
+                        hint: "武器名稱的文字顏色（預設亮白 #eaf2ff）"
+                      - label: "🎨 價格文字色 Price Text Color"
+                        name: priceColor
+                        widget: color
+                        default: "#4a5a7a"
+                        required: false
+                        hint: "價格/說明的文字顏色（預設灰藍 #4a5a7a）"
                   - label: "▌Exhibition 展覽頁"
                     name: exhibition
                     widget: object

@@ -1417,6 +1417,9 @@ footer {
 .weapon-name,
 .weapon-price { background-color: var(--frame-weapons, var(--bg-2)); }
 .weapon-card img { background-color: var(--frame-weapons, var(--bg-3)); }
+/* Weapons text color override */
+.weapon-name { color: var(--weapon-name-color, var(--text-bright)); }
+.weapon-price { color: var(--weapon-price-color, var(--text-dim)); }
 
 /* Exhibition frame color override */
 .exhibition-cover-wrap,

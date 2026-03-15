@@ -349,6 +349,14 @@ function applyFrameSettings(site) {
     if (grid) grid.classList.add('wsize-' + fs.weapons.frameSize);
   }
 
+  // Weapons text colors
+  if (fs.weapons) {
+    if (fs.weapons.nameColor) setVar('--weapon-name-color', fs.weapons.nameColor);
+    else root.style.removeProperty('--weapon-name-color');
+    if (fs.weapons.priceColor) setVar('--weapon-price-color', fs.weapons.priceColor);
+    else root.style.removeProperty('--weapon-price-color');
+  }
+
   // Exhibition subpage image size
   if (fs.exhibition && fs.exhibition.frameSize) {
     document.querySelectorAll('.subpage-images').forEach(g => {
