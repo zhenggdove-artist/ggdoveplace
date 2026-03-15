@@ -195,6 +195,8 @@ nav {
   border-bottom: 1px solid var(--border);
   animation: vhsTitleGlitch 9s infinite;
   position: relative;
+  /* 崩文字符文溢出時保持在後續內容之下 */
+  z-index: 0;
 }
 
 .page-title::after {
@@ -205,6 +207,22 @@ nav {
   background: var(--accent);
   box-shadow: 0 0 10px var(--accent);
   animation: vhsGlowPulse 2.8s ease-in-out infinite;
+}
+
+/* ── 崩文字溢出防擋 ──────────────────────────────
+   page-title 的 zalgo 符文向下溢出時，後續內容容器的
+   z-index:1 + background 會將溢出部分蓋住，實現「符文在文字之下」效果 */
+.gallery-grid,
+.load-more-wrap,
+.bio-layout,
+.exhibition-list,
+.contact-layout,
+.subpage-body,
+.custom-page-body,
+.weapons-grid {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
 }
 
 /* =============================================

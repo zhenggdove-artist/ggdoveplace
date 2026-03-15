@@ -453,6 +453,64 @@ collections:
                     max: 30
                     step: 0.05
                     default: 2.5
+              - label: "🖼 網站背景 Site Background"
+                name: siteBackground
+                widget: object
+                collapsed: false
+                hint: "設定整個網站的背景：純色、圖片或影片均可"
+                fields:
+                  - label: "背景類型 Type"
+                    name: type
+                    widget: select
+                    options:
+                      - { label: "純色 Color", value: "color" }
+                      - { label: "圖片 Image", value: "image" }
+                      - { label: "影片 Video", value: "video" }
+                    default: "color"
+                  - label: "使用預設底色 Use Default Color"
+                    name: useDefaultColor
+                    widget: boolean
+                    default: true
+                    hint: "勾選 = 使用網站原始深色底（#04040c）。取消勾選後可使用下方色盤"
+                  - label: "背景顏色 Background Color（取消上方勾選後生效）"
+                    name: color
+                    widget: color
+                    default: "#04040c"
+                    required: false
+                  - label: "背景圖片 Background Image（類型選「圖片」時使用）"
+                    name: image
+                    widget: image
+                    required: false
+                    media_folder: "/images/uploads"
+                    public_folder: "/ggdoveplace/images/uploads"
+                    hint: "支援 JPG、PNG、WebP、GIF"
+                  - label: "背景影片 Background Video（類型選「影片」時使用）"
+                    name: video
+                    widget: file
+                    required: false
+                    media_folder: "/images/uploads"
+                    public_folder: "/ggdoveplace/images/uploads"
+                    hint: "支援 MP4、WebM。影片會自動靜音循環播放"
+                  - label: "圖片填充方式 Image Size（圖片類型適用）"
+                    name: imageSize
+                    widget: select
+                    options:
+                      - { label: "Cover 覆蓋（推薦，等比例填滿）", value: "cover" }
+                      - { label: "Contain 包含（等比例縮放至可見）", value: "contain" }
+                      - { label: "Repeat 重複平鋪", value: "repeat" }
+                      - { label: "Auto 原始大小", value: "auto" }
+                    default: "cover"
+                    required: false
+                  - label: "暗化遮罩 Overlay Opacity（0=無，0.5=半透明黑幕）"
+                    name: overlayOpacity
+                    widget: number
+                    value_type: float
+                    min: 0
+                    max: 0.9
+                    step: 0.05
+                    default: 0
+                    required: false
+                    hint: "在背景圖片/影片上疊加一層半透明黑幕，讓前景文字更易讀"
 
   - name: visual
     label: Visual Style — VHS Effect (視覺效果)

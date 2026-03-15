@@ -211,6 +211,68 @@ function applyZalgo(site) {
   });
 }
 
+// ── Apply site background (color / image / video) ──
+function applyBackground(site) {
+  if (!site || !site.siteBackground) return;
+  const bg = site.siteBackground;
+  const type = (bg.type || 'color').toLowerCase();
+
+  // 清除舊的背景層與影片層
+  const oldLayer = document.getElementById('site-bg-layer');
+  const oldVideo = document.getElementById('site-bg-video');
+  if (oldLayer) oldLayer.remove();
+  if (oldVideo) oldVideo.remove();
+
+  // 純色模式
+  if (type === 'color') {
+    const useDefault = bg.useDefaultColor === true || bg.useDefaultColor === 'true' || !bg.color;
+    if (!useDefault && bg.color) {
+      document.documentElement.style.setProperty('--bg', bg.color);
+      document.body.style.setProperty('background', bg.color, 'important');
+    } else {
+      document.documentElement.style.removeProperty('--bg');
+      document.body.style.removeProperty('background');
+    }
+    return;
+  }
+
+  // 圖片 / 影片模式：建立固定定位背景層
+  const layer = document.createElement('div');
+  layer.id = 'site-bg-layer';
+  layer.style.cssText = 'position:fixed;inset:0;z-index:-2;pointer-events:none;overflow:hidden;';
+
+  if (type === 'image' && bg.image) {
+    const imgSize = bg.imageSize || 'cover';
+    layer.style.backgroundImage   = 'url(' + bg.image + ')';
+    layer.style.backgroundSize    = imgSize === 'repeat' ? 'auto' : imgSize;
+    layer.style.backgroundRepeat  = imgSize === 'repeat' ? 'repeat' : 'no-repeat';
+    layer.style.backgroundPosition = 'center center';
+  } else if (type === 'video' && bg.video) {
+    const vid = document.createElement('video');
+    vid.id          = 'site-bg-video';
+    vid.src         = bg.video;
+    vid.autoplay    = true;
+    vid.loop        = true;
+    vid.muted       = true;
+    vid.playsInline = true;
+    vid.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+    layer.appendChild(vid);
+  }
+
+  // 選填暗化遮罩
+  const ov = parseFloat(bg.overlayOpacity) || 0;
+  if (ov > 0) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,' + ov + ');pointer-events:none;';
+    layer.appendChild(overlay);
+  }
+
+  document.body.prepend(layer);
+
+  // 讓 body 自身背景透明，改由 layer 提供
+  document.body.style.setProperty('background', 'transparent', 'important');
+}
+
 // ── Apply font settings ─────────────────────────
 function applyFonts(site) {
   if (!site || !site.fonts) return;

@@ -539,7 +539,42 @@
         }}, txt);
       };
 
+      // ── 背景預覽計算 ──
+      var bgCfg = s.siteBackground || {};
+      var bgType = (bgCfg.type || 'color').toLowerCase();
+      var bgUseDefault = bgCfg.useDefaultColor === true || bgCfg.useDefaultColor === 'true' || !bgCfg.color;
+      var bgColor = (!bgUseDefault && bgCfg.color) ? bgCfg.color : '#04040c';
+      var bgLabel = bgType === 'color'
+        ? ('純色 ' + bgColor)
+        : bgType === 'image'
+          ? ('背景圖片' + (bgCfg.image ? ' ✓' : '（未上傳）'))
+          : ('背景影片' + (bgCfg.video ? ' ✓' : '（未上傳）'));
+      // Mock frame 背景：color 直接用顏色；image/video 顯示預覽色塊（無法跨域渲染）
+      var mockBg = bgType === 'color' ? bgColor : '#04040c';
+
       return h('div', null,
+
+        // ── 背景狀態提示條 ──
+        h('div', { style: {
+          display: 'flex', alignItems: 'center', gap: '0.8rem',
+          background: '#0a071e', border: '1px solid #2a2060', borderRadius: '3px',
+          padding: '0.4rem 0.8rem', marginBottom: '0.7rem', fontFamily: '"Courier New",monospace',
+          fontSize: '0.65rem', color: '#9090c0'
+        }},
+          h('span', { style: { color: '#7755ff', letterSpacing: '0.1em' } }, '🖼 背景'),
+          h('span', null, bgType.toUpperCase()),
+          h('span', { style: { color: '#555088' } }, '│'),
+          h('span', { style: { color: '#b0a8e0' } }, bgLabel),
+          bgType !== 'color' && bgCfg.overlayOpacity > 0
+            ? h('span', { style: { color: '#888' } }, '│ 遮罩 ' + Math.round(bgCfg.overlayOpacity * 100) + '%')
+            : null,
+          bgType === 'color'
+            ? h('span', { style: {
+                display: 'inline-block', width: '14px', height: '14px',
+                background: bgColor, border: '1px solid #3a2880', borderRadius: '2px', flexShrink: 0
+              }})
+            : null
+        ),
 
         // header label
         h('div', { style: {
@@ -549,7 +584,7 @@
 
         // MOCK WEBSITE FRAME
         h('div', { style: {
-          background: '#06030f', border: '2px solid #2a2050', borderRadius: '4px',
+          background: mockBg, border: '2px solid #2a2050', borderRadius: '4px',
           overflow: 'visible', marginBottom: '1rem', fontFamily: headingFont
         }},
 
