@@ -112,6 +112,7 @@ function applyNavHoverColor(site) {
 // 使用 el.style.setProperty 搭配 !important 確保覆蓋所有 CSS 規則（含 !important）
 function applyTextStyles(site) {
   applyNavHoverColor(site);
+  applyFrameSettings(site);
   if (!site || !site.textStyles) return;
 
   const selectorMap = {
@@ -314,6 +315,58 @@ function applyBackground(site) {
 
   // 讓 body 自身背景透明，改由 layer 提供
   document.body.style.setProperty('background', 'transparent', 'important');
+}
+
+// ── Apply frame settings (per-page color + size) ──
+function applyFrameSettings(site) {
+  if (!site || !site.frameSettings) return;
+  const fs = site.frameSettings;
+  const root = document.documentElement;
+
+  function getColor(s) {
+    if (!s) return null;
+    if (s.transparent) return 'transparent';
+    const useDefault = s.useDefaultColor !== false && s.useDefaultColor !== 'false';
+    if (!useDefault && s.frameColor) return s.frameColor;
+    return null;
+  }
+
+  function setVar(prop, color) {
+    if (color) root.style.setProperty(prop, color);
+    else root.style.removeProperty(prop);
+  }
+
+  // Frame colors (CSS custom properties)
+  setVar('--frame-works',      getColor(fs.works));
+  setVar('--frame-weapons',    getColor(fs.weapons));
+  setVar('--frame-exhibition', getColor(fs.exhibition));
+  setVar('--frame-bio',        getColor(fs.bio));
+  setVar('--frame-contact',    getColor(fs.contact));
+
+  // Weapons grid size
+  if (fs.weapons && fs.weapons.frameSize) {
+    const grid = document.querySelector('.weapons-grid');
+    if (grid) grid.classList.add('wsize-' + fs.weapons.frameSize);
+  }
+
+  // Exhibition subpage image size
+  if (fs.exhibition && fs.exhibition.frameSize) {
+    document.querySelectorAll('.subpage-images').forEach(g => {
+      g.classList.add('spsize-' + fs.exhibition.frameSize);
+    });
+  }
+
+  // Bio photo width
+  if (fs.bio && fs.bio.photoWidth && fs.bio.photoWidth !== 'medium') {
+    const layout = document.querySelector('.bio-layout');
+    if (layout) layout.classList.add('bio-' + fs.bio.photoWidth);
+  }
+
+  // Contact image width
+  if (fs.contact && fs.contact.imageWidth && fs.contact.imageWidth !== 'medium') {
+    const layout = document.querySelector('.contact-layout');
+    if (layout) layout.classList.add('contact-' + fs.contact.imageWidth);
+  }
 }
 
 // ── Apply font settings ─────────────────────────

@@ -1389,3 +1389,55 @@ footer {
   font-size: 0.65rem;
   color: var(--text-dim);
 }
+
+/* =============================================
+   FRAME SETTINGS — Per-page size & color
+   ============================================= */
+
+/* Works: X-Large size */
+.gallery-grid.size-xlarge  { grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 2.8rem; }
+.gallery-grid.layout-masonry.size-xlarge { column-count: 1; column-gap: 2.4rem; }
+
+/* Works frame color override */
+.gallery-item,
+.gallery-caption,
+.slideshow-slide,
+.slideshow-caption { background-color: var(--frame-works, var(--bg-2)); }
+.gallery-item img,
+.slideshow-slide img { background-color: var(--frame-works, var(--bg-3)); }
+
+/* Weapons size variants */
+.weapons-grid.wsize-small  { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
+.weapons-grid.wsize-medium { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.weapons-grid.wsize-large  { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2.4rem; }
+.weapons-grid.wsize-xlarge { grid-template-columns: repeat(auto-fill, minmax(480px, 1fr)); gap: 2.8rem; }
+
+/* Weapons frame color override */
+.weapon-card,
+.weapon-name,
+.weapon-price { background-color: var(--frame-weapons, var(--bg-2)); }
+.weapon-card img { background-color: var(--frame-weapons, var(--bg-3)); }
+
+/* Exhibition frame color override */
+.exhibition-cover-wrap,
+.detail-cover-media { background-color: var(--frame-exhibition, var(--bg-2)); }
+.ex-slideshow { background-color: var(--frame-exhibition, #04020a); }
+.exhibition-cover-wrap:not(.ex-slideshow) > img { background-color: var(--frame-exhibition, var(--bg-3)); }
+
+/* Exhibition subpage image size variants */
+.subpage-images.spsize-small  { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
+.subpage-images.spsize-medium { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.subpage-images.spsize-large  { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2rem; }
+.subpage-images.spsize-xlarge { grid-template-columns: repeat(auto-fill, minmax(480px, 1fr)); gap: 2.4rem; }
+
+/* Bio frame color + photo width variants */
+.bio-photo { background-color: var(--frame-bio, var(--bg-3)); }
+.bio-layout.bio-narrow  { grid-template-columns: 1fr 3fr; }
+.bio-layout.bio-wide    { grid-template-columns: 1fr 1fr; }
+.bio-layout.bio-full    { grid-template-columns: 1fr; }
+
+/* Contact frame color + image width variants */
+.contact-img { background-color: var(--frame-contact, var(--bg-3)); }
+.contact-layout.contact-narrow  { grid-template-columns: 1fr 3fr; }
+.contact-layout.contact-wide    { grid-template-columns: 3fr 2fr; }
+.contact-layout.contact-full    { grid-template-columns: 1fr; }

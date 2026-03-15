@@ -185,6 +185,7 @@ collections:
                   - { label: "Small 小（160px）", value: "small" }
                   - { label: "Medium 中（280px）", value: "medium" }
                   - { label: "Large 大（420px）", value: "large" }
+                  - { label: "X-Large 特大（560px）", value: "xlarge" }
                 default: "medium"
                 hint: "每張圖片的最小寬度，影響一行可以放幾張"
               - label: "Caption 字幕位置"
@@ -514,6 +515,140 @@ collections:
                     default: 0
                     required: false
                     hint: "在背景圖片/影片上疊加一層半透明黑幕，讓前景文字更易讀"
+              - label: "🖼 圖框設定 Image Frame Settings"
+                name: frameSettings
+                widget: object
+                collapsed: false
+                hint: "設定每個頁面的圖片外框大小與顏色"
+                fields:
+                  - label: "▌Works 作品頁"
+                    name: works
+                    widget: object
+                    collapsed: true
+                    fields:
+                      - label: "使用預設圖框色 Use Default"
+                        name: useDefaultColor
+                        widget: boolean
+                        default: true
+                        hint: "勾選=預設深色，取消可自訂顏色或透明"
+                      - label: "圖框顏色 Frame Color（取消上方勾選後生效）"
+                        name: frameColor
+                        widget: color
+                        default: "#0a0a1c"
+                        required: false
+                      - label: "透明圖框 Transparent（優先於顏色）"
+                        name: transparent
+                        widget: boolean
+                        default: false
+                        hint: "開啟後圖框完全透明"
+                  - label: "▌Weapons 武器頁"
+                    name: weapons
+                    widget: object
+                    collapsed: true
+                    fields:
+                      - label: "圖框大小 Frame Size"
+                        name: frameSize
+                        widget: select
+                        options:
+                          - { label: "Small 小（160px）", value: "small" }
+                          - { label: "Medium 中（220px 預設）", value: "medium" }
+                          - { label: "Large 大（340px）", value: "large" }
+                          - { label: "X-Large 特大（480px）", value: "xlarge" }
+                        default: "medium"
+                      - label: "使用預設圖框色 Use Default"
+                        name: useDefaultColor
+                        widget: boolean
+                        default: true
+                      - label: "圖框顏色 Frame Color（取消上方勾選後生效）"
+                        name: frameColor
+                        widget: color
+                        default: "#0a0a1c"
+                        required: false
+                      - label: "透明圖框 Transparent（優先於顏色）"
+                        name: transparent
+                        widget: boolean
+                        default: false
+                  - label: "▌Exhibition 展覽頁"
+                    name: exhibition
+                    widget: object
+                    collapsed: true
+                    fields:
+                      - label: "子頁圖片大小 Subpage Image Size"
+                        name: frameSize
+                        widget: select
+                        options:
+                          - { label: "Small 小（160px）", value: "small" }
+                          - { label: "Medium 中（220px 預設）", value: "medium" }
+                          - { label: "Large 大（340px）", value: "large" }
+                          - { label: "X-Large 特大（480px）", value: "xlarge" }
+                        default: "medium"
+                      - label: "使用預設圖框色 Use Default"
+                        name: useDefaultColor
+                        widget: boolean
+                        default: true
+                      - label: "圖框顏色 Frame Color（取消上方勾選後生效）"
+                        name: frameColor
+                        widget: color
+                        default: "#0a0a1c"
+                        required: false
+                      - label: "透明圖框 Transparent（優先於顏色）"
+                        name: transparent
+                        widget: boolean
+                        default: false
+                  - label: "▌Bio 簡介頁"
+                    name: bio
+                    widget: object
+                    collapsed: true
+                    fields:
+                      - label: "照片寬度 Photo Width"
+                        name: photoWidth
+                        widget: select
+                        options:
+                          - { label: "Narrow 窄（1:3）", value: "narrow" }
+                          - { label: "Medium 中（1:2 預設）", value: "medium" }
+                          - { label: "Wide 寬（1:1）", value: "wide" }
+                          - { label: "Full 全寬", value: "full" }
+                        default: "medium"
+                      - label: "使用預設圖框色 Use Default"
+                        name: useDefaultColor
+                        widget: boolean
+                        default: true
+                      - label: "圖框顏色 Frame Color（取消上方勾選後生效）"
+                        name: frameColor
+                        widget: color
+                        default: "#111128"
+                        required: false
+                      - label: "透明圖框 Transparent（優先於顏色）"
+                        name: transparent
+                        widget: boolean
+                        default: false
+                  - label: "▌Contact 聯絡頁"
+                    name: contact
+                    widget: object
+                    collapsed: true
+                    fields:
+                      - label: "圖片寬度 Image Width"
+                        name: imageWidth
+                        widget: select
+                        options:
+                          - { label: "Narrow 窄（1:3）", value: "narrow" }
+                          - { label: "Medium 中（1:1 預設）", value: "medium" }
+                          - { label: "Wide 寬（3:2）", value: "wide" }
+                          - { label: "Full 全寬", value: "full" }
+                        default: "medium"
+                      - label: "使用預設圖框色 Use Default"
+                        name: useDefaultColor
+                        widget: boolean
+                        default: true
+                      - label: "圖框顏色 Frame Color（取消上方勾選後生效）"
+                        name: frameColor
+                        widget: color
+                        default: "#111128"
+                        required: false
+                      - label: "透明圖框 Transparent（優先於顏色）"
+                        name: transparent
+                        widget: boolean
+                        default: false
 
   - name: visual
     label: Visual Style — VHS Effect (視覺效果)
