@@ -481,15 +481,11 @@ collections:
                     name: image
                     widget: image
                     required: false
-                    media_folder: "/images/uploads"
-                    public_folder: "/ggdoveplace/images/uploads"
                     hint: "支援 JPG、PNG、WebP、GIF"
                   - label: "背景影片 Background Video（類型選「影片」時使用）"
                     name: video
                     widget: file
                     required: false
-                    media_folder: "/images/uploads"
-                    public_folder: "/ggdoveplace/images/uploads"
                     hint: "支援 MP4、WebM。影片會自動靜音循環播放"
                   - label: "圖片填充方式 Image Size（圖片類型適用）"
                     name: imageSize
