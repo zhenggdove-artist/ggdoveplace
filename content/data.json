@@ -16,10 +16,10 @@
     "hoverEffect": "scale",
     "textStyles": {
       "pageTitle": {
-        "fontSize": "50",
+        "fontSize": "20",
         "x": "0px",
         "y": "0px",
-        "color": "#f70000",
+        "color": "#6a6a8c",
         "zalgo": {
           "enabled": true,
           "up": true,
@@ -28,7 +28,7 @@
           "intensity": 1,
           "interval": 30
         },
-        "useDefaultColor": true
+        "useDefaultColor": false
       },
       "bioH1": {
         "fontSize": "20",
