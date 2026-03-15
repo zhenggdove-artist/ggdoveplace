@@ -3,15 +3,15 @@
   "scanlinesSpacing": 3,
   "edgeBlurSize": 1,
   "glowIntensity": 1,
-  "chromaticAberration": 1,
+  "chromaticAberration": 8,
   "vignetteColor": "#d32393",
   "scanlinesOpacity": 0.1,
   "artifactsOpacity": 0.2,
-  "grainOpacity": 0.15,
+  "grainOpacity": 0.1,
   "vignetteOpacity": 0.0001,
   "overlayColor": "#470707",
   "rollingBarEnabled": true,
-  "glowColor": "#051533",
+  "glowColor": "#bb004c",
   "overlayOpacity": 0.01,
   "edgeBlurAmount": 20
 }
