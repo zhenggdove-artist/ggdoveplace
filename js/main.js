@@ -19,6 +19,15 @@ async function loadData() {
     fetch(DATA_URL,   { cache: 'no-cache' }).then(r => r.json()),
     fetch(VISUAL_URL, { cache: 'no-cache' }).then(r => r.json()).catch(() => ({}))
   ]);
+  // Normalise image paths: CMS writes /ggdoveplace/images/... but on custom
+  // domain the base path is just /.  Detect at runtime and strip the prefix.
+  const repoPrefix = '/ggdoveplace/';
+  const needsStrip = !location.pathname.startsWith(repoPrefix);
+  if (needsStrip) {
+    const raw = JSON.stringify(data);
+    const fixed = raw.replaceAll(repoPrefix, '/');
+    data = JSON.parse(fixed);
+  }
   siteData   = data;
   visualData = visual;
   applyFonts(siteData.site);
