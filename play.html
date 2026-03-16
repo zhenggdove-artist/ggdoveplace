@@ -110,8 +110,11 @@
     }
     .sin-tower-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 520px) {
+      .sin-tower-grid { grid-template-columns: 1fr; }
     }
     .sin-tower-item img {
       width: 100%;
@@ -131,6 +134,40 @@
     .sin-tower-hidden {
       display: none;
     }
+    /* Lightbox overlay */
+    .sin-tower-lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.92);
+      justify-content: center;
+      align-items: center;
+      cursor: zoom-out;
+    }
+    .sin-tower-lightbox.active {
+      display: flex;
+    }
+    .sin-tower-lightbox img {
+      max-width: 92vw;
+      max-height: 92vh;
+      object-fit: contain;
+      border-radius: 3px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.6);
+    }
+    .sin-tower-lightbox-close {
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+      font-family: sans-serif;
+      line-height: 1;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .sin-tower-lightbox-close:hover { opacity: 1; }
     .sin-tower-more {
       display: block;
       margin: 1.2rem auto 0;
@@ -222,6 +259,11 @@
         <div class="sin-tower-grid" id="sinTowerGrid"></div>
         <button class="sin-tower-more" id="sinTowerMore" onclick="expandSinTower()">▼ MORE</button>
       </div>
+      <!-- Lightbox -->
+      <div class="sin-tower-lightbox" id="sinTowerLightbox" onclick="closeLightbox()">
+        <span class="sin-tower-lightbox-close">&times;</span>
+        <img id="sinTowerLightboxImg" src="" alt="">
+      </div>
       <script>
       (function(){
         const imgs = [
@@ -231,13 +273,17 @@
           'S__88702993.jpg','S__88702994.jpg','S__88702995.jpg','S__88702996.jpg',
           'S__88702997.jpg','S__88702998.jpg'
         ];
-        // Fisher-Yates shuffle
         for(let i=imgs.length-1;i>0;i--){const j=Math.random()*i+1|0;[imgs[i],imgs[j]]=[imgs[j],imgs[i]];}
         const grid = document.getElementById('sinTowerGrid');
         imgs.forEach((f,i) => {
           const div = document.createElement('div');
           div.className = 'sin-tower-item' + (i >= 5 ? ' sin-tower-hidden' : '');
-          div.innerHTML = '<img src="images/sin-tower/'+f+'" alt="Sin Tower" loading="lazy">';
+          const img = document.createElement('img');
+          img.src = 'images/sin-tower/'+f;
+          img.alt = 'Sin Tower';
+          img.loading = 'lazy';
+          img.onclick = function(e){ e.stopPropagation(); openLightbox(this.src); };
+          div.appendChild(img);
           grid.appendChild(div);
         });
         if(imgs.length <= 5) document.getElementById('sinTowerMore').style.display='none';
@@ -246,6 +292,17 @@
         document.querySelectorAll('.sin-tower-hidden').forEach(el=>el.classList.remove('sin-tower-hidden'));
         document.getElementById('sinTowerMore').style.display='none';
       }
+      function openLightbox(src){
+        const lb = document.getElementById('sinTowerLightbox');
+        document.getElementById('sinTowerLightboxImg').src = src;
+        lb.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeLightbox(){
+        document.getElementById('sinTowerLightbox').classList.remove('active');
+        document.body.style.overflow = '';
+      }
+      document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLightbox(); });
       </script>
 
     </section>
