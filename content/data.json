@@ -134,7 +134,7 @@
         },
         "useDefaultColor": true,
         "glitch": {
-          "enabled": true,
+          "enabled": false,
           "intensity": 0.2,
           "speed": 5
         }
