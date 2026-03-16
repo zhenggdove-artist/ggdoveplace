@@ -6,6 +6,15 @@
   <title>GGdove</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
+    /* ── Saint font for English titles ── */
+    @font-face {
+      font-family: 'Saint';
+      src: url('fonts/saint.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
     body.landing-body {
       margin: 0;
       overflow: hidden;
@@ -23,7 +32,7 @@
       perspective: 900px;
     }
 
-    /* ── Tilt container (like songxin.site) ── */
+    /* ── Tilt container ── */
     .tilt-scene {
       position: relative;
       width: 100%;
@@ -36,7 +45,7 @@
       transition: transform 0.15s ease-out;
     }
 
-    /* ── TV video — no filter, smooth playback ── */
+    /* ── TV video ── */
     .landing-tv {
       position: relative;
       z-index: 2;
@@ -62,23 +71,23 @@
       cursor: none;
     }
 
-    /* Organic curves — thin, delicate */
+    /* Curves — 3x thicker */
     .orbit-curve {
       fill: none;
       stroke: rgba(184, 184, 208, 0.16);
-      stroke-width: 1;
+      stroke-width: 3;
       stroke-linecap: round;
     }
 
-    /* Decorative flourish curls */
+    /* Decorative flourish curls — 3x thicker */
     .orbit-curl {
       fill: none;
       stroke: rgba(184, 184, 208, 0.12);
-      stroke-width: 0.8;
+      stroke-width: 2.4;
       stroke-linecap: round;
     }
 
-    /* Traveling shimmer */
+    /* Traveling shimmer — 3x thicker */
     @keyframes shimmerTravel {
       0%   { stroke-dashoffset: 1400; }
       100% { stroke-dashoffset: 0; }
@@ -86,17 +95,17 @@
     .orbit-shimmer {
       fill: none;
       stroke: rgba(210, 150, 150, 0.18);
-      stroke-width: 1.2;
+      stroke-width: 3.6;
       stroke-linecap: round;
       stroke-dasharray: 50 1350;
       animation: shimmerTravel 10s linear infinite;
     }
 
-    /* ── Navigation text — songxin style ── */
+    /* ── Navigation text — Saint font, 50% larger ── */
     .nav-label {
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      font-weight: bold;
+      font-family: 'Saint', 'Courier New', monospace;
+      font-size: 19.5px;
+      font-weight: normal;
       letter-spacing: 4px;
       text-transform: uppercase;
       fill: #b8b8d0;
@@ -107,36 +116,33 @@
       fill: #ffffff;
     }
 
-    /* Decorative sub-label (glitch unicode) */
+    /* Decorative sub-label — 50% larger */
     .nav-sub {
       font-family: 'Courier New', monospace;
-      font-size: 9px;
+      font-size: 13.5px;
       font-style: italic;
       fill: #787890;
       letter-spacing: 1px;
     }
 
-    /* Decorative unicode ornament */
+    /* Decorative unicode ornament — 50% larger */
     .nav-ornament {
       font-family: 'Courier New', monospace;
-      font-size: 10px;
+      font-size: 15px;
       fill: rgba(184, 184, 208, 0.35);
     }
 
-    /* ── ASCII Cursor (songxin style) ── */
-    .ascii-cursor {
+    /* ── Dino Cursor ── */
+    .dino-cursor {
       position: fixed;
       z-index: 9999;
       pointer-events: none;
-      font-family: 'Courier New', monospace;
-      font-size: 10px;
-      line-height: 1.1;
-      color: #b8b8d0;
-      white-space: pre;
+      width: 48px;
+      height: auto;
       opacity: 0;
-      transform: translate(-50%, -50%);
-      text-shadow: 0 0 8px rgba(184, 184, 208, 0.3);
+      transform: translate(-24px, -24px);
       user-select: none;
+      image-rendering: auto;
     }
 
     /* ── Subtle scanlines ── */
@@ -154,7 +160,7 @@
       );
     }
 
-    /* ── Artist name — header with sword ASCII ── */
+    /* ── Artist name header — Saint font, 50% larger ── */
     .landing-header {
       position: fixed;
       top: 0;
@@ -171,15 +177,15 @@
 
     .ascii-deco {
       font-family: 'Courier New', monospace;
-      font-size: 0.65rem;
+      font-size: 0.975rem;
       color: rgba(120, 120, 144, 0.4);
       letter-spacing: 0;
       white-space: nowrap;
     }
 
     .landing-artist {
-      font-family: 'Courier New', monospace;
-      font-size: 0.75rem;
+      font-family: 'Saint', 'Courier New', monospace;
+      font-size: 1.125rem;
       letter-spacing: 0.35em;
       color: rgba(184, 184, 208, 0.7);
       white-space: nowrap;
@@ -188,9 +194,9 @@
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .landing-tv { width: clamp(70px, 19vw, 110px); }
-      .nav-label { font-size: 10px; letter-spacing: 2px; }
-      .nav-sub { font-size: 7px; }
-      .ascii-cursor { display: none; }
+      .nav-label { font-size: 15px; letter-spacing: 2px; }
+      .nav-sub { font-size: 10.5px; }
+      .dino-cursor { display: none; }
       body.landing-body { cursor: auto; }
       .landing-svg a { cursor: auto; }
       .landing-header { padding: 1rem 1rem; }
@@ -198,7 +204,7 @@
     }
     @media (max-width: 480px) {
       .landing-tv { width: clamp(60px, 22vw, 90px); }
-      .nav-label { font-size: 9px; letter-spacing: 1.5px; }
+      .nav-label { font-size: 13.5px; letter-spacing: 1.5px; }
     }
   </style>
 </head>
@@ -212,13 +218,13 @@
     <span class="ascii-deco">&lt;:::::::::::::::::::}]xxxx()o</span>
   </div>
 
-  <!-- ASCII Cursor -->
-  <pre id="ascii-cursor" class="ascii-cursor" aria-hidden="true"></pre>
+  <!-- Dino Cursor -->
+  <img id="dino-cursor" class="dino-cursor" src="images/cursor-dino.png" alt="" aria-hidden="true">
 
   <div class="landing-wrap">
     <div class="tilt-scene" id="tilt-scene">
 
-      <!-- TV video (1.5MB vs 60MB GIF) -->
+      <!-- TV video -->
       <video class="landing-tv" autoplay loop muted playsinline>
         <source src="TV.webm" type="video/webm">
         <img src="TV.gif" alt="TV">
@@ -270,30 +276,30 @@
 
         <!-- CV — top-left -->
         <a href="bio.html">
-          <text class="nav-ornament" x="115" y="186">&#x2727;</text>
-          <text class="nav-label" x="135" y="200">CV</text>
-          <text class="nav-sub" x="115" y="215">&#x0489;&#x030D;&#x0352;&#x0357; &#x1D4AB;&#x1D4C1;&#x1D4B8;&#x1D4BB;&#x1D4BE;&#x1D4C1;&#x1D4AE;</text>
+          <text class="nav-ornament" x="115" y="180">&#x2727;</text>
+          <text class="nav-label" x="135" y="198">CV</text>
+          <text class="nav-sub" x="115" y="218">&#x0489;&#x030D;&#x0352;&#x0357; &#x1D4AB;&#x1D4C1;&#x1D4B8;&#x1D4BB;&#x1D4BE;&#x1D4C1;&#x1D4AE;</text>
         </a>
 
         <!-- RELIC — top-right -->
         <a href="relic.html">
-          <text class="nav-ornament" x="870" y="186" text-anchor="end">&#x2727;</text>
-          <text class="nav-label" x="855" y="200" text-anchor="end">Relic</text>
-          <text class="nav-sub" x="870" y="215" text-anchor="end">&#x0489;&#x030D;&#x0352; &#x1D4B2;&#x1D4C7;&#x1D4C9;&#x1D4BE;&#x1D4BB;&#x1D4B6;&#x1D4B8;&#x1D4C9;&#x1D4C8;</text>
+          <text class="nav-ornament" x="870" y="180" text-anchor="end">&#x2727;</text>
+          <text class="nav-label" x="855" y="198" text-anchor="end">Relic</text>
+          <text class="nav-sub" x="870" y="218" text-anchor="end">&#x0489;&#x030D;&#x0352; &#x1D4B2;&#x1D4C7;&#x1D4C9;&#x1D4BE;&#x1D4BB;&#x1D4B6;&#x1D4B8;&#x1D4C9;&#x1D4C8;</text>
         </a>
 
         <!-- EXHIBITION — bottom-right -->
         <a href="exhibition.html">
-          <text class="nav-ornament" x="870" y="516" text-anchor="end">&#x2727;</text>
+          <text class="nav-ornament" x="870" y="512" text-anchor="end">&#x2727;</text>
           <text class="nav-label" x="855" y="530" text-anchor="end">Exhibition</text>
-          <text class="nav-sub" x="870" y="545" text-anchor="end">&#x0489;&#x030D;&#x0352; &#x1D4AE;&#x1D4BD;&#x1D4C4;&#x1D4CC;&#x1D4B8;&#x1D4B6;&#x1D4C8;&#x1D4AE;</text>
+          <text class="nav-sub" x="870" y="550" text-anchor="end">&#x0489;&#x030D;&#x0352; &#x1D4AE;&#x1D4BD;&#x1D4C4;&#x1D4CC;&#x1D4B8;&#x1D4B6;&#x1D4C8;&#x1D4AE;</text>
         </a>
 
         <!-- PLAY — bottom-left -->
         <a href="#">
-          <text class="nav-ornament" x="115" y="516">&#x2727;</text>
+          <text class="nav-ornament" x="115" y="512">&#x2727;</text>
           <text class="nav-label" x="135" y="530">Play</text>
-          <text class="nav-sub" x="115" y="545">&#x0489;&#x030D;&#x0352; &#x1D4B2;&#x1D4B6;&#x1D4C2;&#x1D4AE;</text>
+          <text class="nav-sub" x="115" y="550">&#x0489;&#x030D;&#x0352; &#x1D4B2;&#x1D4B6;&#x1D4C2;&#x1D4AE;</text>
         </a>
 
       </svg>
@@ -320,7 +326,7 @@
       labels.forEach((t, i) => { if (map[i]) t.textContent = map[i]; });
     });
 
-    // ── 3D Tilt on mousemove (songxin.site style) ──
+    // ── 3D Tilt on mousemove ──
     (function() {
       const scene = document.getElementById('tilt-scene');
       if (!scene) return;
@@ -328,8 +334,8 @@
       document.addEventListener('mousemove', function(e) {
         const cx = window.innerWidth / 2;
         const cy = window.innerHeight / 2;
-        const tiltY = ((e.clientX - cx) / cx) * 6;   // max 6 degrees
-        const tiltX = ((cy - e.clientY) / cy) * 3;    // max 3 degrees
+        const tiltY = ((e.clientX - cx) / cx) * 6;
+        const tiltX = ((cy - e.clientY) / cy) * 3;
         scene.style.setProperty('--tiltY', tiltY + 'deg');
         scene.style.setProperty('--tiltX', tiltX + 'deg');
       });
@@ -340,26 +346,10 @@
       });
     })();
 
-    // ── ASCII Cursor with blinking eyes (songxin.site style) ──
+    // ── Dino cursor following mouse ──
     (function() {
-      const cur = document.getElementById('ascii-cursor');
+      const cur = document.getElementById('dino-cursor');
       if (!cur || window.innerWidth < 768) return;
-
-      const frameOpen = [
-        "(\\_\\_\\_/)",
-        " \\* */",
-        "  \\ /",
-        "   \u00A4"
-      ].join("\n");
-
-      const frameBlink = [
-        "(\\_\\_\\_/)",
-        " \\^ ^/",
-        "  \\ /",
-        "   *"
-      ].join("\n");
-
-      cur.textContent = frameOpen;
 
       document.addEventListener('mousemove', function(e) {
         cur.style.left = e.clientX + 'px';
@@ -367,26 +357,7 @@
         cur.style.opacity = '1';
       });
       document.addEventListener('mouseleave', function() { cur.style.opacity = '0'; });
-
-      function doBlinkOnce() {
-        cur.textContent = frameBlink;
-        setTimeout(() => { cur.textContent = frameOpen; }, 120);
-      }
-
-      function scheduleBlink() {
-        const delay = 800 + Math.random() * 1800;
-        setTimeout(() => {
-          if (Math.random() < 0.5) {
-            doBlinkOnce();
-            setTimeout(doBlinkOnce, 180);
-          } else {
-            doBlinkOnce();
-          }
-          scheduleBlink();
-        }, delay);
-      }
-
-      scheduleBlink();
+      document.addEventListener('mouseenter', function() { cur.style.opacity = '1'; });
     })();
   </script>
 </body>

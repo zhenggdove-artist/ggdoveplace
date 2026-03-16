@@ -5,6 +5,14 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Space+Mono:wght@400;700&display=swap');
 
+@font-face {
+  font-family: 'Saint';
+  src: url('../fonts/saint.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -22,6 +30,7 @@
   --border:       rgba(70, 90, 180, 0.15);
   --mono: 'Space Mono', 'Courier New', monospace;
   --serif: 'Cormorant Garamond', Georgia, serif;
+  --saint: 'Saint', 'Cormorant Garamond', Georgia, serif;
 }
 
 html { font-size: 16px; scroll-behavior: smooth; }
@@ -131,7 +140,7 @@ nav {
 }
 
 .nav-logo {
-  font-family: var(--mono);
+  font-family: var(--saint);
   font-size: 0.82rem;
   letter-spacing: 0.22em;
   text-decoration: none;
@@ -185,7 +194,7 @@ nav {
    ============================================= */
 
 .page-title {
-  font-family: var(--mono);
+  font-family: var(--saint);
   font-size: 0.78rem;
   letter-spacing: 0.38em;
   text-transform: uppercase;
@@ -674,7 +683,7 @@ nav {
 }
 
 .exhibition-details h2 {
-  font-family: var(--serif);
+  font-family: var(--saint);
   font-size: 1.5rem;
   font-weight: 400;
   margin-bottom: 0.5rem;
@@ -721,7 +730,7 @@ nav {
 }
 
 .bio-content h1 {
-  font-family: var(--serif);
+  font-family: var(--saint);
   font-size: 2.4rem;
   font-weight: 300;
   letter-spacing: 0.08em;
@@ -787,7 +796,7 @@ nav {
 }
 
 .contact-info h2 {
-  font-family: var(--serif);
+  font-family: var(--saint);
   font-size: 1.5rem;
   font-weight: 300;
   letter-spacing: 0.06em;
@@ -914,7 +923,7 @@ body.home-page {
 #home-nav.visible { opacity: 1; }
 
 #home-nav .nav-logo {
-  font-family: var(--mono);
+  font-family: var(--saint);
   font-size: 0.82rem;
   letter-spacing: 0.22em;
   text-decoration: none;
@@ -1050,7 +1059,7 @@ footer {
   gap: 1rem;
 }
 .detail-title {
-  font-family: var(--serif);
+  font-family: var(--saint);
   font-size: clamp(1.5rem, 3.5vw, 2.2rem);
   font-weight: 400;
   color: var(--text);
