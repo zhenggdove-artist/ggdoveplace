@@ -989,13 +989,39 @@ function renderBio() {
   const wrap = document.getElementById('bio-wrap');
   if (!wrap || !siteData) return;
   const b = siteData.bio;
+  const cvEntries = [
+    { year: '2024', text: 'Melbourne Apocalypse I \u2013 Open Studio, Pseudo Studio, Melbourne, Australia' },
+    { year: '2024', text: 'PSEUDO New Media Art Residency, Melbourne, Australia' },
+    { year: '2024', text: 'NEXS New Media Art Residency, Taipei, Taiwan' },
+    { year: '2024', text: 'Taiwan New Vision Art Award, Taichung City Seaport Art Center, Taichung, Taiwan' },
+    { year: '2023', text: '\u201CThe Love Ship with 999 Roses\u201D, Yongzhou Beach Art Museum, Keelung, Taiwan' },
+    { year: '2023', text: 'OneOFFs Art Fair, W Hotel Taipei, Taipei, Taiwan' },
+    { year: '2022', text: 'Formosa Art Fair, Eslite Hotel Taipei, Taipei, Taiwan' },
+    { year: '2022', text: 'Whatz Art Fair, Sheraton Taipei Hotel, Taipei, Taiwan' },
+    { year: '2021', text: 'Taoyuan Art Exhibition, Chiayi Culture Bureau Art Gallery, Taoyuan, Taiwan' },
+    { year: '2021', text: 'Collective Exhibition \u201CLuminescent Jade\u201D, Chiang Kai-shek Memorial Hall, Taipei, Taiwan' },
+    { year: '2017', text: 'Taoyuan International Illustration Exhibition, Zhongzheng Exhibition Hall, Taoyuan, Taiwan' },
+    { year: '2017', text: 'Solo Exhibition \u201CMeat\u201D, Remember Me Cafe, Taipei, Taiwan' },
+    { year: '2015', text: 'Photography Exhibition \u201CNew Images\u201D, Taipei, Taiwan' },
+    { year: '2014', text: 'Solo Exhibition \u201CEmergency Entrance\u201D, Taipei, Taiwan' },
+    { year: '2012', text: 'Life Exhibition on Pishan Wood Sculpture, Pishan, Taitung, Taiwan' }
+  ];
+  const cvHtml = cvEntries.map(e =>
+    `<li><span class="cv-year">${e.year}</span> ${e.text}</li>`
+  ).join('');
   wrap.innerHTML = `
-    <img class="bio-photo" src="${b.photo}" alt="${b.name}">
+    <div class="bio-left">
+      <img class="bio-photo" src="${b.photo}" alt="${b.name}">
+      <div class="bio-cv-list">
+        <h3>Selected Exhibitions &amp; Residencies</h3>
+        <ul>${cvHtml}</ul>
+      </div>
+    </div>
     <div class="bio-content">
       <h1>${b.name}</h1>
       <p class="bio-subtitle">${b.subtitle}</p>
       <p class="bio-text">${b.text}</p>
-      ${b.cv_url ? `<a class="bio-cv-link" href="${b.cv_url}" target="_blank">Download CV →</a>` : ''}
+      ${b.cv_url ? `<a class="bio-cv-link" href="${b.cv_url}" target="_blank">Download CV \u2192</a>` : ''}
     </div>`;
 }
 
