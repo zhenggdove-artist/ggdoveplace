@@ -395,6 +395,8 @@
       const ctx = canvas.getContext('2d');
       const W = 600, H = 600;
       const CX = W / 2, CY = H / 2;
+      const mobCreature = window.innerWidth < 768;
+      const cBoost = mobCreature ? 2.0 : 1.0; // mobile: 2x brighter/larger
 
       let clickCount = 0;
       let scaleMul = 1.0;
@@ -609,8 +611,8 @@
           const ring = rings[r];
           for (let j = 0; j < ring.length; j++) {
             const p = ring[j];
-            ctx.globalAlpha = Math.min(1, p.alpha * ringAlpha);
-            ctx.font = Math.max(2, p.size*sc*ringAlpha)+'px "Courier New", monospace';
+            ctx.globalAlpha = Math.min(1, p.alpha * ringAlpha * cBoost);
+            ctx.font = Math.max(2, p.size*sc*ringAlpha*cBoost)+'px "Courier New", monospace';
             ctx.fillText(p.glyph, p.x, p.y);
           }
         }
