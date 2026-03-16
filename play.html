@@ -103,6 +103,53 @@
       color: var(--nav-hover-color, #fff);
     }
 
+    /* Sin Tower photo gallery */
+    .sin-tower-gallery {
+      margin-top: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .sin-tower-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 8px;
+    }
+    .sin-tower-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      aspect-ratio: 4/3;
+      border-radius: 2px;
+      filter: grayscale(0.1);
+      transition: filter 0.3s, transform 0.3s;
+      cursor: pointer;
+      display: block;
+    }
+    .sin-tower-item img:hover {
+      filter: grayscale(0);
+      transform: scale(1.02);
+    }
+    .sin-tower-hidden {
+      display: none;
+    }
+    .sin-tower-more {
+      display: block;
+      margin: 1.2rem auto 0;
+      background: none;
+      border: 1px solid rgba(184,184,208,0.25);
+      color: var(--text-bright, #e8e8f0);
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      padding: 0.5rem 2rem;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .sin-tower-more:hover {
+      border-color: var(--nav-hover-color, #fff);
+      color: var(--nav-hover-color, #fff);
+    }
+
     .section-divider {
       border: none;
       border-top: 1px solid rgba(184,184,208,0.1);
@@ -169,6 +216,37 @@
           <source src="images/games/sintower.webm" type="video/webm">
         </video>
       </div>
+
+      <!-- 斷罪塔攝影圖 gallery -->
+      <div class="sin-tower-gallery" id="sinTowerGallery">
+        <div class="sin-tower-grid" id="sinTowerGrid"></div>
+        <button class="sin-tower-more" id="sinTowerMore" onclick="expandSinTower()">▼ MORE</button>
+      </div>
+      <script>
+      (function(){
+        const imgs = [
+          'S__88702980.jpg','S__88702981.jpg','S__88702982.jpg','S__88702983.jpg',
+          'S__88702984.jpg','S__88702985.jpg','S__88702986.jpg','S__88702987.jpg',
+          'S__88702988.jpg','S__88702989.jpg','S__88702991.jpg','S__88702992.jpg',
+          'S__88702993.jpg','S__88702994.jpg','S__88702995.jpg','S__88702996.jpg',
+          'S__88702997.jpg','S__88702998.jpg'
+        ];
+        // Fisher-Yates shuffle
+        for(let i=imgs.length-1;i>0;i--){const j=Math.random()*i+1|0;[imgs[i],imgs[j]]=[imgs[j],imgs[i]];}
+        const grid = document.getElementById('sinTowerGrid');
+        imgs.forEach((f,i) => {
+          const div = document.createElement('div');
+          div.className = 'sin-tower-item' + (i >= 5 ? ' sin-tower-hidden' : '');
+          div.innerHTML = '<img src="images/sin-tower/'+f+'" alt="Sin Tower" loading="lazy">';
+          grid.appendChild(div);
+        });
+        if(imgs.length <= 5) document.getElementById('sinTowerMore').style.display='none';
+      })();
+      function expandSinTower(){
+        document.querySelectorAll('.sin-tower-hidden').forEach(el=>el.classList.remove('sin-tower-hidden'));
+        document.getElementById('sinTowerMore').style.display='none';
+      }
+      </script>
 
     </section>
 
