@@ -313,11 +313,16 @@
       orbitCtx = oc.getContext('2d');
       const OGLYPHS = ['.', '\u00B7', '\u2022', '\u2219', '\u25E6', '+', '*', 'o'];
 
+      var isMobile = window.innerWidth < 768;
+      var dpr = isMobile ? Math.min(window.devicePixelRatio || 1, 3) : 1;
+      // Mobile boost: double alpha so particles are clearly visible
+      var alphaMul = isMobile ? 2.0 : 1.0;
       function resizeOrbit() {
-        // No DPR scaling — massive perf improvement
-        oc.width = oc.offsetWidth;
-        oc.height = oc.offsetHeight;
-        orbitW = oc.width; orbitH = oc.height;
+        var w = oc.offsetWidth, h = oc.offsetHeight;
+        oc.width = w * dpr;
+        oc.height = h * dpr;
+        orbitW = w; orbitH = h;
+        orbitCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
       resizeOrbit();
       window.addEventListener('resize', resizeOrbit);
@@ -359,14 +364,15 @@
           for (var i = 0; i <= DENSITY; i++) {
             var t = i / DENSITY;
             var pt = cubicBez(s.p0, s.p1, s.p2, s.p3, t);
-            var sz = 7 + Math.floor(Math.random()*5);
+            var sz = isMobile ? (10 + Math.floor(Math.random()*6)) : (7 + Math.floor(Math.random()*5));
+            var baseAlpha = ci<4 ? (0.25+Math.random()*0.25) : (0.15+Math.random()*0.2);
             orbitPts.push({
               nx: pt.x, ny: pt.y,
               glyph: OGLYPHS[Math.floor(Math.random()*OGLYPHS.length)],
               phase: Math.random()*6.28,
               speed: 0.15+Math.random()*0.4,
               amp: 0.5+Math.random()*2,
-              alpha: ci<4 ? (0.25+Math.random()*0.25) : (0.15+Math.random()*0.2),
+              alpha: Math.min(1, baseAlpha * alphaMul),
               font: sz+'px monospace',
               ci: ci
             });
@@ -380,7 +386,7 @@
           shimmerPts.push({
             segs:segs, progress:Math.random(),
             speed:0.02+Math.random()*0.025,
-            glyph:'\u2727', font:'10px monospace', alpha:0.5
+            glyph:'\u2727', font:(isMobile?'14px':'10px')+' monospace', alpha:Math.min(1, 0.5*alphaMul)
           });
         }
       });
