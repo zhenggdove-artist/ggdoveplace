@@ -177,17 +177,21 @@
     }
 
     @media (max-width: 768px) {
-      .nav-label { font-size: 15px; letter-spacing: 2px; }
-      .nav-sub { font-size: 10.5px; }
+      .nav-label { font-size: 30px; letter-spacing: 3px; }
+      .nav-sub { font-size: 16px; }
+      .nav-ornament { font-size: 22px; }
       .dino-cursor { display: none; }
       body.landing-body { cursor: auto; }
-      .landing-svg a { cursor: auto; }
+      .landing-svg { pointer-events: auto; }
+      .landing-svg a { cursor: pointer; pointer-events: auto; }
+      .landing-svg text { pointer-events: auto; cursor: pointer; }
       .creature-canvas { cursor: auto; }
       .landing-header { padding: 1rem; }
       .ascii-deco { display: none; }
     }
     @media (max-width: 480px) {
-      .nav-label { font-size: 13.5px; letter-spacing: 1.5px; }
+      .nav-label { font-size: 26px; letter-spacing: 2px; }
+      .nav-sub { font-size: 14px; }
     }
   </style>
 </head>
@@ -447,12 +451,12 @@
       for (let i = 0; i < bodyCtrlN; i++) {
         const t = i / (bodyCtrlN - 1);
         bodyCtrl.push({
-          x: CX + Math.sin(t*Math.PI*4.2)*35 + Math.sin(t*11.3)*18 + Math.cos(t*7.7)*12,
-          y: CY - 70 + t*140 + Math.cos(t*Math.PI*3.1)*20 + Math.sin(t*8.5)*10
+          x: CX + Math.sin(t*Math.PI*4.2)*18 + Math.sin(t*11.3)*9 + Math.cos(t*7.7)*6,
+          y: CY - 35 + t*70 + Math.cos(t*Math.PI*3.1)*10 + Math.sin(t*8.5)*5
         });
       }
       const bodySpine = buildSpine(bodyCtrl, BODY_RINGS);
-      const bodyRings = generateRings(bodySpine, 8, 0.7, BODY_PTS_RING, 3.5, 0.6);
+      const bodyRings = generateRings(bodySpine, 4, 0.7, BODY_PTS_RING, 2, 0.6);
       const bodySpineBase = bodySpine.map(p => ({x:p.x, y:p.y}));
 
       // Worm animation — multiple layered frequencies for irregular motion
@@ -460,7 +464,7 @@
       for (let i = 0; i < 4; i++) {
         wormPhases.push({
           freq: 1.5 + Math.random()*2.5,
-          amp: 4 + Math.random()*8,
+          amp: 2 + Math.random()*4,
           phase: Math.random()*Math.PI*2,
           spatialFreq: 3 + Math.random()*4
         });
@@ -475,7 +479,7 @@
 
       function spawnTentacle(ox, oy) {
         const baseAngle = Math.random()*Math.PI*2;
-        const totalLen = (60 + Math.random()*80) * scaleMul;
+        const totalLen = (30 + Math.random()*40) * scaleMul;
         const spiralDir = Math.random()<0.5 ? 1 : -1;
         const spiralStr = 0.5+Math.random()*1.2;
         const wiggle = 2+Math.random()*4;
@@ -493,8 +497,8 @@
         }
 
         const spine = buildSpine(ctrls, TENT_RINGS);
-        const baseR = (3 + Math.random()*4) * scaleMul;
-        const rings = generateRings(spine, baseR, 0.85, TENT_PTS_RING, 3, 0.5);
+        const baseR = (1.5 + Math.random()*2) * scaleMul;
+        const rings = generateRings(spine, baseR, 0.85, TENT_PTS_RING, 1.5, 0.5);
 
         const palettes = [[0,255,220],[255,0,180],[0,220,80],[200,200,230]];
         const pal = palettes[Math.floor(Math.random()*palettes.length)];
@@ -506,7 +510,7 @@
           totalRings: TENT_RINGS, color: pal, baseR: baseR,
           wrigglePhase: Math.random()*Math.PI*2,
           wriggleFreq: 1.5+Math.random()*2.5,
-          wriggleAmp: 4+Math.random()*8
+          wriggleAmp: 2+Math.random()*4
         });
       }
 
@@ -633,7 +637,7 @@
           bodySpine[i].x = bodySpineBase[i].x + wx*scaleMul;
           bodySpine[i].y = bodySpineBase[i].y + wy*scaleMul;
         }
-        rebuildRings(bodyRings, bodySpine, 8*scaleMul, 0.7);
+        rebuildRings(bodyRings, bodySpine, 4*scaleMul, 0.7);
 
         // Update body ring points
         bodyRings.forEach(ring => ring.forEach(p => {
@@ -698,7 +702,7 @@
               p.x += (dx/dist)*2; p.y += (dy/dist)*2;
             }));
           } else {
-            window.location.href = 'GAME/index.html';
+            window.location.href = 'play.html';
             return;
           }
         }
