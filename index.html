@@ -311,7 +311,7 @@
     })();
 
     // ══════════════════════════════════════════════
-    //  CREATURE — writhing coil + tentacles on click
+    //  CREATURE — Point-cloud ASCII spiral + tentacles
     // ══════════════════════════════════════════════
     (function() {
       const canvas = document.getElementById('creature-canvas');
@@ -321,199 +321,210 @@
       const CX = W / 2, CY = H / 2;
 
       let clickCount = 0;
-      let bodyThickness = 2;
-      let tentacles = [];
-      let flashAlpha = 0;
       let redirecting = false;
-
       const counterEl = document.getElementById('click-counter');
 
-      // ── Main body: a coiling curve defined by control points that writhe ──
-      const SEGS = 8;
-      const spine = [];
-      for (let i = 0; i <= SEGS; i++) {
-        const angle = (i / SEGS) * Math.PI * 3.5;
-        const radius = 15 + i * 6;
-        spine.push({
-          baseX: CX + Math.cos(angle) * radius * 0.4,
-          baseY: CY + Math.sin(angle) * radius * 0.4,
-          x: 0, y: 0,
-          phase: Math.random() * Math.PI * 2,
-          speed: 0.3 + Math.random() * 0.4,
-          amp: 3 + Math.random() * 5
-        });
-      }
+      // ASCII glyphs for point rendering (denser = more opaque/closer)
+      const GLYPHS = ['.', '\u00B7', '*', 'o', '\u00B0', '+', '\u2022', '\u2219', '\u2727', '@'];
 
-      // ── Tentacle class ──
-      function spawnTentacles(originX, originY, count) {
-        for (let i = 0; i < count; i++) {
-          const angle = Math.random() * Math.PI * 2;
-          const len = 20 + Math.random() * 40;
-          const segs = 5 + Math.floor(Math.random() * 4);
-          const pts = [];
-          for (let j = 0; j <= segs; j++) {
-            const t = j / segs;
-            pts.push({
-              x: originX + Math.cos(angle + Math.sin(t * 3) * 0.8) * len * t,
-              y: originY + Math.sin(angle + Math.cos(t * 3) * 0.8) * len * t,
-              phase: Math.random() * Math.PI * 2,
-              speed: 0.5 + Math.random() * 1,
-              amp: 2 + Math.random() * 6
-            });
-          }
-          tentacles.push({
-            pts: pts,
-            thickness: 1 + Math.random() * 2,
-            color: `rgba(${160 + Math.random()*60}, ${80 + Math.random()*60}, ${80 + Math.random()*60}, 0.5)`,
-            birth: Date.now(),
-            growT: 0
+      // ── Generate body points: multiple intertwined spirals ──
+      const bodyPoints = [];
+      const SPIRAL_COUNT = 5;
+      const PTS_PER_SPIRAL = 120;
+
+      for (let s = 0; s < SPIRAL_COUNT; s++) {
+        const spiralPhase = (s / SPIRAL_COUNT) * Math.PI * 2;
+        const dir = s % 2 === 0 ? 1 : -1;
+        const radiusMul = 0.3 + Math.random() * 0.3;
+        for (let i = 0; i < PTS_PER_SPIRAL; i++) {
+          const t = i / PTS_PER_SPIRAL;
+          const angle = t * Math.PI * (5 + s * 1.5) * dir + spiralPhase;
+          const r = (5 + t * 55) * radiusMul;
+          const wobbleX = Math.sin(t * 12 + s) * (3 + s * 2);
+          const wobbleY = Math.cos(t * 10 + s * 3) * (3 + s * 2);
+          bodyPoints.push({
+            baseX: CX + Math.cos(angle) * r + wobbleX,
+            baseY: CY + Math.sin(angle) * r + wobbleY,
+            x: 0, y: 0,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.2 + Math.random() * 0.6,
+            amp: 1.5 + Math.random() * 4,
+            glyph: GLYPHS[Math.floor(Math.random() * 6)],
+            size: 5 + Math.random() * 5,
+            alpha: 0.3 + Math.random() * 0.5
           });
         }
       }
 
-      // ── Click detection ──
+      // Add a dense core cluster
+      for (let i = 0; i < 80; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const r = Math.random() * 25;
+        bodyPoints.push({
+          baseX: CX + Math.cos(a) * r,
+          baseY: CY + Math.sin(a) * r,
+          x: 0, y: 0,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.3 + Math.random() * 0.8,
+          amp: 1 + Math.random() * 3,
+          glyph: GLYPHS[4 + Math.floor(Math.random() * 6)],
+          size: 6 + Math.random() * 6,
+          alpha: 0.4 + Math.random() * 0.5
+        });
+      }
+
+      // ── Tentacle system ──
+      const tentacles = [];
+
+      function spawnTentacle(ox, oy) {
+        const angle = Math.random() * Math.PI * 2;
+        const length = 30 + Math.random() * 60;
+        const ptCount = 15 + Math.floor(Math.random() * 20);
+        const curveFreq = 2 + Math.random() * 4;
+        const curveAmp = 8 + Math.random() * 15;
+        const pts = [];
+
+        for (let i = 0; i < ptCount; i++) {
+          const t = i / ptCount;
+          const dist = t * length;
+          const sway = Math.sin(t * curveFreq) * curveAmp * t;
+          const perpAngle = angle + Math.PI / 2;
+          pts.push({
+            baseX: ox + Math.cos(angle) * dist + Math.cos(perpAngle) * sway,
+            baseY: oy + Math.sin(angle) * dist + Math.sin(perpAngle) * sway,
+            x: 0, y: 0,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.6 + Math.random() * 1.2,
+            amp: 2 + Math.random() * 5 * t,
+            glyph: GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
+            size: 7 - t * 3 + Math.random() * 3,
+            alpha: 0.5 - t * 0.2
+          });
+        }
+
+        tentacles.push({ pts, birth: Date.now(), growDuration: 500 + Math.random() * 400 });
+      }
+
+      // ── Click detection (hit test against all body points) ──
       canvas.addEventListener('click', function(e) {
         if (redirecting) return;
         const rect = canvas.getBoundingClientRect();
         const mx = (e.clientX - rect.left) * (W / rect.width);
         const my = (e.clientY - rect.top) * (H / rect.height);
 
-        // Check if click is near the body curve
         let hit = false;
-        for (let i = 0; i < spine.length; i++) {
-          const dx = spine[i].x - mx;
-          const dy = spine[i].y - my;
-          if (dx * dx + dy * dy < (bodyThickness + 20) * (bodyThickness + 20)) {
-            hit = true;
-            break;
-          }
+        for (let i = 0; i < bodyPoints.length; i++) {
+          const dx = bodyPoints[i].x - mx;
+          const dy = bodyPoints[i].y - my;
+          if (dx * dx + dy * dy < 400) { hit = true; break; }
         }
         if (!hit) return;
 
         clickCount++;
-        bodyThickness += 1.5;
-        flashAlpha = 1;
 
-        // Spawn tentacles from random point along the spine
-        const si = Math.floor(Math.random() * spine.length);
-        spawnTentacles(spine[si].x, spine[si].y, 2 + Math.floor(clickCount * 0.5));
+        // Spawn tentacles from random body positions
+        const count = 3 + Math.floor(clickCount * 0.8);
+        for (let i = 0; i < count; i++) {
+          const bp = bodyPoints[Math.floor(Math.random() * bodyPoints.length)];
+          spawnTentacle(bp.x, bp.y);
+        }
 
-        // Update counter
+        // Agitate: increase body point amplitudes
+        bodyPoints.forEach(p => {
+          p.amp += 0.4;
+          p.speed += 0.05;
+        });
+
         if (counterEl) {
           counterEl.textContent = clickCount + ' / 10';
           counterEl.classList.add('visible');
         }
 
-        // Redirect on 10th click
         if (clickCount >= 10) {
           redirecting = true;
-          flashAlpha = 2;
           setTimeout(function() {
             window.location.href = 'GAME/index.html';
-          }, 800);
+          }, 1200);
         }
       });
 
-      // ── Animation loop ──
+      // ── Draw a single ASCII point ──
+      function drawPoint(p, t, extraAlpha) {
+        const alpha = (p.alpha + (extraAlpha || 0));
+        if (alpha <= 0) return;
+        ctx.globalAlpha = Math.min(1, alpha);
+        ctx.fillText(p.glyph, p.x, p.y);
+      }
+
+      // ── Animation ──
       function animate() {
         const t = Date.now() * 0.001;
         ctx.clearRect(0, 0, W, H);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
 
-        // Update spine positions
-        for (let i = 0; i < spine.length; i++) {
-          const s = spine[i];
-          s.x = s.baseX + Math.sin(t * s.speed + s.phase) * s.amp;
-          s.y = s.baseY + Math.cos(t * s.speed * 0.7 + s.phase) * s.amp;
+        // Color shifts with agitation
+        const r = 184 + clickCount * 8;
+        const g = 184 - clickCount * 8;
+        const b = 208 - clickCount * 5;
+        const baseColor = `rgb(${Math.min(255,r)},${Math.max(80,g)},${Math.max(100,b)})`;
+
+        // ── Update & draw body points ──
+        ctx.font = '8px "Courier New", monospace';
+        ctx.fillStyle = baseColor;
+        for (let i = 0; i < bodyPoints.length; i++) {
+          const p = bodyPoints[i];
+          p.x = p.baseX + Math.sin(t * p.speed + p.phase) * p.amp;
+          p.y = p.baseY + Math.cos(t * p.speed * 0.7 + p.phase + i * 0.01) * p.amp;
+          ctx.font = p.size + 'px "Courier New", monospace';
+          drawPoint(p, t, 0);
         }
 
-        // ── Draw flash ──
-        if (flashAlpha > 0) {
-          ctx.save();
-          ctx.globalAlpha = Math.min(flashAlpha, 1);
-          ctx.fillStyle = redirecting ? '#ff2020' : '#ffffff';
-          ctx.beginPath();
-          ctx.arc(CX, CY, 60 + bodyThickness * 3, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
-          flashAlpha -= redirecting ? 0.008 : 0.03;
-        }
-
-        // ── Draw tentacles ──
+        // ── Update & draw tentacle points ──
+        const now = Date.now();
         for (let ti = 0; ti < tentacles.length; ti++) {
           const ten = tentacles[ti];
-          ten.growT = Math.min(1, (Date.now() - ten.birth) / 600);
-          const pts = ten.pts;
-          const visCount = Math.floor(pts.length * ten.growT);
-          if (visCount < 2) continue;
+          const growT = Math.min(1, (now - ten.birth) / ten.growDuration);
+          const visCount = Math.floor(ten.pts.length * growT);
 
-          ctx.beginPath();
-          ctx.strokeStyle = ten.color;
-          ctx.lineWidth = ten.thickness * (bodyThickness / 5);
-          ctx.lineCap = 'round';
+          const tenR = Math.min(255, 200 + clickCount * 6);
+          const tenG = Math.max(60, 120 - clickCount * 5);
+          const tenB = Math.max(60, 100 - clickCount * 3);
+          ctx.fillStyle = `rgb(${tenR},${tenG},${tenB})`;
 
-          const p0 = pts[0];
-          const px0 = p0.x + Math.sin(t * p0.speed + p0.phase) * p0.amp;
-          const py0 = p0.y + Math.cos(t * p0.speed + p0.phase) * p0.amp;
-          ctx.moveTo(px0, py0);
-
-          for (let j = 1; j < visCount; j++) {
-            const p = pts[j];
-            const px = p.x + Math.sin(t * p.speed + p.phase) * p.amp;
-            const py = p.y + Math.cos(t * p.speed + p.phase) * p.amp;
-            ctx.lineTo(px, py);
-          }
-          ctx.stroke();
-
-          // Tentacle tip bulb
-          if (visCount >= pts.length) {
-            const last = pts[pts.length - 1];
-            const lx = last.x + Math.sin(t * last.speed + last.phase) * last.amp;
-            const ly = last.y + Math.cos(t * last.speed + last.phase) * last.amp;
-            ctx.beginPath();
-            ctx.fillStyle = ten.color;
-            ctx.arc(lx, ly, ten.thickness * 0.8, 0, Math.PI * 2);
-            ctx.fill();
+          for (let j = 0; j < visCount; j++) {
+            const p = ten.pts[j];
+            p.x = p.baseX + Math.sin(t * p.speed + p.phase) * p.amp;
+            p.y = p.baseY + Math.cos(t * p.speed + p.phase) * p.amp;
+            ctx.font = p.size + 'px "Courier New", monospace';
+            drawPoint(p, t, 0);
           }
         }
 
-        // ── Draw main body curve ──
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(184, 184, 208, ${0.4 + clickCount * 0.06})`;
-        ctx.lineWidth = bodyThickness;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-
-        ctx.moveTo(spine[0].x, spine[0].y);
-        for (let i = 1; i < spine.length - 1; i++) {
-          const xc = (spine[i].x + spine[i + 1].x) / 2;
-          const yc = (spine[i].y + spine[i + 1].y) / 2;
-          ctx.quadraticCurveTo(spine[i].x, spine[i].y, xc, yc);
-        }
-        const last = spine[spine.length - 1];
-        ctx.lineTo(last.x, last.y);
-        ctx.stroke();
-
-        // Body nodes (little circles along spine)
-        for (let i = 0; i < spine.length; i++) {
-          const nodeR = bodyThickness * 0.4 + Math.sin(t * 2 + i) * 0.5;
-          ctx.beginPath();
-          ctx.fillStyle = `rgba(210, 150, 150, ${0.3 + clickCount * 0.05})`;
-          ctx.arc(spine[i].x, spine[i].y, nodeR, 0, Math.PI * 2);
-          ctx.fill();
+        // ── Redirect agitation: points scatter outward ──
+        if (redirecting) {
+          bodyPoints.forEach(p => {
+            p.amp += 0.3;
+            p.speed += 0.02;
+            const dx = p.baseX - CX;
+            const dy = p.baseY - CY;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            p.baseX += (dx / dist) * 0.8;
+            p.baseY += (dy / dist) * 0.8;
+          });
+          tentacles.forEach(ten => {
+            ten.pts.forEach(p => {
+              p.amp += 0.5;
+              const dx = p.baseX - CX;
+              const dy = p.baseY - CY;
+              const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+              p.baseX += (dx / dist) * 1.2;
+              p.baseY += (dy / dist) * 1.2;
+            });
+          });
         }
 
-        // ── Pulsating glow when agitated ──
-        if (clickCount > 0) {
-          ctx.save();
-          ctx.globalAlpha = 0.03 + clickCount * 0.015 + Math.sin(t * 3) * 0.02;
-          const grad = ctx.createRadialGradient(CX, CY, 0, CX, CY, 80 + clickCount * 10);
-          grad.addColorStop(0, `rgba(210, 80, 80, 0.4)`);
-          grad.addColorStop(1, 'transparent');
-          ctx.fillStyle = grad;
-          ctx.fillRect(0, 0, W, H);
-          ctx.restore();
-        }
-
+        ctx.globalAlpha = 1;
         requestAnimationFrame(animate);
       }
 
