@@ -53,8 +53,8 @@
       cursor: none;
     }
 
-    /* ── SVG orbital curves + nav ── */
-    .landing-svg {
+    /* ── Orbit ASCII canvas (replaces SVG curves) ── */
+    .orbit-canvas {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -63,36 +63,20 @@
       pointer-events: none;
       transform: translateZ(0px);
     }
+
+    /* ── SVG nav labels only ── */
+    .landing-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 4;
+      pointer-events: none;
+      transform: translateZ(0px);
+    }
     .landing-svg a {
       pointer-events: all;
       cursor: none;
-    }
-
-    .orbit-curve {
-      fill: none;
-      stroke: rgba(184, 184, 208, 0.16);
-      stroke-width: 3;
-      stroke-linecap: round;
-    }
-
-    .orbit-curl {
-      fill: none;
-      stroke: rgba(184, 184, 208, 0.12);
-      stroke-width: 2.4;
-      stroke-linecap: round;
-    }
-
-    @keyframes shimmerTravel {
-      0%   { stroke-dashoffset: 1400; }
-      100% { stroke-dashoffset: 0; }
-    }
-    .orbit-shimmer {
-      fill: none;
-      stroke: rgba(210, 150, 150, 0.18);
-      stroke-width: 3.6;
-      stroke-linecap: round;
-      stroke-dasharray: 50 1350;
-      animation: shimmerTravel 10s linear infinite;
     }
 
     .nav-label {
@@ -223,40 +207,11 @@
       <!-- Creature canvas (replaces TV) -->
       <canvas class="creature-canvas" id="creature-canvas" width="600" height="600"></canvas>
 
-      <!-- SVG orbital curves + navigation — maximally chaotic -->
+      <!-- Orbit curves rendered as ASCII on canvas -->
+      <canvas class="orbit-canvas" id="orbit-canvas"></canvas>
+
+      <!-- SVG navigation labels only -->
       <svg class="landing-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
-        <!-- Top: violent tangling with knots -->
-        <path id="c1" class="orbit-curve" d="M 170,235 C 195,180 240,110 310,155 C 380,200 330,90 410,60 C 490,30 445,170 520,95 C 595,20 560,180 625,100 C 690,20 680,190 745,140 C 810,90 850,200 830,235"/>
-        <path class="orbit-shimmer" d="M 170,235 C 195,180 240,110 310,155 C 380,200 330,90 410,60 C 490,30 445,170 520,95 C 595,20 560,180 625,100 C 690,20 680,190 745,140 C 810,90 850,200 830,235"/>
-        <path class="orbit-curl" d="M 170,235 C 140,270 105,260 110,225 C 115,190 145,175 165,200 C 185,225 170,265 140,270 C 110,275 100,240 130,215 C 160,190 180,220 170,235"/>
-        <path class="orbit-curl" d="M 830,235 C 860,200 895,210 890,250 C 885,290 855,295 835,270 C 815,245 830,205 860,200 C 890,195 900,230 870,255 C 840,280 820,250 830,235"/>
-
-        <!-- Right: double-back spaghetti -->
-        <path id="c2" class="orbit-curve" d="M 830,235 C 910,250 970,290 940,340 C 910,390 975,360 980,400 C 985,440 935,420 960,460 C 985,500 920,490 890,470 C 860,450 870,500 830,485"/>
-        <path class="orbit-shimmer" d="M 830,235 C 910,250 970,290 940,340 C 910,390 975,360 980,400 C 985,440 935,420 960,460 C 985,500 920,490 890,470 C 860,450 870,500 830,485" style="animation-delay:-2.5s"/>
-        <path class="orbit-curl" d="M 920,310 C 955,330 960,370 930,375 C 900,380 905,340 930,325"/>
-        <path class="orbit-curl" d="M 950,430 C 970,445 965,475 940,470 C 915,465 925,440 950,430"/>
-
-        <!-- Bottom: aggressive zigzag tangles -->
-        <path id="c3" class="orbit-curve" d="M 830,485 C 800,545 760,610 690,575 C 620,540 670,640 590,650 C 510,660 540,550 470,610 C 400,670 380,540 310,590 C 240,640 230,540 200,510 C 170,480 175,490 170,485"/>
-        <path class="orbit-shimmer" d="M 830,485 C 800,545 760,610 690,575 C 620,540 670,640 590,650 C 510,660 540,550 470,610 C 400,670 380,540 310,590 C 240,640 230,540 200,510 C 170,480 175,490 170,485" style="animation-delay:-5s"/>
-        <path class="orbit-curl" d="M 830,485 C 865,520 860,555 830,548 C 800,541 790,510 815,498 C 840,486 870,505 855,530 C 840,555 805,545 810,515"/>
-        <path class="orbit-curl" d="M 170,485 C 135,520 105,510 112,478 C 119,446 148,440 163,462 C 178,484 165,520 138,525 C 111,530 100,500 128,472 C 156,444 175,475 170,485"/>
-
-        <!-- Left: looping back on itself -->
-        <path id="c4" class="orbit-curve" d="M 170,485 C 110,470 40,445 65,390 C 90,335 25,365 15,320 C 5,275 55,295 30,255 C 5,215 60,240 95,260 C 130,280 105,225 140,240 C 175,255 165,240 170,235"/>
-        <path class="orbit-shimmer" d="M 170,485 C 110,470 40,445 65,390 C 90,335 25,365 15,320 C 5,275 55,295 30,255 C 5,215 60,240 95,260 C 130,280 105,225 140,240 C 175,255 165,240 170,235" style="animation-delay:-7.5s"/>
-        <path class="orbit-curl" d="M 60,380 C 30,395 15,375 35,355 C 55,335 75,350 60,380"/>
-        <path class="orbit-curl" d="M 50,290 C 25,305 10,285 30,265 C 50,245 70,260 50,290"/>
-
-        <!-- Stray tangential wires crossing everything -->
-        <path class="orbit-curl" d="M 280,160 C 350,270 250,320 360,290 C 470,260 370,380 280,340 C 190,300 320,220 280,160"/>
-        <path class="orbit-curl" d="M 720,160 C 650,270 750,320 640,290 C 530,260 630,380 720,340 C 810,300 680,220 720,160"/>
-        <path class="orbit-curl" d="M 720,540 C 640,440 750,390 640,410 C 530,430 640,340 720,380"/>
-        <path class="orbit-curl" d="M 280,540 C 360,440 250,390 360,410 C 470,430 360,340 280,380"/>
-        <path class="orbit-curl" d="M 400,120 C 500,180 450,250 500,200 C 550,150 600,240 500,260"/>
-        <path class="orbit-curl" d="M 600,580 C 500,520 550,450 500,500 C 450,550 400,460 500,440"/>
-
         <!-- Navigation Labels -->
         <a href="bio.html">
           <text class="nav-ornament" x="115" y="180">&#x2727;</text>
@@ -327,9 +282,139 @@
     })();
 
     // ══════════════════════════════════════════════
-    //  CREATURE — Worm body (donut rings) + donut-ring tentacles
-    //  Every ring = a visible circle of dots (like a donut/torus)
-    //  Stacked rings along a spine = tentacle or worm segment
+    //  ORBIT CURVES — rendered as ASCII dot particles
+    // ══════════════════════════════════════════════
+    (function() {
+      const oc = document.getElementById('orbit-canvas');
+      if (!oc) return;
+      const octx = oc.getContext('2d');
+      const OGLYPHS = ['.', '\u00B7', '\u2022', '\u2219', '\u25E6', '+', '*', 'o', '\u00B0'];
+
+      function resizeOrbit() {
+        oc.width = oc.offsetWidth * (window.devicePixelRatio || 1);
+        oc.height = oc.offsetHeight * (window.devicePixelRatio || 1);
+      }
+      resizeOrbit();
+      window.addEventListener('resize', resizeOrbit);
+
+      // Cubic bezier sampling: B(t) = (1-t)^3*P0 + 3(1-t)^2*t*P1 + 3(1-t)*t^2*P2 + t^3*P3
+      function cubicBez(p0, p1, p2, p3, t) {
+        const u = 1 - t;
+        return {
+          x: u*u*u*p0.x + 3*u*u*t*p1.x + 3*u*t*t*p2.x + t*t*t*p3.x,
+          y: u*u*u*p0.y + 3*u*u*t*p1.y + 3*u*t*t*p2.y + t*t*t*p3.y
+        };
+      }
+
+      // Define chaotic curves as chains of cubic beziers (in 0-1 normalized coords)
+      // Each curve = array of {p0,p1,p2,p3} segments
+      function seg(x0,y0,x1,y1,x2,y2,x3,y3) {
+        return { p0:{x:x0,y:y0}, p1:{x:x1,y:y1}, p2:{x:x2,y:y2}, p3:{x:x3,y:y3} };
+      }
+      const curves = [
+        // Top — tangled knots
+        [seg(.17,.335, .20,.19, .28,.08, .35,.18), seg(.35,.18, .42,.28, .33,.07, .46,.05),
+         seg(.46,.05, .59,.03, .50,.22, .58,.11), seg(.58,.11, .66,.00, .68,.25, .74,.15),
+         seg(.74,.15, .80,.05, .85,.25, .83,.335)],
+        // Right — spaghetti loops
+        [seg(.83,.335, .92,.29, .97,.36, .94,.44), seg(.94,.44, .91,.52, .98,.48, .97,.54),
+         seg(.97,.54, .96,.60, .93,.56, .95,.62), seg(.95,.62, .97,.68, .91,.67, .87,.65),
+         seg(.87,.65, .83,.63, .85,.70, .83,.693)],
+        // Bottom — aggressive zigzag
+        [seg(.83,.693, .79,.79, .74,.88, .67,.82), seg(.67,.82, .60,.76, .66,.91, .57,.92),
+         seg(.57,.92, .48,.93, .52,.77, .44,.84), seg(.44,.84, .36,.91, .34,.76, .28,.81),
+         seg(.28,.81, .22,.86, .21,.74, .19,.70), seg(.19,.70, .17,.66, .17,.69, .17,.693)],
+        // Left — looping back
+        [seg(.17,.693, .10,.66, .03,.62, .06,.54), seg(.06,.54, .09,.46, .02,.50, .01,.44),
+         seg(.01,.44, .00,.38, .05,.40, .03,.35), seg(.03,.35, .01,.30, .06,.33, .09,.36),
+         seg(.09,.36, .12,.39, .10,.30, .14,.32), seg(.14,.32, .18,.34, .16,.33, .17,.335)],
+        // Stray tangential wires
+        [seg(.25,.20, .38,.35, .22,.42, .40,.38), seg(.40,.38, .58,.34, .35,.52, .25,.45)],
+        [seg(.75,.20, .62,.35, .78,.42, .60,.38), seg(.60,.38, .42,.34, .65,.52, .75,.45)],
+        [seg(.38,.14, .52,.24, .44,.34, .52,.28), seg(.52,.28, .60,.22, .62,.32, .52,.36)],
+        [seg(.62,.82, .48,.72, .56,.62, .48,.68), seg(.48,.68, .40,.74, .38,.64, .48,.60)]
+      ];
+
+      // Sample all curves into point arrays
+      const orbitPts = [];
+      const DENSITY = 8; // pts per segment
+      curves.forEach(function(segs, ci) {
+        segs.forEach(function(s) {
+          for (let i = 0; i <= DENSITY; i++) {
+            const t = i / DENSITY;
+            const pt = cubicBez(s.p0, s.p1, s.p2, s.p3, t);
+            orbitPts.push({
+              nx: pt.x, ny: pt.y, // normalized 0-1
+              glyph: OGLYPHS[Math.floor(Math.random() * OGLYPHS.length)],
+              phase: Math.random() * Math.PI * 2,
+              speed: 0.2 + Math.random() * 0.5,
+              amp: 1 + Math.random() * 3,
+              alpha: 0.08 + Math.random() * 0.14,
+              size: 6 + Math.random() * 6,
+              curveIdx: ci
+            });
+          }
+        });
+      });
+
+      // Shimmer particles (brighter, moving along curves)
+      const shimmerPts = [];
+      curves.slice(0, 4).forEach(function(segs, ci) {
+        for (let i = 0; i < 6; i++) {
+          shimmerPts.push({
+            curveIdx: ci,
+            segs: segs,
+            progress: Math.random(),
+            speed: 0.03 + Math.random() * 0.02,
+            glyph: '\u2727',
+            size: 8,
+            alpha: 0.25
+          });
+        }
+      });
+
+      function animateOrbit() {
+        const t = Date.now() * 0.001;
+        const w = oc.width, h = oc.height;
+        octx.clearRect(0, 0, w, h);
+        octx.textAlign = 'center';
+        octx.textBaseline = 'middle';
+
+        // Draw static orbit dots
+        for (let i = 0; i < orbitPts.length; i++) {
+          const p = orbitPts[i];
+          const px = p.nx * w + Math.sin(t * p.speed + p.phase) * p.amp;
+          const py = p.ny * h + Math.cos(t * p.speed * 0.7 + p.phase) * p.amp;
+          octx.globalAlpha = p.alpha;
+          octx.fillStyle = p.curveIdx < 4 ? 'rgba(184,184,208,1)' : 'rgba(184,184,208,0.6)';
+          octx.font = p.size + 'px "Courier New", monospace';
+          octx.fillText(p.glyph, px, py);
+        }
+
+        // Shimmer particles traveling along curves
+        for (let i = 0; i < shimmerPts.length; i++) {
+          const sp = shimmerPts[i];
+          sp.progress = (sp.progress + sp.speed * 0.016) % 1;
+          const totalSegs = sp.segs.length;
+          const globalT = sp.progress * totalSegs;
+          const si = Math.min(Math.floor(globalT), totalSegs - 1);
+          const localT = globalT - si;
+          const pt = cubicBez(sp.segs[si].p0, sp.segs[si].p1, sp.segs[si].p2, sp.segs[si].p3, localT);
+          octx.globalAlpha = sp.alpha;
+          octx.fillStyle = 'rgba(210,150,150,1)';
+          octx.font = sp.size + 'px "Courier New", monospace';
+          octx.fillText(sp.glyph, pt.x * w, pt.y * h);
+        }
+
+        octx.globalAlpha = 1;
+        requestAnimationFrame(animateOrbit);
+      }
+      animateOrbit();
+    })();
+
+    // ══════════════════════════════════════════════
+    //  CREATURE — Thin worm body + thin donut-ring tentacles
+    //  Halved sizes, more chaotic motion, tentacles from click point
     // ══════════════════════════════════════════════
     (function() {
       const canvas = document.getElementById('creature-canvas');
@@ -346,13 +431,11 @@
 
       const GLYPHS = ['.', '\u00B7', '\u2022', '\u2219', '\u25E6', '\u2218', 'o', '\u00B0', '*', '+'];
 
-      // ══════════════════════════════════════
-      //  Helper: build a spine (curved path) from control points
-      // ══════════════════════════════════════
-      function buildSpine(ctrlPts, numSegments) {
+      // ── Helper: build spine from control points ──
+      function buildSpine(ctrlPts, numSeg) {
         const spine = [];
-        for (let i = 0; i < numSegments; i++) {
-          const u = i / (numSegments - 1);
+        for (let i = 0; i < numSeg; i++) {
+          const u = i / (numSeg - 1);
           const ci = u * (ctrlPts.length - 1);
           const i0 = Math.floor(ci);
           const i1 = Math.min(i0 + 1, ctrlPts.length - 1);
@@ -365,51 +448,31 @@
         return spine;
       }
 
-      // ══════════════════════════════════════
-      //  Helper: generate donut rings along a spine
-      //  Each ring = circle of dots perpendicular to spine direction
-      //  tiltAngle simulates 3D viewing angle of each donut
-      // ══════════════════════════════════════
-      function generateRings(spine, baseRadius, taperEnd, ptsPerRing, dotSize, dotAlpha) {
+      // ── Helper: generate donut rings along spine ──
+      function generateRings(spine, baseR, taperEnd, ptsPerRing, dotSize, dotAlpha) {
         const rings = [];
         for (let r = 0; r < spine.length; r++) {
           const u = r / (spine.length - 1);
-          const ringR = baseRadius * (1.0 - u * taperEnd);
+          const ringR = baseR * (1.0 - u * taperEnd);
           const ringPts = [];
-
-          // Tangent direction
           let tx, ty;
-          if (r < spine.length - 1) {
-            tx = spine[r + 1].x - spine[r].x;
-            ty = spine[r + 1].y - spine[r].y;
-          } else {
-            tx = spine[r].x - spine[r - 1].x;
-            ty = spine[r].y - spine[r - 1].y;
-          }
-          const tLen = Math.sqrt(tx * tx + ty * ty) || 1;
-          const nx = -ty / tLen; // perpendicular
-          const ny = tx / tLen;
-
-          // Each ring is an ellipse (donut seen at an angle)
-          // The "depth" axis is compressed to simulate 3D tilt
-          const tiltCompress = 0.3 + Math.abs(ny) * 0.5; // how squished the donut looks
-
+          if (r < spine.length - 1) { tx = spine[r+1].x - spine[r].x; ty = spine[r+1].y - spine[r].y; }
+          else { tx = spine[r].x - spine[r-1].x; ty = spine[r].y - spine[r-1].y; }
+          const tLen = Math.sqrt(tx*tx+ty*ty) || 1;
+          const nx = -ty/tLen, ny = tx/tLen;
+          const tiltC = 0.3 + Math.abs(ny) * 0.5;
           for (let j = 0; j < ptsPerRing; j++) {
             const theta = (j / ptsPerRing) * Math.PI * 2;
-            // Donut ring: points arranged in a circle
-            // X-component along perpendicular, Y-component is "depth" (compressed)
-            const px = spine[r].x + Math.cos(theta) * ringR * nx - Math.sin(theta) * ringR * tiltCompress * tx / tLen;
-            const py = spine[r].y + Math.cos(theta) * ringR * ny - Math.sin(theta) * ringR * tiltCompress * ty / tLen;
-
             ringPts.push({
-              baseX: px, baseY: py,
-              x: px, y: py,
-              phase: Math.random() * Math.PI * 2,
-              speed: 0.3 + Math.random() * 1.0,
-              amp: 0.5 + Math.random() * 2 * (1 - u * 0.5),
-              glyph: GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
-              size: dotSize * (1 - u * 0.4),
-              alpha: dotAlpha * (1 - u * 0.3)
+              baseX: spine[r].x + Math.cos(theta)*ringR*nx - Math.sin(theta)*ringR*tiltC*tx/tLen,
+              baseY: spine[r].y + Math.cos(theta)*ringR*ny - Math.sin(theta)*ringR*tiltC*ty/tLen,
+              x: 0, y: 0,
+              phase: Math.random()*Math.PI*2,
+              speed: 0.3+Math.random()*1.0,
+              amp: 0.3+Math.random()*1.5*(1-u*0.5),
+              glyph: GLYPHS[Math.floor(Math.random()*GLYPHS.length)],
+              size: dotSize*(1-u*0.4),
+              alpha: dotAlpha*(1-u*0.3)
             });
           }
           rings.push(ringPts);
@@ -418,127 +481,130 @@
       }
 
       // ══════════════════════════════════════
-      //  BODY: writhing worm/bacteria made of donut rings
-      //  A single sinuous spine with visible ring segments
+      //  BODY — thin writhing worm (radius halved: 8px)
+      //  More chaotic multi-frequency spine
       // ══════════════════════════════════════
-      const BODY_RINGS = 60;
-      const BODY_PTS_PER_RING = 16;
-
-      // Worm spine: S-shaped writhing curve through center
+      const BODY_RINGS = 55;
+      const BODY_PTS_RING = 10;
       const bodyCtrl = [];
-      const bodyCtrlCount = 12;
-      for (let i = 0; i < bodyCtrlCount; i++) {
-        const t = i / (bodyCtrlCount - 1);
-        // S-curve with some chaos
+      const bodyCtrlN = 16; // more control points = more irregular
+      for (let i = 0; i < bodyCtrlN; i++) {
+        const t = i / (bodyCtrlN - 1);
         bodyCtrl.push({
-          x: CX + Math.sin(t * Math.PI * 3.5) * 60 + Math.sin(t * 7) * 25,
-          y: CY - 90 + t * 180 + Math.cos(t * Math.PI * 2.5) * 30
+          x: CX + Math.sin(t*Math.PI*4.2)*35 + Math.sin(t*11.3)*18 + Math.cos(t*7.7)*12,
+          y: CY - 70 + t*140 + Math.cos(t*Math.PI*3.1)*20 + Math.sin(t*8.5)*10
         });
       }
       const bodySpine = buildSpine(bodyCtrl, BODY_RINGS);
-      const bodyRings = generateRings(bodySpine, 18, 0.6, BODY_PTS_PER_RING, 6, 0.6);
+      const bodyRings = generateRings(bodySpine, 8, 0.7, BODY_PTS_RING, 3.5, 0.6);
+      const bodySpineBase = bodySpine.map(p => ({x:p.x, y:p.y}));
 
-      // Store original spine for animation
-      const bodySpineBase = bodySpine.map(p => ({ x: p.x, y: p.y }));
-      // Worm animation params
-      const wormPhase = Math.random() * Math.PI * 2;
-      const wormFreq = 2 + Math.random() * 2;
-      const wormAmp = 12 + Math.random() * 8;
-
-      // ══════════════════════════════════════
-      //  TENTACLE SYSTEM — donut ring stacks growing from body
-      // ══════════════════════════════════════
-      const tentacles = [];
-      const TENT_RINGS = 40;
-      const TENT_PTS_PER_RING = 14;
-
-      function spawnTentacle(ox, oy) {
-        const baseAngle = Math.random() * Math.PI * 2;
-        const totalLen = (100 + Math.random() * 140) * scaleMul;
-        const spiralDir = Math.random() < 0.5 ? 1 : -1;
-        const spiralStr = 0.4 + Math.random() * 1.0;
-        const wiggle = 2 + Math.random() * 3;
-
-        // Build spine control points
-        const ctrlCount = 20;
-        const ctrls = [{ x: ox, y: oy }];
-        let cx = ox, cy = oy, angle = baseAngle;
-        for (let c = 0; c < ctrlCount; c++) {
-          const seg = totalLen / ctrlCount;
-          angle += spiralDir * spiralStr * (Math.PI / ctrlCount);
-          angle += (Math.random() - 0.5) * wiggle * (Math.PI / ctrlCount);
-          cx += Math.cos(angle) * seg;
-          cy += Math.sin(angle) * seg;
-          ctrls.push({ x: cx, y: cy });
-        }
-
-        const spine = buildSpine(ctrls, TENT_RINGS);
-        const baseR = (8 + Math.random() * 10) * scaleMul;
-        const rings = generateRings(spine, baseR, 0.85, TENT_PTS_PER_RING, 5, 0.55);
-
-        // Random color: cyan, magenta, green, or white
-        const palettes = [
-          [0, 255, 220],   // cyan
-          [255, 0, 180],   // magenta/pink
-          [0, 220, 80],    // green
-          [200, 200, 230]  // pale white
-        ];
-        const pal = palettes[Math.floor(Math.random() * palettes.length)];
-
-        tentacles.push({
-          rings: rings,
-          spine: spine,
-          spineBase: spine.map(p => ({ x: p.x, y: p.y })),
-          birth: Date.now(),
-          growDuration: 1200 + Math.random() * 800,
-          totalRings: TENT_RINGS,
-          color: pal,
-          wrigglePhase: Math.random() * Math.PI * 2,
-          wriggleFreq: 1.5 + Math.random() * 2,
-          wriggleAmp: 6 + Math.random() * 10
+      // Worm animation — multiple layered frequencies for irregular motion
+      const wormPhases = [];
+      for (let i = 0; i < 4; i++) {
+        wormPhases.push({
+          freq: 1.5 + Math.random()*2.5,
+          amp: 4 + Math.random()*8,
+          phase: Math.random()*Math.PI*2,
+          spatialFreq: 3 + Math.random()*4
         });
       }
 
       // ══════════════════════════════════════
-      //  CLICK HANDLING
+      //  TENTACLES — thin donut rings (radius halved: ~4px)
       // ══════════════════════════════════════
+      const tentacles = [];
+      const TENT_RINGS = 35;
+      const TENT_PTS_RING = 10;
+
+      function spawnTentacle(ox, oy) {
+        const baseAngle = Math.random()*Math.PI*2;
+        const totalLen = (60 + Math.random()*80) * scaleMul;
+        const spiralDir = Math.random()<0.5 ? 1 : -1;
+        const spiralStr = 0.5+Math.random()*1.2;
+        const wiggle = 2+Math.random()*4;
+
+        const ctrlCount = 18;
+        const ctrls = [{x:ox, y:oy}];
+        let cx = ox, cy = oy, angle = baseAngle;
+        for (let c = 0; c < ctrlCount; c++) {
+          const seg = totalLen/ctrlCount;
+          angle += spiralDir*spiralStr*(Math.PI/ctrlCount);
+          angle += (Math.random()-0.5)*wiggle*(Math.PI/ctrlCount);
+          cx += Math.cos(angle)*seg;
+          cy += Math.sin(angle)*seg;
+          ctrls.push({x:cx, y:cy});
+        }
+
+        const spine = buildSpine(ctrls, TENT_RINGS);
+        const baseR = (3 + Math.random()*4) * scaleMul;
+        const rings = generateRings(spine, baseR, 0.85, TENT_PTS_RING, 3, 0.5);
+
+        const palettes = [[0,255,220],[255,0,180],[0,220,80],[200,200,230]];
+        const pal = palettes[Math.floor(Math.random()*palettes.length)];
+
+        tentacles.push({
+          rings: rings, spine: spine,
+          spineBase: spine.map(p => ({x:p.x, y:p.y})),
+          birth: Date.now(), growDuration: 1000+Math.random()*800,
+          totalRings: TENT_RINGS, color: pal, baseR: baseR,
+          wrigglePhase: Math.random()*Math.PI*2,
+          wriggleFreq: 1.5+Math.random()*2.5,
+          wriggleAmp: 4+Math.random()*8
+        });
+      }
+
+      // ── Find nearest body spine point to click ──
+      function nearestBodySpineIdx(mx, my) {
+        let best = 0, bestD = Infinity;
+        for (let i = 0; i < bodySpine.length; i++) {
+          const dx = bodySpine[i].x - mx, dy = bodySpine[i].y - my;
+          const d = dx*dx + dy*dy;
+          if (d < bestD) { bestD = d; best = i; }
+        }
+        return best;
+      }
+
+      // ── Click: tentacles grow from nearest body point to click ──
       function getAllPoints() {
         const pts = [];
-        bodyRings.forEach(ring => ring.forEach(p => pts.push(p)));
-        tentacles.forEach(t => t.rings.forEach(ring => ring.forEach(p => pts.push(p))));
+        bodyRings.forEach(r => r.forEach(p => pts.push(p)));
+        tentacles.forEach(t => t.rings.forEach(r => r.forEach(p => pts.push(p))));
         return pts;
       }
 
       canvas.addEventListener('click', function(e) {
         if (redirecting) return;
         const rect = canvas.getBoundingClientRect();
-        const mx = (e.clientX - rect.left) * (W / rect.width);
-        const my = (e.clientY - rect.top) * (H / rect.height);
+        const mx = (e.clientX-rect.left)*(W/rect.width);
+        const my = (e.clientY-rect.top)*(H/rect.height);
 
         // Hit test
         let hit = false;
         const allPts = getAllPoints();
         for (let i = 0; i < allPts.length; i++) {
-          const dx = allPts[i].x - mx, dy = allPts[i].y - my;
-          if (dx * dx + dy * dy < 800) { hit = true; break; }
+          const dx = allPts[i].x-mx, dy = allPts[i].y-my;
+          if (dx*dx+dy*dy < 800) { hit = true; break; }
         }
         if (!hit) return;
 
         clickCount++;
         scaleMul *= 1.2;
 
-        // Expand body
+        // Expand body spine
         for (let i = 0; i < bodySpineBase.length; i++) {
-          const dx = bodySpineBase[i].x - CX;
-          const dy = bodySpineBase[i].y - CY;
-          bodySpineBase[i].x = CX + dx * 1.2;
-          bodySpineBase[i].y = CY + dy * 1.2;
+          const dx = bodySpineBase[i].x-CX, dy = bodySpineBase[i].y-CY;
+          bodySpineBase[i].x = CX+dx*1.2;
+          bodySpineBase[i].y = CY+dy*1.2;
         }
 
-        // Spawn tentacles from body spine positions
-        const count = 2 + Math.floor(clickCount * 1.5);
+        // Spawn tentacles from NEAREST body spine point to click
+        const nearIdx = nearestBodySpineIdx(mx, my);
+        const count = 2 + Math.floor(clickCount * 1.2);
         for (let i = 0; i < count; i++) {
-          const si = Math.floor(Math.random() * bodySpine.length);
+          // Cluster around nearest point ±3 spine indices
+          const si = Math.max(0, Math.min(bodySpine.length-1,
+            nearIdx + Math.floor((Math.random()-0.5)*6)));
           spawnTentacle(bodySpine[si].x, bodySpine[si].y);
         }
 
@@ -546,202 +612,135 @@
           counterEl.textContent = clickCount + ' / 10';
           counterEl.classList.add('visible');
         }
-
         if (clickCount >= 10 && !redirecting) {
           redirecting = true;
           redirectTimer = Date.now();
         }
       });
 
-      // ══════════════════════════════════════
-      //  DRAW: render a set of rings as dots
-      // ══════════════════════════════════════
-      function drawRings(rings, visCount, color, t, extraScale) {
-        const sc = extraScale || 1;
+      // ── Draw rings ──
+      function drawRings(rings, visCount, color, sc) {
         for (let r = 0; r < visCount; r++) {
           const u = r / rings.length;
-          // Color gradient along length
-          const cr = Math.min(255, Math.floor(color[0] * (1 - u * 0.3)));
-          const cg = Math.min(255, Math.floor(color[1] * (1 - u * 0.2)));
-          const cb = Math.min(255, Math.floor(color[2] * (1 - u * 0.1)));
-          ctx.fillStyle = 'rgb(' + cr + ',' + cg + ',' + cb + ')';
-
+          const cr = Math.min(255, Math.floor(color[0]*(1-u*0.3)));
+          const cg = Math.min(255, Math.floor(color[1]*(1-u*0.2)));
+          const cb = Math.min(255, Math.floor(color[2]*(1-u*0.1)));
+          ctx.fillStyle = 'rgb('+cr+','+cg+','+cb+')';
           const ring = rings[r];
           for (let j = 0; j < ring.length; j++) {
             const p = ring[j];
             ctx.globalAlpha = Math.min(1, p.alpha);
-            ctx.font = Math.max(2, p.size * sc) + 'px "Courier New", monospace';
+            ctx.font = Math.max(2, p.size*sc)+'px "Courier New", monospace';
             ctx.fillText(p.glyph, p.x, p.y);
           }
         }
       }
 
-      // ══════════════════════════════════════
-      //  Rebuild body rings from animated spine
-      // ══════════════════════════════════════
-      function rebuildBodyRings(spine) {
-        const baseR = 18 * scaleMul;
-        for (let r = 0; r < spine.length; r++) {
-          const u = r / (spine.length - 1);
-          const ringR = baseR * (1.0 - u * 0.6);
-
+      // ── Rebuild rings from spine ──
+      function rebuildRings(rings, spine, baseR, taperEnd) {
+        for (let r = 0; r < spine.length && r < rings.length; r++) {
+          const u = r/(spine.length-1);
+          const ringR = baseR*(1.0-u*taperEnd);
           let tx, ty;
-          if (r < spine.length - 1) {
-            tx = spine[r + 1].x - spine[r].x;
-            ty = spine[r + 1].y - spine[r].y;
-          } else {
-            tx = spine[r].x - spine[r - 1].x;
-            ty = spine[r].y - spine[r - 1].y;
-          }
-          const tLen = Math.sqrt(tx * tx + ty * ty) || 1;
-          const nx = -ty / tLen;
-          const ny = tx / tLen;
-          const tiltC = 0.3 + Math.abs(ny) * 0.5;
-
-          const ring = bodyRings[r];
-          if (!ring) continue;
+          if (r < spine.length-1) { tx=spine[r+1].x-spine[r].x; ty=spine[r+1].y-spine[r].y; }
+          else { tx=spine[r].x-spine[r-1].x; ty=spine[r].y-spine[r-1].y; }
+          const tLen = Math.sqrt(tx*tx+ty*ty)||1;
+          const nx=-ty/tLen, ny=tx/tLen;
+          const tiltC = 0.3+Math.abs(ny)*0.5;
+          const ring = rings[r];
           for (let j = 0; j < ring.length; j++) {
-            const theta = (j / ring.length) * Math.PI * 2;
-            const p = ring[j];
-            p.baseX = spine[r].x + Math.cos(theta) * ringR * nx - Math.sin(theta) * ringR * tiltC * tx / tLen;
-            p.baseY = spine[r].y + Math.cos(theta) * ringR * ny - Math.sin(theta) * ringR * tiltC * ty / tLen;
+            const theta = (j/ring.length)*Math.PI*2;
+            ring[j].baseX = spine[r].x + Math.cos(theta)*ringR*nx - Math.sin(theta)*ringR*tiltC*tx/tLen;
+            ring[j].baseY = spine[r].y + Math.cos(theta)*ringR*ny - Math.sin(theta)*ringR*tiltC*ty/tLen;
           }
         }
       }
 
       // ══════════════════════════════════════
-      //  Rebuild tentacle rings from animated spine
-      // ══════════════════════════════════════
-      function rebuildTentRings(ten) {
-        const baseR = (8 + 5) * scaleMul; // approximate
-        for (let r = 0; r < ten.spine.length; r++) {
-          const u = r / (ten.spine.length - 1);
-          const ringR = baseR * (1.0 - u * 0.85);
-
-          let tx, ty;
-          if (r < ten.spine.length - 1) {
-            tx = ten.spine[r + 1].x - ten.spine[r].x;
-            ty = ten.spine[r + 1].y - ten.spine[r].y;
-          } else {
-            tx = ten.spine[r].x - ten.spine[r - 1].x;
-            ty = ten.spine[r].y - ten.spine[r - 1].y;
-          }
-          const tLen = Math.sqrt(tx * tx + ty * ty) || 1;
-          const nx = -ty / tLen;
-          const ny = tx / tLen;
-          const tiltC = 0.3 + Math.abs(ny) * 0.5;
-
-          const ring = ten.rings[r];
-          if (!ring) continue;
-          for (let j = 0; j < ring.length; j++) {
-            const theta = (j / ring.length) * Math.PI * 2;
-            const p = ring[j];
-            p.baseX = ten.spine[r].x + Math.cos(theta) * ringR * nx - Math.sin(theta) * ringR * tiltC * tx / tLen;
-            p.baseY = ten.spine[r].y + Math.cos(theta) * ringR * ny - Math.sin(theta) * ringR * tiltC * ty / tLen;
-          }
-        }
-      }
-
-      // ══════════════════════════════════════
-      //  ANIMATION LOOP
+      //  ANIMATION
       // ══════════════════════════════════════
       function animate() {
-        const t = Date.now() * 0.001;
+        const t = Date.now()*0.001;
         ctx.clearRect(0, 0, W, H);
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        // ── Animate body spine: writhing worm ──
+        // ── Animate body: multi-frequency irregular writhing ──
         for (let i = 0; i < bodySpine.length; i++) {
-          const u = i / bodySpine.length;
-          // Sine wave travels along the worm body
-          const wave = Math.sin(t * wormFreq + u * Math.PI * 4 + wormPhase);
-          const wave2 = Math.cos(t * wormFreq * 0.7 + u * Math.PI * 3);
-          bodySpine[i].x = bodySpineBase[i].x + wave * wormAmp * scaleMul;
-          bodySpine[i].y = bodySpineBase[i].y + wave2 * wormAmp * 0.5 * scaleMul;
+          const u = i/bodySpine.length;
+          let wx = 0, wy = 0;
+          for (let f = 0; f < wormPhases.length; f++) {
+            const wp = wormPhases[f];
+            wx += Math.sin(t*wp.freq + u*Math.PI*wp.spatialFreq + wp.phase) * wp.amp;
+            wy += Math.cos(t*wp.freq*0.8 + u*Math.PI*(wp.spatialFreq*0.7) + wp.phase*1.3) * wp.amp*0.6;
+          }
+          bodySpine[i].x = bodySpineBase[i].x + wx*scaleMul;
+          bodySpine[i].y = bodySpineBase[i].y + wy*scaleMul;
         }
-        rebuildBodyRings(bodySpine);
+        rebuildRings(bodyRings, bodySpine, 8*scaleMul, 0.7);
 
-        // Update body ring point positions with micro-jitter
-        bodyRings.forEach(ring => {
-          ring.forEach(p => {
-            p.x = p.baseX + Math.sin(t * p.speed + p.phase) * p.amp;
-            p.y = p.baseY + Math.cos(t * p.speed * 0.7 + p.phase) * p.amp;
-          });
-        });
+        // Update body ring points
+        bodyRings.forEach(ring => ring.forEach(p => {
+          p.x = p.baseX + Math.sin(t*p.speed+p.phase)*p.amp;
+          p.y = p.baseY + Math.cos(t*p.speed*0.7+p.phase)*p.amp;
+        }));
 
-        // Body color
-        const cr = Math.min(255, 180 + clickCount * 8);
-        const cg = Math.max(80, 220 - clickCount * 12);
-        const cb = Math.max(100, 230 - clickCount * 8);
-        drawRings(bodyRings, bodyRings.length, [cr, cg, cb], t, Math.min(scaleMul, 2.5));
+        const cr = Math.min(255, 180+clickCount*8);
+        const cg = Math.max(80, 220-clickCount*12);
+        const cb = Math.max(100, 230-clickCount*8);
+        drawRings(bodyRings, bodyRings.length, [cr,cg,cb], Math.min(scaleMul, 2.5));
 
         // ── Animate & draw tentacles ──
         const now = Date.now();
         for (let ti = 0; ti < tentacles.length; ti++) {
           const ten = tentacles[ti];
-          const growT = Math.min(1, (now - ten.birth) / ten.growDuration);
-          const visRings = Math.floor(ten.totalRings * growT);
+          const growT = Math.min(1, (now-ten.birth)/ten.growDuration);
+          const visRings = Math.floor(ten.totalRings*growT);
 
-          // Wriggle the tentacle spine
+          // Wriggle spine
           for (let i = 0; i < ten.spine.length; i++) {
-            const u = i / ten.spine.length;
-            const wave = Math.sin(t * ten.wriggleFreq + u * Math.PI * 5 + ten.wrigglePhase);
-            const wave2 = Math.cos(t * ten.wriggleFreq * 0.6 + u * Math.PI * 3 + ten.wrigglePhase);
-            ten.spine[i].x = ten.spineBase[i].x + wave * ten.wriggleAmp * u;
-            ten.spine[i].y = ten.spineBase[i].y + wave2 * ten.wriggleAmp * 0.6 * u;
+            const u = i/ten.spine.length;
+            const wave = Math.sin(t*ten.wriggleFreq + u*Math.PI*5 + ten.wrigglePhase);
+            const wave2 = Math.cos(t*ten.wriggleFreq*0.6 + u*Math.PI*3 + ten.wrigglePhase);
+            ten.spine[i].x = ten.spineBase[i].x + wave*ten.wriggleAmp*u;
+            ten.spine[i].y = ten.spineBase[i].y + wave2*ten.wriggleAmp*0.6*u;
           }
-          rebuildTentRings(ten);
+          rebuildRings(ten.rings, ten.spine, ten.baseR, 0.85);
 
-          // Update ring point positions
-          ten.rings.forEach(ring => {
-            ring.forEach(p => {
-              p.x = p.baseX + Math.sin(t * p.speed + p.phase) * p.amp;
-              p.y = p.baseY + Math.cos(t * p.speed * 0.7 + p.phase) * p.amp;
-            });
-          });
+          ten.rings.forEach(ring => ring.forEach(p => {
+            p.x = p.baseX + Math.sin(t*p.speed+p.phase)*p.amp;
+            p.y = p.baseY + Math.cos(t*p.speed*0.7+p.phase)*p.amp;
+          }));
 
-          drawRings(ten.rings, visRings, ten.color, t, Math.min(scaleMul, 2.0));
+          drawRings(ten.rings, visRings, ten.color, Math.min(scaleMul, 2.0));
         }
 
-        // ── Post-10-click: evolve → scatter → redirect ──
+        // ── Post-10-click transition ──
         if (redirecting) {
-          const elapsed = (now - redirectTimer) / 1000;
-
+          const elapsed = (now-redirectTimer)/1000;
           if (elapsed < 3) {
-            // Phase 1: rapid expansion, burst tentacles
             scaleMul += 0.01;
-            wormAmp * 1.01;
             if (Math.random() < 0.1) {
-              const si = Math.floor(Math.random() * bodySpine.length);
+              const si = Math.floor(Math.random()*bodySpine.length);
               spawnTentacle(bodySpine[si].x, bodySpine[si].y);
             }
           } else if (elapsed < 5.5) {
-            // Phase 2: scatter all points outward, fade
-            const allPts = getAllPoints();
-            allPts.forEach(p => {
-              p.alpha = Math.max(0, p.alpha - 0.003);
-              const dx = p.baseX - CX;
-              const dy = p.baseY - CY;
-              const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-              p.baseX += (dx / dist) * 2;
-              p.baseY += (dy / dist) * 2;
+            getAllPoints().forEach(p => {
+              p.alpha = Math.max(0, p.alpha-0.003);
+              const dx=p.baseX-CX, dy=p.baseY-CY;
+              const dist = Math.sqrt(dx*dx+dy*dy)||1;
+              p.baseX += (dx/dist)*2; p.baseY += (dy/dist)*2;
             });
-            // Also push spines outward
             bodySpineBase.forEach(p => {
-              const dx = p.x - CX, dy = p.y - CY;
-              const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-              p.x += (dx / dist) * 1.5;
-              p.y += (dy / dist) * 1.5;
+              const dx=p.x-CX, dy=p.y-CY;
+              const dist = Math.sqrt(dx*dx+dy*dy)||1;
+              p.x += (dx/dist)*1.5; p.y += (dy/dist)*1.5;
             });
-            tentacles.forEach(ten => {
-              ten.spineBase.forEach(p => {
-                const dx = p.x - CX, dy = p.y - CY;
-                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                p.x += (dx / dist) * 2;
-                p.y += (dy / dist) * 2;
-              });
-            });
+            tentacles.forEach(ten => ten.spineBase.forEach(p => {
+              const dx=p.x-CX, dy=p.y-CY;
+              const dist = Math.sqrt(dx*dx+dy*dy)||1;
+              p.x += (dx/dist)*2; p.y += (dy/dist)*2;
+            }));
           } else {
             window.location.href = 'GAME/index.html';
             return;
@@ -751,7 +750,6 @@
         ctx.globalAlpha = 1;
         requestAnimationFrame(animate);
       }
-
       animate();
     })();
   </script>
