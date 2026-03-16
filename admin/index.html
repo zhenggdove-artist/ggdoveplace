@@ -43,9 +43,12 @@
   </div>
 
   <script>
-  // ── 1. 直接測試 GitHub API Token 是否有效
+  // ── 1. 持續偵測 GitHub API Token 是否有效
   (function testGitHubToken() {
     var statusEl = document.getElementById('cms-auth-status');
+    var verified = false;
+    var pollTimer = null;
+
     function setStatus(msg, color, clickable) {
       statusEl.textContent = msg;
       statusEl.style.color = color || '#6a6080';
@@ -54,26 +57,36 @@
       if (clickable) statusEl.onclick = window.cmsRelogin;
     }
 
-    // 讀取 Decap CMS 存在 localStorage 裡的 token
-    setTimeout(function() {
-      var token = null;
+    // 從 localStorage 搜尋 token（支援多種 Decap CMS 儲存格式）
+    function findToken() {
       var keys = Object.keys(localStorage);
       for (var i = 0; i < keys.length; i++) {
+        var raw = localStorage.getItem(keys[i]);
+        // 格式1: JSON 物件 {token: "...", access_token: "..."}
         try {
-          var v = JSON.parse(localStorage.getItem(keys[i]));
-          if (v && (v.token || v.access_token)) {
-            token = v.token || v.access_token;
-            break;
+          var v = JSON.parse(raw);
+          if (v && typeof v === 'object') {
+            if (v.token && typeof v.token === 'string') return v.token;
+            if (v.access_token && typeof v.access_token === 'string') return v.access_token;
           }
         } catch(e) {}
+        // 格式2: 純字串 token（gh開頭或40字元hex）
+        if (typeof raw === 'string' && /^(gh[opsu]_[A-Za-z0-9_]{36,}|[a-f0-9]{40})$/.test(raw.trim())) {
+          return raw.trim();
+        }
       }
+      return null;
+    }
 
+    function checkToken() {
+      if (verified) return;
+      var token = findToken();
       if (!token) {
-        setStatus('❌ 未找到 Token，請點此重新登入', '#ff6688', true);
-        return;
+        setStatus('⏳ 等待登入...', '#6a6080');
+        return; // keep polling
       }
 
-      // 用 token 打 GitHub API，確認是否有效且有寫入權限
+      // 找到 token，驗證是否有效
       fetch('https://api.github.com/repos/zhenggdove-artist/ggdoveplace', {
         headers: {
           'Authorization': 'token ' + token,
@@ -82,6 +95,8 @@
       }).then(function(r) {
         if (r.ok) {
           return r.json().then(function(d) {
+            verified = true;
+            if (pollTimer) clearInterval(pollTimer);
             var push = d.permissions && d.permissions.push;
             if (push) {
               setStatus('✅ GitHub 認證正常，有寫入權限', '#55ddaa');
@@ -99,6 +114,19 @@
       }).catch(function(err) {
         setStatus('❌ 無法連接 GitHub API: ' + err.message, '#ff6688', true);
       });
+    }
+
+    // 首次 2 秒後開始檢查，之後每 3 秒輪詢直到找到有效 token
+    setTimeout(function() {
+      checkToken();
+      pollTimer = setInterval(checkToken, 3000);
+      // 60 秒後如果還沒找到就停止輪詢，顯示提示
+      setTimeout(function() {
+        if (!verified) {
+          clearInterval(pollTimer);
+          setStatus('❌ 未找到 Token，請點此重新登入', '#ff6688', true);
+        }
+      }, 60000);
     }, 2000);
   })();
 
