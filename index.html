@@ -6,11 +6,11 @@
   <title>GGdove</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* ── Landing Page ── */
     body.landing-body {
       margin: 0;
       overflow: hidden;
       background: #04040c;
+      cursor: none;
     }
 
     .landing-wrap {
@@ -20,45 +20,34 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      perspective: 900px;
     }
 
-    /* ── TV — no filter, GPU-accelerated ── */
+    /* ── Tilt container (like songxin.site) ── */
+    .tilt-scene {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-style: preserve-3d;
+      transform: rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg));
+      transition: transform 0.15s ease-out;
+    }
+
+    /* ── TV video — no filter, smooth playback ── */
     .landing-tv {
       position: relative;
       z-index: 2;
-      width: clamp(180px, 26vw, 340px);
+      width: clamp(180px, 24vw, 320px);
       height: auto;
       display: block;
       will-change: transform;
-      transform: translateZ(0);
+      transform: translateZ(30px);
     }
 
-    /* ── Warm glow behind TV (pure CSS, no animation on GIF) ── */
-    .tv-glow {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 420px;
-      height: 420px;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      background: radial-gradient(
-        circle,
-        rgba(255,120,40,0.10) 0%,
-        rgba(255,80,20,0.04) 40%,
-        transparent 65%
-      );
-      pointer-events: none;
-      z-index: 1;
-      animation: glowBreath 5s ease-in-out infinite;
-    }
-
-    @keyframes glowBreath {
-      0%, 100% { opacity: 0.7; }
-      50%      { opacity: 1; }
-    }
-
-    /* ── SVG orbital curves ── */
+    /* ── SVG orbital curves + nav ── */
     .landing-svg {
       position: absolute;
       inset: 0;
@@ -66,53 +55,88 @@
       height: 100%;
       z-index: 3;
       pointer-events: none;
+      transform: translateZ(0px);
     }
-    .landing-svg a { pointer-events: all; }
+    .landing-svg a {
+      pointer-events: all;
+      cursor: none;
+    }
 
-    /* Curve styling — thin, organic, warm */
+    /* Organic curves — thin, delicate */
     .orbit-curve {
       fill: none;
-      stroke: rgba(200, 180, 160, 0.18);
-      stroke-width: 1.2;
-      stroke-linecap: round;
-    }
-
-    /* Decorative flourish swirls */
-    .orbit-flourish {
-      fill: none;
-      stroke: rgba(200, 180, 160, 0.14);
+      stroke: rgba(184, 184, 208, 0.16);
       stroke-width: 1;
       stroke-linecap: round;
     }
 
-    /* Traveling light along curves */
-    @keyframes travelLight {
-      0%   { stroke-dashoffset: 1200; }
-      100% { stroke-dashoffset: 0; }
-    }
-    .orbit-light {
+    /* Decorative flourish curls */
+    .orbit-curl {
       fill: none;
-      stroke: rgba(255, 200, 150, 0.25);
-      stroke-width: 1.5;
+      stroke: rgba(184, 184, 208, 0.12);
+      stroke-width: 0.8;
       stroke-linecap: round;
-      stroke-dasharray: 60 1140;
-      animation: travelLight 8s linear infinite;
     }
 
-    /* ── Navigation text ── */
-    .landing-nav-text {
-      font-family: 'Courier New', monospace;
-      font-size: 15px;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      fill: rgba(234, 242, 255, 0.88);
-      cursor: pointer;
-      transition: fill 0.3s, filter 0.3s;
-      text-decoration: none;
+    /* Traveling shimmer */
+    @keyframes shimmerTravel {
+      0%   { stroke-dashoffset: 1400; }
+      100% { stroke-dashoffset: 0; }
     }
-    .landing-nav-text:hover {
+    .orbit-shimmer {
+      fill: none;
+      stroke: rgba(210, 150, 150, 0.18);
+      stroke-width: 1.2;
+      stroke-linecap: round;
+      stroke-dasharray: 50 1350;
+      animation: shimmerTravel 10s linear infinite;
+    }
+
+    /* ── Navigation text — songxin style ── */
+    .nav-label {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      fill: #b8b8d0;
+      cursor: none;
+      transition: fill 0.3s;
+    }
+    .nav-label:hover {
       fill: #ffffff;
-      filter: drop-shadow(0 0 12px rgba(255, 200, 150, 0.6));
+    }
+
+    /* Decorative sub-label (glitch unicode) */
+    .nav-sub {
+      font-family: 'Courier New', monospace;
+      font-size: 9px;
+      font-style: italic;
+      fill: #787890;
+      letter-spacing: 1px;
+    }
+
+    /* Decorative unicode ornament */
+    .nav-ornament {
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      fill: rgba(184, 184, 208, 0.35);
+    }
+
+    /* ── ASCII Cursor (songxin style) ── */
+    .ascii-cursor {
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none;
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      line-height: 1.1;
+      color: #b8b8d0;
+      white-space: pre;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+      text-shadow: 0 0 8px rgba(184, 184, 208, 0.3);
+      user-select: none;
     }
 
     /* ── Subtle scanlines ── */
@@ -125,132 +149,245 @@
         to bottom,
         transparent 0px,
         transparent 3px,
-        rgba(0,0,0,0.04) 3px,
-        rgba(0,0,0,0.04) 6px
+        rgba(0,0,0,0.03) 3px,
+        rgba(0,0,0,0.03) 6px
       );
+    }
+
+    /* ── Artist name — header with sword ASCII ── */
+    .landing-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.8rem 2rem;
+      gap: 1rem;
+      cursor: none;
+    }
+
+    .ascii-deco {
+      font-family: 'Courier New', monospace;
+      font-size: 0.65rem;
+      color: rgba(120, 120, 144, 0.4);
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .landing-artist {
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.35em;
+      color: rgba(184, 184, 208, 0.7);
+      white-space: nowrap;
     }
 
     /* ── Responsive ── */
     @media (max-width: 768px) {
-      .landing-tv { width: clamp(150px, 40vw, 240px); }
-      .landing-nav-text { font-size: 11px; letter-spacing: 3px; }
-      .tv-glow { width: 280px; height: 280px; }
+      .landing-tv { width: clamp(140px, 38vw, 220px); }
+      .nav-label { font-size: 10px; letter-spacing: 2px; }
+      .nav-sub { font-size: 7px; }
+      .ascii-cursor { display: none; }
+      body.landing-body { cursor: auto; }
+      .landing-svg a { cursor: auto; }
+      .landing-header { padding: 1rem 1rem; }
+      .ascii-deco { display: none; }
     }
     @media (max-width: 480px) {
-      .landing-tv { width: clamp(130px, 50vw, 200px); }
-      .landing-nav-text { font-size: 10px; letter-spacing: 2px; }
+      .landing-tv { width: clamp(120px, 45vw, 180px); }
+      .nav-label { font-size: 9px; letter-spacing: 1.5px; }
     }
   </style>
 </head>
 <body class="landing-body">
   <div class="landing-scanlines"></div>
 
+  <!-- Header with artist name -->
+  <div class="landing-header">
+    <span class="ascii-deco">o()xxxx[{:::::::::::::::::::></span>
+    <span class="landing-artist">&#xFF61;&#xFF65;&#xFF9F;&#xFF65;&#x2727; GGdove &#x2727;&#xFF65;&#xFF9F;&#xFF65;&#xFF61;</span>
+    <span class="ascii-deco">&lt;:::::::::::::::::::}]xxxx()o</span>
+  </div>
+
+  <!-- ASCII Cursor -->
+  <pre id="ascii-cursor" class="ascii-cursor" aria-hidden="true"></pre>
+
   <div class="landing-wrap">
-    <!-- Warm glow -->
-    <div class="tv-glow"></div>
+    <div class="tilt-scene" id="tilt-scene">
 
-    <!-- TV GIF center — NO filters -->
-    <img class="landing-tv" src="TV.gif" alt="TV">
+      <!-- TV video (1.5MB vs 60MB GIF) -->
+      <video class="landing-tv" autoplay loop muted playsinline>
+        <source src="TV.webm" type="video/webm">
+        <img src="TV.gif" alt="TV">
+      </video>
 
-    <!-- SVG orbital curves + navigation -->
-    <svg class="landing-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
-      <defs>
-        <!-- Soft glow for curves -->
-        <filter id="softGlow">
-          <feGaussianBlur stdDeviation="1.5" result="blur"/>
-          <feMerge>
-            <feMergeNode in="blur"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-      </defs>
+      <!-- SVG orbital curves + navigation -->
+      <svg class="landing-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
 
-      <!-- ═══ Curve 1: CV (top-left) → RELIC (top-right) — top arc ═══ -->
-      <path id="c1" class="orbit-curve"
-            d="M 160,240 C 250,100 750,100 840,240"
-            filter="url(#softGlow)"/>
-      <path class="orbit-light" d="M 160,240 C 250,100 750,100 840,240"/>
+        <!-- ═══ Curve 1: top arc (CV → RELIC) ═══ -->
+        <path id="c1" class="orbit-curve"
+              d="M 170,235 C 280,95 720,95 830,235"/>
+        <path class="orbit-shimmer"
+              d="M 170,235 C 280,95 720,95 830,235"/>
+        <!-- curl at CV -->
+        <path class="orbit-curl"
+              d="M 170,235 C 155,252 143,244 148,228 C 153,214 168,218 170,235"/>
+        <!-- curl at RELIC -->
+        <path class="orbit-curl"
+              d="M 830,235 C 845,218 857,226 852,242 C 847,256 832,252 830,235"/>
 
-      <!-- Flourish: top-left curl -->
-      <path class="orbit-flourish"
-            d="M 160,240 C 145,255 135,248 140,232 C 145,218 158,222 160,240"
-            filter="url(#softGlow)"/>
+        <!-- ═══ Curve 2: right arc (RELIC → EXHIBITION) ═══ -->
+        <path id="c2" class="orbit-curve"
+              d="M 830,235 C 935,340 935,430 830,485"/>
+        <path class="orbit-shimmer"
+              d="M 830,235 C 935,340 935,430 830,485"
+              style="animation-delay:-2.5s"/>
 
-      <!-- ═══ Curve 2: RELIC (top-right) → EXHIBITION (bottom-right) — right arc ═══ -->
-      <path id="c2" class="orbit-curve"
-            d="M 840,240 C 940,340 940,440 840,480"
-            filter="url(#softGlow)"/>
-      <path class="orbit-light" d="M 840,240 C 940,340 940,440 840,480"
-            style="animation-delay: -2s"/>
+        <!-- ═══ Curve 3: bottom arc (EXHIBITION → PLAY) ═══ -->
+        <path id="c3" class="orbit-curve"
+              d="M 830,485 C 720,615 280,615 170,485"/>
+        <path class="orbit-shimmer"
+              d="M 830,485 C 720,615 280,615 170,485"
+              style="animation-delay:-5s"/>
+        <!-- curl at EXHIBITION -->
+        <path class="orbit-curl"
+              d="M 830,485 C 845,500 838,512 822,507 C 808,502 812,485 830,485"/>
+        <!-- curl at PLAY -->
+        <path class="orbit-curl"
+              d="M 170,485 C 155,500 143,492 148,476 C 153,462 168,466 170,485"/>
 
-      <!-- Flourish: top-right curl -->
-      <path class="orbit-flourish"
-            d="M 840,240 C 855,225 865,232 860,248 C 855,262 842,258 840,240"
-            filter="url(#softGlow)"/>
+        <!-- ═══ Curve 4: left arc (PLAY → CV) ═══ -->
+        <path id="c4" class="orbit-curve"
+              d="M 170,485 C 65,430 65,340 170,235"/>
+        <path class="orbit-shimmer"
+              d="M 170,485 C 65,430 65,340 170,235"
+              style="animation-delay:-7.5s"/>
 
-      <!-- ═══ Curve 3: EXHIBITION (bottom-right) → PLAY (bottom-left) — bottom arc ═══ -->
-      <path id="c3" class="orbit-curve"
-            d="M 840,480 C 750,600 250,600 160,480"
-            filter="url(#softGlow)"/>
-      <path class="orbit-light" d="M 840,480 C 750,600 250,600 160,480"
-            style="animation-delay: -4s"/>
+        <!-- ═══ Navigation Labels ═══ -->
 
-      <!-- Flourish: bottom-right curl -->
-      <path class="orbit-flourish"
-            d="M 840,480 C 855,495 848,505 832,500 C 818,495 822,478 840,480"
-            filter="url(#softGlow)"/>
+        <!-- CV — top-left -->
+        <a href="bio.html">
+          <text class="nav-ornament" x="115" y="186">&#x2727;</text>
+          <text class="nav-label" x="135" y="200">CV</text>
+          <text class="nav-sub" x="115" y="215">&#x0489;&#x030D;&#x0352;&#x0357; &#x1D4AB;&#x1D4C1;&#x1D4B8;&#x1D4BB;&#x1D4BE;&#x1D4C1;&#x1D4AE;</text>
+        </a>
 
-      <!-- ═══ Curve 4: PLAY (bottom-left) → CV (top-left) — left arc ═══ -->
-      <path id="c4" class="orbit-curve"
-            d="M 160,480 C 60,440 60,340 160,240"
-            filter="url(#softGlow)"/>
-      <path class="orbit-light" d="M 160,480 C 60,440 60,340 160,240"
-            style="animation-delay: -6s"/>
+        <!-- RELIC — top-right -->
+        <a href="relic.html">
+          <text class="nav-ornament" x="870" y="186" text-anchor="end">&#x2727;</text>
+          <text class="nav-label" x="855" y="200" text-anchor="end">Relic</text>
+          <text class="nav-sub" x="870" y="215" text-anchor="end">&#x0489;&#x030D;&#x0352; &#x1D4B2;&#x1D4C7;&#x1D4C9;&#x1D4BE;&#x1D4BB;&#x1D4B6;&#x1D4B8;&#x1D4C9;&#x1D4C8;</text>
+        </a>
 
-      <!-- Flourish: bottom-left curl -->
-      <path class="orbit-flourish"
-            d="M 160,480 C 145,495 135,488 140,472 C 145,458 158,462 160,480"
-            filter="url(#softGlow)"/>
+        <!-- EXHIBITION — bottom-right -->
+        <a href="exhibition.html">
+          <text class="nav-ornament" x="870" y="516" text-anchor="end">&#x2727;</text>
+          <text class="nav-label" x="855" y="530" text-anchor="end">Exhibition</text>
+          <text class="nav-sub" x="870" y="545" text-anchor="end">&#x0489;&#x030D;&#x0352; &#x1D4AE;&#x1D4BD;&#x1D4C4;&#x1D4CC;&#x1D4B8;&#x1D4B6;&#x1D4C8;&#x1D4AE;</text>
+        </a>
 
-      <!-- ═══ Navigation Labels ═══ -->
-      <!-- CV — top-left -->
-      <a href="bio.html">
-        <text class="landing-nav-text" x="120" y="205" text-anchor="start">CV</text>
-      </a>
-      <!-- RELIC — top-right -->
-      <a href="relic.html">
-        <text class="landing-nav-text" x="880" y="205" text-anchor="end">Relic</text>
-      </a>
-      <!-- EXHIBITION — bottom-right -->
-      <a href="exhibition.html">
-        <text class="landing-nav-text" x="880" y="530" text-anchor="end">Exhibition</text>
-      </a>
-      <!-- PLAY — bottom-left -->
-      <a href="#">
-        <text class="landing-nav-text" x="120" y="530" text-anchor="start">Play</text>
-      </a>
-    </svg>
+        <!-- PLAY — bottom-left -->
+        <a href="#">
+          <text class="nav-ornament" x="115" y="516">&#x2727;</text>
+          <text class="nav-label" x="135" y="530">Play</text>
+          <text class="nav-sub" x="115" y="545">&#x0489;&#x030D;&#x0352; &#x1D4B2;&#x1D4B6;&#x1D4C2;&#x1D4AE;</text>
+        </a>
+
+      </svg>
+    </div>
   </div>
 
   <script src="js/main.js"></script>
   <script>
+    // ── Load CMS data ──
     loadData().then(() => {
       applyBackground(siteData.site);
       applyNavHoverColor(siteData.site);
 
-      // Update nav labels from CMS
+      // Update artist name
+      const artistEl = document.querySelector('.landing-artist');
+      if (artistEl && siteData.site && siteData.site.title) {
+        artistEl.innerHTML = '\uFF61\uFF65\uFF9F\uFF65\u2727 ' + siteData.site.title + ' \u2727\uFF65\uFF9F\uFF65\uFF61';
+      }
+
+      // Update nav labels
       const nl = (siteData.site && siteData.site.navLabels) || {};
-      const svg = document.querySelector('.landing-svg');
-      if (!svg) return;
-      const texts = svg.querySelectorAll('.landing-nav-text');
-      const labels = [
-        nl.bio || 'CV',
-        nl.works || 'Relic',
-        nl.exhibition || 'Exhibition',
-        'Play'
-      ];
-      texts.forEach((t, i) => { if (labels[i]) t.textContent = labels[i]; });
+      const labels = document.querySelectorAll('.nav-label');
+      const map = [nl.bio || 'CV', nl.works || 'Relic', nl.exhibition || 'Exhibition', 'Play'];
+      labels.forEach((t, i) => { if (map[i]) t.textContent = map[i]; });
     });
+
+    // ── 3D Tilt on mousemove (songxin.site style) ──
+    (function() {
+      const scene = document.getElementById('tilt-scene');
+      if (!scene) return;
+
+      document.addEventListener('mousemove', function(e) {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        const tiltY = ((e.clientX - cx) / cx) * 6;   // max 6 degrees
+        const tiltX = ((cy - e.clientY) / cy) * 3;    // max 3 degrees
+        scene.style.setProperty('--tiltY', tiltY + 'deg');
+        scene.style.setProperty('--tiltX', tiltX + 'deg');
+      });
+
+      document.addEventListener('mouseleave', function() {
+        scene.style.setProperty('--tiltY', '0deg');
+        scene.style.setProperty('--tiltX', '0deg');
+      });
+    })();
+
+    // ── ASCII Cursor with blinking eyes (songxin.site style) ──
+    (function() {
+      const cur = document.getElementById('ascii-cursor');
+      if (!cur || window.innerWidth < 768) return;
+
+      const frameOpen = [
+        "(\\_\\_\\_/)",
+        " \\* */",
+        "  \\ /",
+        "   \u00A4"
+      ].join("\n");
+
+      const frameBlink = [
+        "(\\_\\_\\_/)",
+        " \\^ ^/",
+        "  \\ /",
+        "   *"
+      ].join("\n");
+
+      cur.textContent = frameOpen;
+
+      document.addEventListener('mousemove', function(e) {
+        cur.style.left = e.clientX + 'px';
+        cur.style.top = e.clientY + 'px';
+        cur.style.opacity = '1';
+      });
+      document.addEventListener('mouseleave', function() { cur.style.opacity = '0'; });
+
+      function doBlinkOnce() {
+        cur.textContent = frameBlink;
+        setTimeout(() => { cur.textContent = frameOpen; }, 120);
+      }
+
+      function scheduleBlink() {
+        const delay = 800 + Math.random() * 1800;
+        setTimeout(() => {
+          if (Math.random() < 0.5) {
+            doBlinkOnce();
+            setTimeout(doBlinkOnce, 180);
+          } else {
+            doBlinkOnce();
+          }
+          scheduleBlink();
+        }, delay);
+      }
+
+      scheduleBlink();
+    })();
   </script>
 </body>
 </html>
