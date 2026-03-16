@@ -11,13 +11,111 @@
       margin: 0;
       overflow: hidden;
       background: #04040c;
+    }
+
+    .landing-wrap {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
     }
 
-    /* ── Scanline overlay ── */
+    /* ── TV — no filter, GPU-accelerated ── */
+    .landing-tv {
+      position: relative;
+      z-index: 2;
+      width: clamp(180px, 26vw, 340px);
+      height: auto;
+      display: block;
+      will-change: transform;
+      transform: translateZ(0);
+    }
+
+    /* ── Warm glow behind TV (pure CSS, no animation on GIF) ── */
+    .tv-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 420px;
+      height: 420px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(255,120,40,0.10) 0%,
+        rgba(255,80,20,0.04) 40%,
+        transparent 65%
+      );
+      pointer-events: none;
+      z-index: 1;
+      animation: glowBreath 5s ease-in-out infinite;
+    }
+
+    @keyframes glowBreath {
+      0%, 100% { opacity: 0.7; }
+      50%      { opacity: 1; }
+    }
+
+    /* ── SVG orbital curves ── */
+    .landing-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .landing-svg a { pointer-events: all; }
+
+    /* Curve styling — thin, organic, warm */
+    .orbit-curve {
+      fill: none;
+      stroke: rgba(200, 180, 160, 0.18);
+      stroke-width: 1.2;
+      stroke-linecap: round;
+    }
+
+    /* Decorative flourish swirls */
+    .orbit-flourish {
+      fill: none;
+      stroke: rgba(200, 180, 160, 0.14);
+      stroke-width: 1;
+      stroke-linecap: round;
+    }
+
+    /* Traveling light along curves */
+    @keyframes travelLight {
+      0%   { stroke-dashoffset: 1200; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .orbit-light {
+      fill: none;
+      stroke: rgba(255, 200, 150, 0.25);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-dasharray: 60 1140;
+      animation: travelLight 8s linear infinite;
+    }
+
+    /* ── Navigation text ── */
+    .landing-nav-text {
+      font-family: 'Courier New', monospace;
+      font-size: 15px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      fill: rgba(234, 242, 255, 0.88);
+      cursor: pointer;
+      transition: fill 0.3s, filter 0.3s;
+      text-decoration: none;
+    }
+    .landing-nav-text:hover {
+      fill: #ffffff;
+      filter: drop-shadow(0 0 12px rgba(255, 200, 150, 0.6));
+    }
+
+    /* ── Subtle scanlines ── */
     .landing-scanlines {
       position: fixed;
       inset: 0;
@@ -26,421 +124,133 @@
       background: repeating-linear-gradient(
         to bottom,
         transparent 0px,
-        transparent 2px,
-        rgba(0,0,0,0.06) 2px,
-        rgba(0,0,0,0.06) 4px
+        transparent 3px,
+        rgba(0,0,0,0.04) 3px,
+        rgba(0,0,0,0.04) 6px
       );
-      mix-blend-mode: multiply;
-    }
-
-    /* ── Main layout ── */
-    .landing-scene {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      z-index: 1;
-    }
-
-    /* ── Ambient fire glow behind TV ── */
-    .landing-glow {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 600px;
-      height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(
-        circle,
-        rgba(255, 120, 40, 0.12) 0%,
-        rgba(255, 80, 20, 0.06) 30%,
-        rgba(180, 40, 0, 0.03) 50%,
-        transparent 70%
-      );
-      animation: glowPulse 4s ease-in-out infinite;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .landing-glow-inner {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -45%);
-      width: 320px;
-      height: 280px;
-      border-radius: 50%;
-      background: radial-gradient(
-        ellipse,
-        rgba(255, 150, 50, 0.18) 0%,
-        rgba(255, 100, 30, 0.08) 40%,
-        transparent 70%
-      );
-      animation: glowPulseInner 3s ease-in-out infinite 0.5s;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    @keyframes glowPulse {
-      0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
-      50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.05); }
-    }
-
-    @keyframes glowPulseInner {
-      0%, 100% { opacity: 0.6; }
-      30%      { opacity: 1; }
-      70%      { opacity: 0.8; }
-    }
-
-    /* ── Artist name ── */
-    .landing-title {
-      font-family: var(--mono, 'Courier New', monospace);
-      font-size: clamp(0.7rem, 1.4vw, 1rem);
-      letter-spacing: 0.45em;
-      text-transform: uppercase;
-      color: rgba(234, 242, 255, 0.85);
-      margin-bottom: 2rem;
-      opacity: 0;
-      animation: fadeSlideDown 1.2s ease 0.3s forwards;
-      text-shadow: 0 0 20px rgba(119, 85, 238, 0.4);
-      position: relative;
-      z-index: 2;
-    }
-
-    /* ── TV container ── */
-    .landing-tv-wrap {
-      position: relative;
-      opacity: 0;
-      animation: fadeIn 1.8s ease 0s forwards;
-      z-index: 2;
-    }
-
-    .landing-tv {
-      width: clamp(220px, 30vw, 380px);
-      height: auto;
-      display: block;
-      filter: drop-shadow(0 0 60px rgba(255, 120, 40, 0.25))
-              drop-shadow(0 20px 40px rgba(0, 0, 0, 0.6));
-      transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-
-    .landing-tv:hover {
-      transform: scale(1.03);
-    }
-
-    /* ── Reflection beneath TV ── */
-    .landing-reflection {
-      width: clamp(160px, 22vw, 280px);
-      height: 30px;
-      margin: -5px auto 0;
-      background: radial-gradient(
-        ellipse at center,
-        rgba(255, 120, 40, 0.15) 0%,
-        transparent 70%
-      );
-      animation: reflectionPulse 4s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    @keyframes reflectionPulse {
-      0%, 100% { opacity: 0.5; }
-      50%      { opacity: 0.9; }
-    }
-
-    /* ── Navigation ── */
-    .landing-nav {
-      display: flex;
-      align-items: center;
-      gap: clamp(1.5rem, 4vw, 3.5rem);
-      margin-top: 2.5rem;
-      opacity: 0;
-      animation: fadeSlideUp 1s ease 0.8s forwards;
-      z-index: 2;
-      position: relative;
-    }
-
-    .landing-nav a {
-      font-family: var(--mono, 'Courier New', monospace);
-      font-size: clamp(0.6rem, 1vw, 0.75rem);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: rgba(140, 155, 200, 0.5);
-      position: relative;
-      padding: 0.5rem 0;
-      transition: color 0.4s, text-shadow 0.4s;
-    }
-
-    .landing-nav a::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      right: 50%;
-      height: 1px;
-      background: var(--nav-hover-color, rgba(210, 150, 150, 0.6));
-      box-shadow: 0 0 8px var(--nav-hover-glow, rgba(210, 150, 150, 0.3));
-      transition: left 0.35s ease, right 0.35s ease;
-    }
-
-    .landing-nav a:hover::after {
-      left: 0;
-      right: 0;
-    }
-
-    .landing-nav a:hover {
-      color: var(--nav-hover-color, rgba(234, 242, 255, 0.95));
-      text-shadow: 0 0 18px var(--nav-hover-glow, rgba(150, 120, 255, 0.5));
-    }
-
-    /* Separator dots between nav items */
-    .landing-nav-dot {
-      width: 2px;
-      height: 2px;
-      border-radius: 50%;
-      background: rgba(140, 155, 200, 0.25);
-      flex-shrink: 0;
-    }
-
-    /* ── Ember particles ── */
-    .ember-canvas {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    /* ── Entrance animations ── */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-
-    @keyframes fadeSlideDown {
-      from { opacity: 0; transform: translateY(-15px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeSlideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── Corner accent lines ── */
-    .corner-line {
-      position: fixed;
-      background: rgba(119, 85, 238, 0.12);
-      z-index: 2;
-      pointer-events: none;
-    }
-    .corner-line.top-left-h  { top: 2.5rem; left: 2.5rem; width: 40px; height: 1px; }
-    .corner-line.top-left-v  { top: 2.5rem; left: 2.5rem; width: 1px; height: 40px; }
-    .corner-line.top-right-h { top: 2.5rem; right: 2.5rem; width: 40px; height: 1px; }
-    .corner-line.top-right-v { top: 2.5rem; right: 2.5rem; width: 1px; height: 40px; }
-    .corner-line.bot-left-h  { bottom: 2.5rem; left: 2.5rem; width: 40px; height: 1px; }
-    .corner-line.bot-left-v  { bottom: 2.5rem; left: 2.5rem; width: 1px; height: 40px; }
-    .corner-line.bot-right-h { bottom: 2.5rem; right: 2.5rem; width: 40px; height: 1px; }
-    .corner-line.bot-right-v { bottom: 2.5rem; right: 2.5rem; width: 1px; height: 40px; }
-
-    /* ── Noise texture overlay ── */
-    .landing-noise {
-      position: fixed;
-      inset: 0;
-      z-index: 9;
-      pointer-events: none;
-      opacity: 0.035;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-repeat: repeat;
-      background-size: 256px 256px;
     }
 
     /* ── Responsive ── */
-    @media (max-width: 600px) {
-      .landing-title { font-size: 0.65rem; letter-spacing: 0.3em; margin-bottom: 1.5rem; }
-      .landing-tv { width: clamp(180px, 55vw, 260px); }
-      .landing-nav { gap: 1.2rem; margin-top: 2rem; flex-wrap: wrap; justify-content: center; }
-      .landing-nav a { font-size: 0.58rem; letter-spacing: 0.15em; }
-      .landing-glow { width: 350px; height: 350px; }
-      .corner-line { display: none; }
+    @media (max-width: 768px) {
+      .landing-tv { width: clamp(150px, 40vw, 240px); }
+      .landing-nav-text { font-size: 11px; letter-spacing: 3px; }
+      .tv-glow { width: 280px; height: 280px; }
     }
-
-    @media (max-height: 500px) {
-      .landing-title { margin-bottom: 0.8rem; }
-      .landing-nav { margin-top: 1.2rem; }
-      .landing-tv { width: clamp(140px, 25vh, 220px); }
+    @media (max-width: 480px) {
+      .landing-tv { width: clamp(130px, 50vw, 200px); }
+      .landing-nav-text { font-size: 10px; letter-spacing: 2px; }
     }
   </style>
 </head>
 <body class="landing-body">
-
-  <!-- Scanlines -->
   <div class="landing-scanlines"></div>
 
-  <!-- Film grain noise -->
-  <div class="landing-noise"></div>
+  <div class="landing-wrap">
+    <!-- Warm glow -->
+    <div class="tv-glow"></div>
 
-  <!-- Ember particles -->
-  <canvas class="ember-canvas" id="ember-canvas"></canvas>
+    <!-- TV GIF center — NO filters -->
+    <img class="landing-tv" src="TV.gif" alt="TV">
 
-  <!-- Corner accents -->
-  <div class="corner-line top-left-h"></div>
-  <div class="corner-line top-left-v"></div>
-  <div class="corner-line top-right-h"></div>
-  <div class="corner-line top-right-v"></div>
-  <div class="corner-line bot-left-h"></div>
-  <div class="corner-line bot-left-v"></div>
-  <div class="corner-line bot-right-h"></div>
-  <div class="corner-line bot-right-v"></div>
+    <!-- SVG orbital curves + navigation -->
+    <svg class="landing-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <!-- Soft glow for curves -->
+        <filter id="softGlow">
+          <feGaussianBlur stdDeviation="1.5" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
 
-  <!-- Main scene -->
-  <div class="landing-scene">
+      <!-- ═══ Curve 1: CV (top-left) → RELIC (top-right) — top arc ═══ -->
+      <path id="c1" class="orbit-curve"
+            d="M 160,240 C 250,100 750,100 840,240"
+            filter="url(#softGlow)"/>
+      <path class="orbit-light" d="M 160,240 C 250,100 750,100 840,240"/>
 
-    <!-- Ambient glow -->
-    <div class="landing-glow"></div>
-    <div class="landing-glow-inner"></div>
+      <!-- Flourish: top-left curl -->
+      <path class="orbit-flourish"
+            d="M 160,240 C 145,255 135,248 140,232 C 145,218 158,222 160,240"
+            filter="url(#softGlow)"/>
 
-    <!-- Artist title -->
-    <div class="landing-title" id="landing-title">GGdove</div>
+      <!-- ═══ Curve 2: RELIC (top-right) → EXHIBITION (bottom-right) — right arc ═══ -->
+      <path id="c2" class="orbit-curve"
+            d="M 840,240 C 940,340 940,440 840,480"
+            filter="url(#softGlow)"/>
+      <path class="orbit-light" d="M 840,240 C 940,340 940,440 840,480"
+            style="animation-delay: -2s"/>
 
-    <!-- TV -->
-    <div class="landing-tv-wrap">
-      <img class="landing-tv" src="TV.gif" alt="TV">
-      <div class="landing-reflection"></div>
-    </div>
+      <!-- Flourish: top-right curl -->
+      <path class="orbit-flourish"
+            d="M 840,240 C 855,225 865,232 860,248 C 855,262 842,258 840,240"
+            filter="url(#softGlow)"/>
 
-    <!-- Navigation -->
-    <nav class="landing-nav" id="landing-nav">
-      <a href="bio.html">CV</a>
-      <span class="landing-nav-dot"></span>
-      <a href="relic.html">Relic</a>
-      <span class="landing-nav-dot"></span>
-      <a href="exhibition.html">Exhibition</a>
-      <span class="landing-nav-dot"></span>
-      <a href="#">Play</a>
-    </nav>
+      <!-- ═══ Curve 3: EXHIBITION (bottom-right) → PLAY (bottom-left) — bottom arc ═══ -->
+      <path id="c3" class="orbit-curve"
+            d="M 840,480 C 750,600 250,600 160,480"
+            filter="url(#softGlow)"/>
+      <path class="orbit-light" d="M 840,480 C 750,600 250,600 160,480"
+            style="animation-delay: -4s"/>
+
+      <!-- Flourish: bottom-right curl -->
+      <path class="orbit-flourish"
+            d="M 840,480 C 855,495 848,505 832,500 C 818,495 822,478 840,480"
+            filter="url(#softGlow)"/>
+
+      <!-- ═══ Curve 4: PLAY (bottom-left) → CV (top-left) — left arc ═══ -->
+      <path id="c4" class="orbit-curve"
+            d="M 160,480 C 60,440 60,340 160,240"
+            filter="url(#softGlow)"/>
+      <path class="orbit-light" d="M 160,480 C 60,440 60,340 160,240"
+            style="animation-delay: -6s"/>
+
+      <!-- Flourish: bottom-left curl -->
+      <path class="orbit-flourish"
+            d="M 160,480 C 145,495 135,488 140,472 C 145,458 158,462 160,480"
+            filter="url(#softGlow)"/>
+
+      <!-- ═══ Navigation Labels ═══ -->
+      <!-- CV — top-left -->
+      <a href="bio.html">
+        <text class="landing-nav-text" x="120" y="205" text-anchor="start">CV</text>
+      </a>
+      <!-- RELIC — top-right -->
+      <a href="relic.html">
+        <text class="landing-nav-text" x="880" y="205" text-anchor="end">Relic</text>
+      </a>
+      <!-- EXHIBITION — bottom-right -->
+      <a href="exhibition.html">
+        <text class="landing-nav-text" x="880" y="530" text-anchor="end">Exhibition</text>
+      </a>
+      <!-- PLAY — bottom-left -->
+      <a href="#">
+        <text class="landing-nav-text" x="120" y="530" text-anchor="start">Play</text>
+      </a>
+    </svg>
   </div>
 
   <script src="js/main.js"></script>
   <script>
-    // ── Load site data & apply settings ──
     loadData().then(() => {
       applyBackground(siteData.site);
       applyNavHoverColor(siteData.site);
 
-      // Update title from CMS
-      const titleEl = document.getElementById('landing-title');
-      if (titleEl && siteData.site && siteData.site.title) {
-        titleEl.textContent = siteData.site.title;
-      }
-
       // Update nav labels from CMS
       const nl = (siteData.site && siteData.site.navLabels) || {};
-      const navEl = document.getElementById('landing-nav');
-      if (navEl) {
-        const customPages = (siteData.customPages || []).map(p => ({
-          label: p.navLabel || p.title || p.id,
-          href: 'custom-page.html?id=' + encodeURIComponent(p.id)
-        }));
-        const pages = [
-          { label: nl.bio        || 'CV',         href: 'bio.html'        },
-          { label: nl.works      || 'Relic',      href: 'relic.html'      },
-          { label: nl.exhibition || 'Exhibition', href: 'exhibition.html' },
-          { label: 'Play',                         href: '#'               },
-          ...customPages
-        ];
-        navEl.innerHTML = pages.map((p, i) => {
-          const dot = i < pages.length - 1
-            ? '<span class="landing-nav-dot"></span>'
-            : '';
-          return `<a href="${p.href}">${p.label}</a>${dot}`;
-        }).join('');
-      }
+      const svg = document.querySelector('.landing-svg');
+      if (!svg) return;
+      const texts = svg.querySelectorAll('.landing-nav-text');
+      const labels = [
+        nl.bio || 'CV',
+        nl.works || 'Relic',
+        nl.exhibition || 'Exhibition',
+        'Play'
+      ];
+      texts.forEach((t, i) => { if (labels[i]) t.textContent = labels[i]; });
     });
-
-    // ── Ember / spark particle system ──
-    (function() {
-      const canvas = document.getElementById('ember-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      let W, H;
-      const embers = [];
-      const EMBER_COUNT = 35;
-
-      function resize() {
-        W = canvas.width  = window.innerWidth;
-        H = canvas.height = window.innerHeight;
-      }
-      resize();
-      window.addEventListener('resize', resize);
-
-      // TV center position (approximate)
-      function tvCenter() {
-        const tv = document.querySelector('.landing-tv');
-        if (!tv) return { x: W / 2, y: H / 2 };
-        const r = tv.getBoundingClientRect();
-        return { x: r.left + r.width / 2, y: r.top + r.height * 0.4 };
-      }
-
-      function createEmber() {
-        const c = tvCenter();
-        return {
-          x: c.x + (Math.random() - 0.5) * 80,
-          y: c.y + (Math.random() - 0.5) * 40,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: -(Math.random() * 0.8 + 0.3),
-          size: Math.random() * 2.5 + 0.5,
-          life: 1,
-          decay: Math.random() * 0.004 + 0.002,
-          color: Math.random() > 0.3
-            ? { r: 255, g: 140 + Math.random() * 80, b: 30 + Math.random() * 30 }
-            : { r: 255, g: 200 + Math.random() * 55, b: 120 + Math.random() * 80 }
-        };
-      }
-
-      for (let i = 0; i < EMBER_COUNT; i++) {
-        const e = createEmber();
-        e.life = Math.random();
-        e.y -= Math.random() * H * 0.4;
-        embers.push(e);
-      }
-
-      function animate() {
-        ctx.clearRect(0, 0, W, H);
-
-        for (let i = embers.length - 1; i >= 0; i--) {
-          const e = embers[i];
-          e.x += e.vx + Math.sin(Date.now() * 0.001 + i) * 0.15;
-          e.y += e.vy;
-          e.life -= e.decay;
-
-          if (e.life <= 0) {
-            embers[i] = createEmber();
-            continue;
-          }
-
-          const alpha = e.life * 0.6;
-          ctx.beginPath();
-          ctx.arc(e.x, e.y, e.size * e.life, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${e.color.r},${e.color.g},${e.color.b},${alpha})`;
-          ctx.fill();
-
-          // Glow
-          ctx.beginPath();
-          ctx.arc(e.x, e.y, e.size * e.life * 3, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${e.color.r},${e.color.g},${e.color.b},${alpha * 0.15})`;
-          ctx.fill();
-        }
-
-        requestAnimationFrame(animate);
-      }
-
-      animate();
-    })();
   </script>
 </body>
 </html>
