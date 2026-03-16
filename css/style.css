@@ -643,70 +643,104 @@ nav {
    EXHIBITION
    ============================================= */
 
-.exhibition-list { display: flex; flex-direction: column; gap: 3.5rem; }
+.exhibition-list { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
 
-.exhibition-item {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 3rem;
-  padding-bottom: 3.5rem;
-  border-bottom: 1px solid var(--border);
-  position: relative;
+.exh-section {
+  margin-bottom: 4rem;
 }
+.exh-section:last-of-type { margin-bottom: 2rem; }
 
-.exhibition-item::after {
-  content: '';
-  position: absolute;
-  bottom: -1px; left: 0;
-  width: 52px; height: 1px;
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
+.exh-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 2.2rem;
+  color: var(--text-bright, #e8e8f0);
+  margin: 0 0 0.5rem;
+  letter-spacing: 2px;
 }
-
-.exhibition-item:last-child { border-bottom: none; }
-.exhibition-item:last-child::after { display: none; }
-
-.exhibition-item > img,
-.exhibition-cover-wrap:not(.ex-slideshow) > img {
-  width: 100%;
-  aspect-ratio: 3/2;
-  object-fit: cover;
-  background: var(--bg-3);
-}
-/* cover-wrap acts as the image column */
-.exhibition-cover-wrap {
-  min-height: 220px;
-}
-/* slideshow overrides aspect-ratio */
-.exhibition-cover-wrap.ex-slideshow {
-  aspect-ratio: unset;
-}
-
-.exhibition-details h2 {
-  font-family: var(--saint);
+.exh-subtitle {
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.5rem;
-  font-weight: 400;
-  margin-bottom: 0.5rem;
-  letter-spacing: 0.04em;
-  color: var(--text-bright);
-  animation: vhsHeadingGlitch 5s infinite 0.8s;
+  color: var(--text-bright, #e8e8f0);
+  margin: 0 0 0.5rem;
+  letter-spacing: 1px;
 }
-
-.exhibition-meta {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  color: var(--accent);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin-bottom: 1.4rem;
-  animation: vhsGlowPulse 3.5s ease-in-out infinite;
+.exh-meta {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: var(--text-dim, #787890);
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
 }
-
-.exhibition-desc {
-  font-family: var(--serif);
+.exh-desc {
   font-size: 0.95rem;
-  color: var(--text);
-  line-height: 2;
+  line-height: 1.8;
+  color: var(--text-body, #b0b0c8);
+  margin-bottom: 2rem;
+  max-width: 720px;
+}
+.exh-desc p { margin: 0 0 1rem; }
+
+.exh-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+}
+.exh-gallery img {
+  width: 100%;
+  height: auto;
+  border-radius: 2px;
+  filter: grayscale(0.1);
+  transition: filter 0.3s;
+  cursor: pointer;
+}
+.exh-gallery img:hover { filter: grayscale(0); }
+
+.exh-video {
+  margin-bottom: 2rem;
+}
+.exh-video video,
+.exh-video iframe {
+  width: 100%;
+  max-width: 720px;
+  aspect-ratio: 16/9;
+  border: 1px solid rgba(184,184,208,0.12);
+  border-radius: 2px;
+  background: #000;
+}
+
+.exh-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.exh-links a {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: var(--text-bright, #e8e8f0);
+  text-decoration: none;
+  padding: 0.4rem 1rem;
+  border: 1px solid rgba(184,184,208,0.25);
+  border-radius: 2px;
+  transition: border-color 0.3s, color 0.3s;
+  letter-spacing: 1px;
+}
+.exh-links a:hover {
+  border-color: var(--nav-hover-color, #fff);
+  color: var(--nav-hover-color, #fff);
+}
+
+.exh-divider {
+  border: none;
+  border-top: 1px solid rgba(184,184,208,0.1);
+  margin: 3rem auto;
+  max-width: 200px;
+}
+
+@media (max-width: 600px) {
+  .exh-title { font-size: 1.6rem; }
+  .exh-gallery { grid-template-columns: 1fr; }
 }
 
 /* =============================================
@@ -981,7 +1015,7 @@ footer {
   .page-wrapper::before, .page-wrapper::after { display: none; }
   nav { flex-direction: column; gap: 1.2rem; align-items: flex-start; }
   .bio-layout, .contact-layout { grid-template-columns: 1fr; gap: 2rem; }
-  .exhibition-item { grid-template-columns: 1fr; gap: 1.5rem; }
+  .exh-section { margin-bottom: 3rem; }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
   .weapons-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
   #home-nav { padding: 1.2rem 1.5rem; }
@@ -1035,8 +1069,9 @@ footer {
 
 /* Detail page wrapper */
 .exhibition-detail-wrap {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
 /* Cover: image + info side by side */

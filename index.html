@@ -353,7 +353,7 @@
               speed: 0.15+Math.random()*0.4,
               amp: 0.5+Math.random()*2,
               alpha: ci<4 ? (0.25+Math.random()*0.25) : (0.15+Math.random()*0.2),
-              sz: sz * 0.35,
+              font: sz+'px monospace',
               ci: ci
             });
           }
@@ -366,7 +366,7 @@
           shimmerPts.push({
             segs:segs, progress:Math.random(),
             speed:0.02+Math.random()*0.025,
-            glyph:'\u2727', sz:3.5, alpha:0.5
+            glyph:'\u2727', font:'10px monospace', alpha:0.5
           });
         }
       });
@@ -578,7 +578,7 @@
         }
       });
 
-      // ── Draw rings (fillRect for performance) ──
+      // ── Draw rings ──
       function drawRings(rings, visCount, color, sc, growT) {
         for (let r = 0; r < visCount; r++) {
           const u = r / rings.length;
@@ -586,7 +586,7 @@
           let ringAlpha = 1;
           if (growT !== undefined && growT < 1) {
             const ringPos = r / rings.length;
-            const fadeZone = 0.15; // 15% of length is the fade zone
+            const fadeZone = 0.15;
             ringAlpha = Math.max(0, Math.min(1, (growT - ringPos + fadeZone) / fadeZone));
           }
           const cr = Math.min(255, Math.floor(color[0]*(1-u*0.3)));
@@ -597,8 +597,8 @@
           for (let j = 0; j < ring.length; j++) {
             const p = ring[j];
             ctx.globalAlpha = Math.min(1, p.alpha * ringAlpha);
-            const sz = Math.max(1, p.size * sc * ringAlpha);
-            ctx.fillRect(p.x - sz*0.5, p.y - sz*0.5, sz, sz);
+            ctx.font = Math.max(2, p.size*sc*ringAlpha)+'px "Courier New", monospace';
+            ctx.fillText(p.glyph, p.x, p.y);
           }
         }
       }
@@ -629,6 +629,8 @@
       function animate() {
         const t = Date.now()*0.001;
         ctx.clearRect(0, 0, W, H);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
 
         // ── Animate body: multi-frequency irregular writhing ──
         for (let i = 0; i < bodySpine.length; i++) {
@@ -719,26 +721,28 @@
           var ow = orbitW, oh = orbitH;
           orbitCtx.clearRect(0, 0, ow, oh);
 
-          // Batch by color: main curves vs stray wires (fillRect for perf)
+          // Batch by color: main curves vs stray wires
+          orbitCtx.textAlign = 'center';
+          orbitCtx.textBaseline = 'middle';
           orbitCtx.fillStyle = 'rgb(184,184,208)';
           for (var oi = 0; oi < orbitPts.length; oi++) {
             var op = orbitPts[oi];
             if (op.ci >= 4) continue;
             orbitCtx.globalAlpha = op.alpha;
-            var osz = op.sz || 2;
-            var opx = op.nx*ow + Math.sin(t*op.speed+op.phase)*op.amp;
-            var opy = op.ny*oh + Math.cos(t*op.speed*0.7+op.phase)*op.amp;
-            orbitCtx.fillRect(opx-osz*0.5, opy-osz*0.5, osz, osz);
+            orbitCtx.font = op.font;
+            orbitCtx.fillText(op.glyph,
+              op.nx*ow + Math.sin(t*op.speed+op.phase)*op.amp,
+              op.ny*oh + Math.cos(t*op.speed*0.7+op.phase)*op.amp);
           }
           orbitCtx.fillStyle = 'rgba(184,184,208,0.6)';
           for (var oi = 0; oi < orbitPts.length; oi++) {
             var op = orbitPts[oi];
             if (op.ci < 4) continue;
             orbitCtx.globalAlpha = op.alpha;
-            var osz = op.sz || 2;
-            var opx = op.nx*ow + Math.sin(t*op.speed+op.phase)*op.amp;
-            var opy = op.ny*oh + Math.cos(t*op.speed*0.7+op.phase)*op.amp;
-            orbitCtx.fillRect(opx-osz*0.5, opy-osz*0.5, osz, osz);
+            orbitCtx.font = op.font;
+            orbitCtx.fillText(op.glyph,
+              op.nx*ow + Math.sin(t*op.speed+op.phase)*op.amp,
+              op.ny*oh + Math.cos(t*op.speed*0.7+op.phase)*op.amp);
           }
 
           // Shimmer
@@ -755,8 +759,8 @@
             var px = u2*u2*u2*s.p0.x + 3*u2*u2*lT*s.p1.x + 3*u2*lT*lT*s.p2.x + lT*lT*lT*s.p3.x;
             var py = u2*u2*u2*s.p0.y + 3*u2*u2*lT*s.p1.y + 3*u2*lT*lT*s.p2.y + lT*lT*lT*s.p3.y;
             orbitCtx.globalAlpha = sp.alpha;
-            var ssz = sp.sz || 2;
-            orbitCtx.fillRect(px*ow-ssz*0.5, py*oh-ssz*0.5, ssz, ssz);
+            orbitCtx.font = sp.font;
+            orbitCtx.fillText(sp.glyph, px*ow, py*oh);
           }
           orbitCtx.globalAlpha = 1;
         }

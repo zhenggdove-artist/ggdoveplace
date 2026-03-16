@@ -777,33 +777,58 @@ function mountSlideshow(container, slides, height) {
 function renderExhibition() {
   const list = document.getElementById('exhibition-list');
   if (!list || !siteData) return;
-  siteData.exhibition.forEach(e => {
+  siteData.exhibition.forEach((e, idx) => {
     const hasSubpages = e.subpages && e.subpages.length > 0;
     const detailUrl   = 'exhibition-detail.html?id=' + encodeURIComponent(e.id);
     const allMedia    = collectExhibitionMedia(e);
-    const el = document.createElement('div');
-    el.className = 'exhibition-item';
 
-    // Slideshow cover or single image
-    const coverWrap = document.createElement('div');
-    coverWrap.className = 'exhibition-cover-wrap';
-    if (allMedia.length > 1) {
-      mountSlideshow(coverWrap, allMedia, e.slideshowHeight || '360px');
-    } else if (e.image) {
-      coverWrap.innerHTML = `<img src="${e.image}" alt="${e.title || ''}" loading="lazy">`;
+    const section = document.createElement('section');
+    section.className = 'exh-section';
+
+    // Title + meta + description
+    let html = `<h3 class="exh-title">${e.title || ''}</h3>`;
+    html += `<p class="exh-meta">${[e.year, e.venue, e.location].filter(Boolean).join('  ·  ')}</p>`;
+    if (e.description) html += `<div class="exh-desc"><p>${e.description}</p></div>`;
+
+    // Image gallery (all images from cover + subpages)
+    const images = allMedia.filter(m => m.src && !m.video);
+    if (images.length) {
+      html += '<div class="exh-gallery">';
+      images.forEach(m => {
+        html += `<img src="${m.src}" alt="${m.caption || ''}" loading="lazy">`;
+      });
+      html += '</div>';
     }
 
-    const info = document.createElement('div');
-    info.className = 'exhibition-details';
-    info.innerHTML = `
-      <h2>${e.title || ''}</h2>
-      <div class="exhibition-meta">${[e.year, e.venue, e.location].filter(Boolean).join('  ·  ')}</div>
-      <p class="exhibition-desc">${e.description || ''}</p>
-      ${hasSubpages ? `<a class="exhibition-more-link" href="${detailUrl}">More →</a>` : ''}`;
+    // Videos
+    const videos = allMedia.filter(m => m.video);
+    videos.forEach(m => {
+      const embedUrl = videoEmbedUrl(m.video);
+      if (embedUrl) {
+        html += '<div class="exh-video">';
+        if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
+          html += `<video src="${embedUrl}" controls preload="metadata" playsinline></video>`;
+        } else {
+          html += `<iframe src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
+        }
+        html += '</div>';
+      }
+    });
 
-    el.appendChild(coverWrap);
-    el.appendChild(info);
-    list.appendChild(el);
+    // "More" link
+    if (hasSubpages) {
+      html += `<div class="exh-links"><a href="${detailUrl}">More →</a></div>`;
+    }
+
+    section.innerHTML = html;
+    list.appendChild(section);
+
+    // Divider between sections
+    if (idx < siteData.exhibition.length - 1) {
+      const hr = document.createElement('hr');
+      hr.className = 'exh-divider';
+      list.appendChild(hr);
+    }
   });
 }
 
@@ -821,75 +846,63 @@ function renderExhibitionDetail() {
     return;
   }
 
-  const subpages  = exh.subpages || [];
-  const allMedia  = collectExhibitionMedia(exh);
-  const slideH    = exh.slideshowHeight || '480px';
+  const subpages = exh.subpages || [];
 
-  // ── Cover section: slideshow on the left ──
-  const coverDiv = document.createElement('div');
-  coverDiv.className = 'detail-cover';
+  // ── Header section ──
+  let html = `<h3 class="exh-title">${exh.title || ''}</h3>`;
+  html += `<p class="exh-meta">${[exh.year, exh.venue, exh.location].filter(Boolean).join('  ·  ')}</p>`;
+  if (exh.description) html += `<div class="exh-desc"><p>${exh.description}</p></div>`;
 
-  const coverMediaWrap = document.createElement('div');
-  coverMediaWrap.className = 'detail-cover-media';
-  if (allMedia.length > 0) {
-    mountSlideshow(coverMediaWrap, allMedia, slideH);
+  // Cover image
+  if (exh.image) {
+    html += `<div class="exh-gallery"><img src="${exh.image}" alt="${exh.title || ''}" loading="lazy"></div>`;
   }
 
-  const infoDiv = document.createElement('div');
-  infoDiv.className = 'detail-cover-info';
-  infoDiv.innerHTML = `
-    <h1 class="detail-title">${exh.title || ''}</h1>
-    <div class="detail-meta">${[exh.year, exh.venue, exh.location].filter(Boolean).join('  ·  ')}</div>
-    ${exh.description ? `<p class="detail-desc">${exh.description}</p>` : ''}`;
+  wrap.innerHTML = html;
 
-  coverDiv.appendChild(coverMediaWrap);
-  coverDiv.appendChild(infoDiv);
-  wrap.appendChild(coverDiv);
+  // ── Sub-pages as sequential sections ──
+  subpages.forEach((sp, i) => {
+    if (i > 0 || exh.image) {
+      const hr = document.createElement('hr');
+      hr.className = 'exh-divider';
+      wrap.appendChild(hr);
+    }
 
-  // ── Sub-page tabs ──
-  if (subpages.length > 0) {
-    const tabNav = document.createElement('div');
-    tabNav.className = 'subpage-tabs';
-    tabNav.innerHTML = subpages.map((sp, i) =>
-      `<button class="subpage-tab${i === 0 ? ' active' : ''}" data-tab="${i}">${sp.title || ('Part ' + (i + 1))}</button>`
-    ).join('');
-    wrap.appendChild(tabNav);
+    const section = document.createElement('section');
+    section.className = 'exh-section';
 
-    const panels = document.createElement('div');
-    panels.className = 'subpage-panels';
-    subpages.forEach((sp, i) => {
-      const panel = document.createElement('div');
-      panel.className = 'subpage-panel' + (i === 0 ? ' active' : '');
-      panel.dataset.panel = i;
+    let shtml = '';
+    if (sp.title) shtml += `<h4 class="exh-subtitle">${sp.title}</h4>`;
 
-      const bodyHtml = markdownToHtml(sp.body || '');
-      panel.innerHTML = `<div class="subpage-body">${bodyHtml}</div>`;
+    const bodyHtml = markdownToHtml(sp.body || '');
+    if (bodyHtml) shtml += `<div class="exh-desc">${bodyHtml}</div>`;
 
-      const imgs = sp.images || [];
-      if (imgs.length) {
-        const grid = document.createElement('div');
-        grid.className = 'subpage-images';
-        imgs.forEach(img => {
-          grid.innerHTML += renderMediaItem(img, 'subpage-figure');
-        });
-        panel.appendChild(grid);
-      }
-
-      panels.appendChild(panel);
-    });
-    wrap.appendChild(panels);
-
-    // Tab switching
-    wrap.querySelectorAll('.subpage-tab').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const idx = +btn.dataset.tab;
-        wrap.querySelectorAll('.subpage-tab').forEach(b => b.classList.remove('active'));
-        wrap.querySelectorAll('.subpage-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        wrap.querySelector('.subpage-panel[data-panel="' + idx + '"]').classList.add('active');
+    const imgs = (sp.images || []).filter(m => m.src && !m.video);
+    if (imgs.length) {
+      shtml += '<div class="exh-gallery">';
+      imgs.forEach(m => {
+        shtml += `<img src="${m.src}" alt="${m.caption || ''}" loading="lazy">`;
       });
+      shtml += '</div>';
+    }
+
+    const videos = (sp.images || []).filter(m => m.video);
+    videos.forEach(m => {
+      const embedUrl = videoEmbedUrl(m.video);
+      if (embedUrl) {
+        shtml += '<div class="exh-video">';
+        if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
+          shtml += `<video src="${embedUrl}" controls preload="metadata" playsinline></video>`;
+        } else {
+          shtml += `<iframe src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
+        }
+        shtml += '</div>';
+      }
     });
-  }
+
+    section.innerHTML = shtml;
+    wrap.appendChild(section);
+  });
 }
 
 // ── Custom Page ─────────────────────────────────
