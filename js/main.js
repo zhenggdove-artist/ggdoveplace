@@ -15,19 +15,10 @@ async function loadData() {
   // cache:'no-cache' sends a conditional request so browser always gets the
   // latest version after a CMS publish — without this, stale cached data.json
   // would make site settings changes appear to have no effect.
-  let [data, visual] = await Promise.all([
+  const [data, visual] = await Promise.all([
     fetch(DATA_URL,   { cache: 'no-cache' }).then(r => r.json()),
     fetch(VISUAL_URL, { cache: 'no-cache' }).then(r => r.json()).catch(() => ({}))
   ]);
-  // Normalise image paths: CMS writes /ggdoveplace/images/... but on custom
-  // domain the base path is just /.  Detect at runtime and strip the prefix.
-  const repoPrefix = '/ggdoveplace/';
-  const needsStrip = !location.pathname.startsWith(repoPrefix);
-  if (needsStrip) {
-    const raw = JSON.stringify(data);
-    const fixed = raw.replaceAll(repoPrefix, '/');
-    data = JSON.parse(fixed);
-  }
   siteData   = data;
   visualData = visual;
   applyFonts(siteData.site);
