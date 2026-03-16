@@ -159,6 +159,27 @@ function applyTextStyles(site) {
       } else {
         el.style.removeProperty('transform');
       }
+
+      // ── VHS Glitch 色差閃爍 ──────────────────────
+      const g = s.glitch;
+      if (g && (g.enabled === true || g.enabled === 'true')) {
+        const intensity = parseFloat(g.intensity) || 1.0;
+        const speed     = parseFloat(g.speed)     || 4.0;
+        const c1        = g.color1    || '#ff001e';
+        const c2        = g.color2    || '#003cff';
+        const glow      = g.glowColor || '#c8c0e8';
+        el.style.setProperty('--glitch-red',  c1);
+        el.style.setProperty('--glitch-blue', c2);
+        el.style.setProperty('--glitch-glow', glow);
+        el.style.setProperty('--glitch-intensity', intensity);
+        el.style.setProperty('animation', `vhsGlitchDynamic ${speed}s infinite`, 'important');
+      } else {
+        el.style.removeProperty('animation');
+        el.style.removeProperty('--glitch-red');
+        el.style.removeProperty('--glitch-blue');
+        el.style.removeProperty('--glitch-glow');
+        el.style.removeProperty('--glitch-intensity');
+      }
     });
   });
 }

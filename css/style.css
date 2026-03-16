@@ -74,6 +74,38 @@ body {
   100% { text-shadow: -2px 0 var(--red-ghost), 2px 0 var(--blue-ghost), 0 0 28px var(--accent-glow); }
 }
 
+/* Dynamic VHS glitch — colors & intensity driven by CSS custom properties set from JS
+   --glitch-red, --glitch-blue, --glitch-glow, --glitch-intensity (multiplier) */
+@keyframes vhsGlitchDynamic {
+  0%   { text-shadow: calc(-2px * var(--glitch-intensity,1)) 0 var(--glitch-red, #ff001e),
+                       calc( 2px * var(--glitch-intensity,1)) 0 var(--glitch-blue, #003cff),
+                       0 0 calc(28px * var(--glitch-intensity,1)) var(--glitch-glow, #c8c0e8); }
+  8%   { text-shadow: calc(-4px * var(--glitch-intensity,1)) 0 var(--glitch-red, #ff001e),
+                       calc( 3px * var(--glitch-intensity,1)) 1px var(--glitch-blue, #003cff),
+                       0 0 calc(16px * var(--glitch-intensity,1)) var(--glitch-glow, #c8c0e8); }
+  16%  { text-shadow: calc(-1px * var(--glitch-intensity,1)) 1px var(--glitch-red, #ff001e),
+                       calc( 1px * var(--glitch-intensity,1)) -1px var(--glitch-blue, #003cff),
+                       0 0 calc(40px * var(--glitch-intensity,1)) var(--glitch-glow, #c8c0e8); }
+  24%  { text-shadow: calc(-3px * var(--glitch-intensity,1)) 0 var(--glitch-red, #ff001e),
+                       calc( 2px * var(--glitch-intensity,1)) 0 var(--glitch-blue, #003cff),
+                       0 0 calc(22px * var(--glitch-intensity,1)) var(--glitch-glow, #c8c0e8); }
+  40%  { text-shadow: calc(-5px * var(--glitch-intensity,1)) 0 var(--glitch-red, #ff001e),
+                       calc( 3px * var(--glitch-intensity,1)) 0 var(--glitch-blue, #003cff),
+                       0 0 calc(20px * var(--glitch-intensity,1)) var(--glitch-glow, #c8c0e8); }
+  50%  { text-shadow: calc(-2px * var(--glitch-intensity,1)) 0 var(--glitch-red, #ff001e),
+                       calc( 2px * var(--glitch-intensity,1)) 0 var(--glitch-blue, #003cff),
+                       0 0 calc(44px * var(--glitch-intensity,1)) var(--glitch-glow, #c8c0e8); }
+  66%  { text-shadow: calc(-1px * var(--glitch-intensity,1)) 0 var(--glitch-red, #ff001e),
+                       calc( 1px * var(--glitch-intensity,1)) 0 var(--glitch-blue, #003cff),
+                       0 0 calc(36px * var(--glitch-intensity,1)) var(--glitch-glow, #c8c0e8); }
+  82%  { text-shadow: calc(-2px * var(--glitch-intensity,1)) 1px var(--glitch-red, #ff001e),
+                       calc( 2px * var(--glitch-intensity,1)) -1px var(--glitch-blue, #003cff),
+                       0 0 calc(30px * var(--glitch-intensity,1)) var(--glitch-glow, #c8c0e8); }
+  100% { text-shadow: calc(-2px * var(--glitch-intensity,1)) 0 var(--glitch-red, #ff001e),
+                       calc( 2px * var(--glitch-intensity,1)) 0 var(--glitch-blue, #003cff),
+                       0 0 calc(28px * var(--glitch-intensity,1)) var(--glitch-glow, #c8c0e8); }
+}
+
 /* Occasional glitch burst for nav logo */
 @keyframes vhsLogoGlitch {
   0%, 87%, 100% { text-shadow: 0 0 22px var(--accent-glow); }
@@ -802,7 +834,7 @@ nav {
   letter-spacing: 0.08em;
   margin-bottom: 0.4rem;
   color: var(--text-bright);
-  animation: vhsHeadingGlitch 4s infinite;
+  /* animation now applied dynamically via JS glitch settings */
 }
 
 .bio-content .bio-subtitle {

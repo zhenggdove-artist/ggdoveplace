@@ -320,6 +320,17 @@ collections:
                           - { label: "向下 Down ↓", name: down, widget: boolean, default: false, hint: "字母下方符文刺" }
                           - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
                           - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+                      - label: "🔴 VHS 色差閃爍 Glitch"
+                        name: glitch
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: false, hint: "勾選後此文字會有紅藍色差閃爍效果" }
+                          - { label: "紅色頻道 Red Channel", name: color1, widget: color, default: "#ff001e", required: false, hint: "色差偏移的紅色通道顏色" }
+                          - { label: "藍色頻道 Blue Channel", name: color2, widget: color, default: "#003cff", required: false, hint: "色差偏移的藍色通道顏色" }
+                          - { label: "光暈顏色 Glow Color", name: glowColor, widget: color, default: "#c8c0e8", required: false, hint: "文字周圍光暈的顏色" }
+                          - { label: "強度 Intensity (0.1–2.0)", name: intensity, widget: number, value_type: float, min: 0.1, max: 2.0, step: 0.1, default: 1.0, hint: "數值越大色差偏移越明顯" }
+                          - { label: "速度 Speed (s)", name: speed, widget: number, value_type: float, min: 0.5, max: 10, step: 0.5, default: 4.0, hint: "動畫循環秒數，越小越快" }
                   - label: "▌Bio 姓名標題 Bio h1 (.bio-content h1)"
                     name: bioH1
                     widget: object
@@ -341,6 +352,17 @@ collections:
                           - { label: "向下 Down ↓", name: down, widget: boolean, default: false }
                           - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
                           - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+                      - label: "🔴 VHS 色差閃爍 Glitch"
+                        name: glitch
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: true, hint: "勾選後此文字會有紅藍色差閃爍效果" }
+                          - { label: "紅色頻道 Red Channel", name: color1, widget: color, default: "#ff001e", required: false }
+                          - { label: "藍色頻道 Blue Channel", name: color2, widget: color, default: "#003cff", required: false }
+                          - { label: "光暈顏色 Glow Color", name: glowColor, widget: color, default: "#c8c0e8", required: false }
+                          - { label: "強度 Intensity (0.1–2.0)", name: intensity, widget: number, value_type: float, min: 0.1, max: 2.0, step: 0.1, default: 1.0 }
+                          - { label: "速度 Speed (s)", name: speed, widget: number, value_type: float, min: 0.5, max: 10, step: 0.5, default: 4.0 }
                   - label: "▌展覽標題 Exhibition h2 (.exhibition-details h2)"
                     name: exhibitionH2
                     widget: object
@@ -362,6 +384,17 @@ collections:
                           - { label: "向下 Down ↓", name: down, widget: boolean, default: false }
                           - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
                           - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+                      - label: "🔴 VHS 色差閃爍 Glitch"
+                        name: glitch
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: false, hint: "勾選後此文字會有紅藍色差閃爍效果" }
+                          - { label: "紅色頻道 Red Channel", name: color1, widget: color, default: "#ff001e", required: false }
+                          - { label: "藍色頻道 Blue Channel", name: color2, widget: color, default: "#003cff", required: false }
+                          - { label: "光暈顏色 Glow Color", name: glowColor, widget: color, default: "#c8c0e8", required: false }
+                          - { label: "強度 Intensity (0.1–2.0)", name: intensity, widget: number, value_type: float, min: 0.1, max: 2.0, step: 0.1, default: 1.0 }
+                          - { label: "速度 Speed (s)", name: speed, widget: number, value_type: float, min: 0.5, max: 10, step: 0.5, default: 4.0 }
                   - label: "▌聯絡標題 Contact h2 (.contact-info h2)"
                     name: contactH2
                     widget: object
@@ -383,6 +416,17 @@ collections:
                           - { label: "向下 Down ↓", name: down, widget: boolean, default: false }
                           - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
                           - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+                      - label: "🔴 VHS 色差閃爍 Glitch"
+                        name: glitch
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: false, hint: "勾選後此文字會有紅藍色差閃爍效果" }
+                          - { label: "紅色頻道 Red Channel", name: color1, widget: color, default: "#ff001e", required: false }
+                          - { label: "藍色頻道 Blue Channel", name: color2, widget: color, default: "#003cff", required: false }
+                          - { label: "光暈顏色 Glow Color", name: glowColor, widget: color, default: "#c8c0e8", required: false }
+                          - { label: "強度 Intensity (0.1–2.0)", name: intensity, widget: number, value_type: float, min: 0.1, max: 2.0, step: 0.1, default: 1.0 }
+                          - { label: "速度 Speed (s)", name: speed, widget: number, value_type: float, min: 0.5, max: 10, step: 0.5, default: 4.0 }
                   - label: "▌Logo 左上角品牌名 Nav Logo (.nav-logo)"
                     name: navLogo
                     widget: object
@@ -404,6 +448,17 @@ collections:
                           - { label: "向下 Down ↓", name: down, widget: boolean, default: false }
                           - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
                           - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+                      - label: "🔴 VHS 色差閃爍 Glitch"
+                        name: glitch
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: false, hint: "勾選後此文字會有紅藍色差閃爍效果" }
+                          - { label: "紅色頻道 Red Channel", name: color1, widget: color, default: "#ff001e", required: false }
+                          - { label: "藍色頻道 Blue Channel", name: color2, widget: color, default: "#003cff", required: false }
+                          - { label: "光暈顏色 Glow Color", name: glowColor, widget: color, default: "#c8c0e8", required: false }
+                          - { label: "強度 Intensity (0.1–2.0)", name: intensity, widget: number, value_type: float, min: 0.1, max: 2.0, step: 0.1, default: 1.0 }
+                          - { label: "速度 Speed (s)", name: speed, widget: number, value_type: float, min: 0.5, max: 10, step: 0.5, default: 4.0 }
                   - label: "▌Nav 導航連結文字 (.nav-links a)"
                     name: navLinks
                     widget: object
@@ -425,6 +480,17 @@ collections:
                           - { label: "向下 Down ↓", name: down, widget: boolean, default: false }
                           - { label: "強度 Intensity (0.05–1.0)", name: intensity, widget: number, value_type: float, min: 0.05, max: 1.0, step: 0.05, default: 0.3 }
                           - { label: "間隔秒數 Interval (s)", name: interval, widget: number, value_type: float, min: 0.05, max: 30, step: 0.05, default: 3.0 }
+                      - label: "🔴 VHS 色差閃爍 Glitch"
+                        name: glitch
+                        widget: object
+                        collapsed: true
+                        fields:
+                          - { label: "啟用 Enabled", name: enabled, widget: boolean, default: false, hint: "勾選後此文字會有紅藍色差閃爍效果" }
+                          - { label: "紅色頻道 Red Channel", name: color1, widget: color, default: "#ff001e", required: false }
+                          - { label: "藍色頻道 Blue Channel", name: color2, widget: color, default: "#003cff", required: false }
+                          - { label: "光暈顏色 Glow Color", name: glowColor, widget: color, default: "#c8c0e8", required: false }
+                          - { label: "強度 Intensity (0.1–2.0)", name: intensity, widget: number, value_type: float, min: 0.1, max: 2.0, step: 0.1, default: 1.0 }
+                          - { label: "速度 Speed (s)", name: speed, widget: number, value_type: float, min: 0.5, max: 10, step: 0.5, default: 4.0 }
               # ━━━ 舊版 Zalgo（已被上方取代）━━━
               - label: "⚠️ Zalgo 全域設定（舊版，已被「文字樣式」取代）"
                 name: zalgoEffect

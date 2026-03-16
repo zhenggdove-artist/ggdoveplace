@@ -44,7 +44,15 @@
           "intensity": 1,
           "interval": 30
         },
-        "useDefaultColor": false
+        "useDefaultColor": false,
+        "glitch": {
+          "enabled": true,
+          "color1": "#ff001e",
+          "color2": "#003cff",
+          "glowColor": "#c8c0e8",
+          "intensity": 1.0,
+          "speed": 4.0
+        }
       },
       "exhibitionH2": {
         "fontSize": "",
