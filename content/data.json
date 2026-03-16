@@ -136,12 +136,12 @@
     "imageAspect": "4/3",
     "siteBackground": {
       "type": "color",
-      "color": "#191926",
+      "color": "#0f0c0c",
       "useDefaultColor": false,
       "image": "",
       "video": "",
       "imageSize": "cover",
-      "overlayOpacity": 0
+      "overlayOpacity": 0.3
     },
     "animSpeed": "normal",
     "subtitle": "名為鴿子的一隻迅猛龍",
