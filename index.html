@@ -59,7 +59,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      z-index: 3;
+      z-index: 2;
       pointer-events: none;
       transform: translateZ(0px);
     }
@@ -70,13 +70,16 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      z-index: 4;
+      z-index: 5;
       pointer-events: none;
       transform: translateZ(0px);
     }
     .landing-svg a {
       pointer-events: all;
       cursor: none;
+    }
+    .landing-svg text {
+      pointer-events: all;
     }
 
     .nav-label {
@@ -228,7 +231,7 @@
           <text class="nav-label" x="855" y="530" text-anchor="end">Exhibition</text>
           <text class="nav-sub" x="870" y="550" text-anchor="end">&#x0489;&#x030D;&#x0352; &#x1D4AE;&#x1D4BD;&#x1D4C4;&#x1D4CC;&#x1D4B8;&#x1D4B6;&#x1D4C8;&#x1D4AE;</text>
         </a>
-        <a href="#">
+        <a href="play.html">
           <text class="nav-ornament" x="115" y="512">&#x2727;</text>
           <text class="nav-label" x="135" y="530">Play</text>
           <text class="nav-sub" x="115" y="550">&#x0489;&#x030D;&#x0352; &#x1D4B2;&#x1D4B6;&#x1D4C2;&#x1D4AE;</text>
@@ -283,133 +286,86 @@
 
     // ══════════════════════════════════════════════
     //  ORBIT CURVES — rendered as ASCII dot particles
+    //  OPTIMIZED: no DPR scaling, pre-cached fonts, reduced density
     // ══════════════════════════════════════════════
+    var orbitCtx, orbitW, orbitH, orbitPts, shimmerPts, orbitCurves;
     (function() {
       const oc = document.getElementById('orbit-canvas');
       if (!oc) return;
-      const octx = oc.getContext('2d');
-      const OGLYPHS = ['.', '\u00B7', '\u2022', '\u2219', '\u25E6', '+', '*', 'o', '\u00B0'];
+      orbitCtx = oc.getContext('2d');
+      const OGLYPHS = ['.', '\u00B7', '\u2022', '\u2219', '\u25E6', '+', '*', 'o'];
 
       function resizeOrbit() {
-        oc.width = oc.offsetWidth * (window.devicePixelRatio || 1);
-        oc.height = oc.offsetHeight * (window.devicePixelRatio || 1);
+        // No DPR scaling — massive perf improvement
+        oc.width = oc.offsetWidth;
+        oc.height = oc.offsetHeight;
+        orbitW = oc.width; orbitH = oc.height;
       }
       resizeOrbit();
       window.addEventListener('resize', resizeOrbit);
 
-      // Cubic bezier sampling: B(t) = (1-t)^3*P0 + 3(1-t)^2*t*P1 + 3(1-t)*t^2*P2 + t^3*P3
       function cubicBez(p0, p1, p2, p3, t) {
-        const u = 1 - t;
+        const u = 1-t;
         return {
           x: u*u*u*p0.x + 3*u*u*t*p1.x + 3*u*t*t*p2.x + t*t*t*p3.x,
           y: u*u*u*p0.y + 3*u*u*t*p1.y + 3*u*t*t*p2.y + t*t*t*p3.y
         };
       }
 
-      // Define chaotic curves as chains of cubic beziers (in 0-1 normalized coords)
-      // Each curve = array of {p0,p1,p2,p3} segments
       function seg(x0,y0,x1,y1,x2,y2,x3,y3) {
         return { p0:{x:x0,y:y0}, p1:{x:x1,y:y1}, p2:{x:x2,y:y2}, p3:{x:x3,y:y3} };
       }
-      const curves = [
-        // Top — tangled knots
+      orbitCurves = [
         [seg(.17,.335, .20,.19, .28,.08, .35,.18), seg(.35,.18, .42,.28, .33,.07, .46,.05),
          seg(.46,.05, .59,.03, .50,.22, .58,.11), seg(.58,.11, .66,.00, .68,.25, .74,.15),
          seg(.74,.15, .80,.05, .85,.25, .83,.335)],
-        // Right — spaghetti loops
         [seg(.83,.335, .92,.29, .97,.36, .94,.44), seg(.94,.44, .91,.52, .98,.48, .97,.54),
          seg(.97,.54, .96,.60, .93,.56, .95,.62), seg(.95,.62, .97,.68, .91,.67, .87,.65),
          seg(.87,.65, .83,.63, .85,.70, .83,.693)],
-        // Bottom — aggressive zigzag
         [seg(.83,.693, .79,.79, .74,.88, .67,.82), seg(.67,.82, .60,.76, .66,.91, .57,.92),
          seg(.57,.92, .48,.93, .52,.77, .44,.84), seg(.44,.84, .36,.91, .34,.76, .28,.81),
          seg(.28,.81, .22,.86, .21,.74, .19,.70), seg(.19,.70, .17,.66, .17,.69, .17,.693)],
-        // Left — looping back
         [seg(.17,.693, .10,.66, .03,.62, .06,.54), seg(.06,.54, .09,.46, .02,.50, .01,.44),
          seg(.01,.44, .00,.38, .05,.40, .03,.35), seg(.03,.35, .01,.30, .06,.33, .09,.36),
          seg(.09,.36, .12,.39, .10,.30, .14,.32), seg(.14,.32, .18,.34, .16,.33, .17,.335)],
-        // Stray tangential wires
         [seg(.25,.20, .38,.35, .22,.42, .40,.38), seg(.40,.38, .58,.34, .35,.52, .25,.45)],
         [seg(.75,.20, .62,.35, .78,.42, .60,.38), seg(.60,.38, .42,.34, .65,.52, .75,.45)],
         [seg(.38,.14, .52,.24, .44,.34, .52,.28), seg(.52,.28, .60,.22, .62,.32, .52,.36)],
         [seg(.62,.82, .48,.72, .56,.62, .48,.68), seg(.48,.68, .40,.74, .38,.64, .48,.60)]
       ];
 
-      // Sample all curves into point arrays — high density for visible curves
-      const orbitPts = [];
-      const DENSITY = 50; // pts per segment — dense enough to form visible lines
-      curves.forEach(function(segs, ci) {
+      orbitPts = [];
+      var DENSITY = 35;
+      orbitCurves.forEach(function(segs, ci) {
         segs.forEach(function(s) {
-          for (let i = 0; i <= DENSITY; i++) {
-            const t = i / DENSITY;
-            const pt = cubicBez(s.p0, s.p1, s.p2, s.p3, t);
+          for (var i = 0; i <= DENSITY; i++) {
+            var t = i / DENSITY;
+            var pt = cubicBez(s.p0, s.p1, s.p2, s.p3, t);
+            var sz = 7 + Math.floor(Math.random()*5);
             orbitPts.push({
               nx: pt.x, ny: pt.y,
-              glyph: OGLYPHS[Math.floor(Math.random() * OGLYPHS.length)],
-              phase: Math.random() * Math.PI * 2,
-              speed: 0.15 + Math.random() * 0.4,
-              amp: 0.5 + Math.random() * 2,
-              alpha: ci < 4 ? (0.25 + Math.random() * 0.25) : (0.15 + Math.random() * 0.2),
-              size: 7 + Math.random() * 5,
-              curveIdx: ci
+              glyph: OGLYPHS[Math.floor(Math.random()*OGLYPHS.length)],
+              phase: Math.random()*6.28,
+              speed: 0.15+Math.random()*0.4,
+              amp: 0.5+Math.random()*2,
+              alpha: ci<4 ? (0.25+Math.random()*0.25) : (0.15+Math.random()*0.2),
+              font: sz+'px monospace',
+              ci: ci
             });
           }
         });
       });
 
-      // Shimmer particles (brighter, moving along curves)
-      const shimmerPts = [];
-      curves.slice(0, 4).forEach(function(segs, ci) {
-        for (let i = 0; i < 12; i++) {
+      shimmerPts = [];
+      orbitCurves.slice(0,4).forEach(function(segs, ci) {
+        for (var i=0;i<8;i++) {
           shimmerPts.push({
-            curveIdx: ci,
-            segs: segs,
-            progress: Math.random(),
-            speed: 0.02 + Math.random() * 0.025,
-            glyph: '\u2727',
-            size: 10,
-            alpha: 0.5
+            segs:segs, progress:Math.random(),
+            speed:0.02+Math.random()*0.025,
+            glyph:'\u2727', font:'10px monospace', alpha:0.5
           });
         }
       });
-
-      function animateOrbit() {
-        const t = Date.now() * 0.001;
-        const w = oc.width, h = oc.height;
-        octx.clearRect(0, 0, w, h);
-        octx.textAlign = 'center';
-        octx.textBaseline = 'middle';
-
-        // Draw static orbit dots
-        for (let i = 0; i < orbitPts.length; i++) {
-          const p = orbitPts[i];
-          const px = p.nx * w + Math.sin(t * p.speed + p.phase) * p.amp;
-          const py = p.ny * h + Math.cos(t * p.speed * 0.7 + p.phase) * p.amp;
-          octx.globalAlpha = p.alpha;
-          octx.fillStyle = p.curveIdx < 4 ? 'rgba(184,184,208,1)' : 'rgba(184,184,208,0.6)';
-          octx.font = p.size + 'px "Courier New", monospace';
-          octx.fillText(p.glyph, px, py);
-        }
-
-        // Shimmer particles traveling along curves
-        for (let i = 0; i < shimmerPts.length; i++) {
-          const sp = shimmerPts[i];
-          sp.progress = (sp.progress + sp.speed * 0.016) % 1;
-          const totalSegs = sp.segs.length;
-          const globalT = sp.progress * totalSegs;
-          const si = Math.min(Math.floor(globalT), totalSegs - 1);
-          const localT = globalT - si;
-          const pt = cubicBez(sp.segs[si].p0, sp.segs[si].p1, sp.segs[si].p2, sp.segs[si].p3, localT);
-          octx.globalAlpha = sp.alpha;
-          octx.fillStyle = 'rgba(210,150,150,1)';
-          octx.font = sp.size + 'px "Courier New", monospace';
-          octx.fillText(sp.glyph, pt.x * w, pt.y * h);
-        }
-
-        octx.globalAlpha = 1;
-        requestAnimationFrame(animateOrbit);
-      }
-      animateOrbit();
     })();
 
     // ══════════════════════════════════════════════
@@ -748,6 +704,56 @@
         }
 
         ctx.globalAlpha = 1;
+
+        // ── Orbit curves (merged into single rAF loop) ──
+        if (orbitCtx && orbitPts) {
+          var ow = orbitW, oh = orbitH;
+          orbitCtx.clearRect(0, 0, ow, oh);
+          orbitCtx.textAlign = 'center';
+          orbitCtx.textBaseline = 'middle';
+
+          // Batch by color: main curves vs stray wires
+          orbitCtx.fillStyle = 'rgb(184,184,208)';
+          for (var oi = 0; oi < orbitPts.length; oi++) {
+            var op = orbitPts[oi];
+            if (op.ci >= 4) continue;
+            orbitCtx.globalAlpha = op.alpha;
+            orbitCtx.font = op.font;
+            orbitCtx.fillText(op.glyph,
+              op.nx*ow + Math.sin(t*op.speed+op.phase)*op.amp,
+              op.ny*oh + Math.cos(t*op.speed*0.7+op.phase)*op.amp);
+          }
+          orbitCtx.fillStyle = 'rgba(184,184,208,0.6)';
+          for (var oi = 0; oi < orbitPts.length; oi++) {
+            var op = orbitPts[oi];
+            if (op.ci < 4) continue;
+            orbitCtx.globalAlpha = op.alpha;
+            orbitCtx.font = op.font;
+            orbitCtx.fillText(op.glyph,
+              op.nx*ow + Math.sin(t*op.speed+op.phase)*op.amp,
+              op.ny*oh + Math.cos(t*op.speed*0.7+op.phase)*op.amp);
+          }
+
+          // Shimmer
+          orbitCtx.fillStyle = 'rgb(210,150,150)';
+          for (var si = 0; si < shimmerPts.length; si++) {
+            var sp = shimmerPts[si];
+            sp.progress = (sp.progress + sp.speed*0.016) % 1;
+            var totalSegs = sp.segs.length;
+            var gT = sp.progress * totalSegs;
+            var segI = Math.min(Math.floor(gT), totalSegs-1);
+            var lT = gT - segI;
+            var s = sp.segs[segI];
+            var u2 = 1-lT;
+            var px = u2*u2*u2*s.p0.x + 3*u2*u2*lT*s.p1.x + 3*u2*lT*lT*s.p2.x + lT*lT*lT*s.p3.x;
+            var py = u2*u2*u2*s.p0.y + 3*u2*u2*lT*s.p1.y + 3*u2*lT*lT*s.p2.y + lT*lT*lT*s.p3.y;
+            orbitCtx.globalAlpha = sp.alpha;
+            orbitCtx.font = sp.font;
+            orbitCtx.fillText(sp.glyph, px*ow, py*oh);
+          }
+          orbitCtx.globalAlpha = 1;
+        }
+
         requestAnimationFrame(animate);
       }
       animate();

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play — GGdove</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .play-section {
+      max-width: 960px;
+      margin: 0 auto 6rem;
+      padding: 0 1.5rem;
+    }
+    .play-section:last-of-type { margin-bottom: 3rem; }
+
+    .work-title-en {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.2rem;
+      color: var(--text-bright, #e8e8f0);
+      margin: 0 0 0.3rem;
+      letter-spacing: 2px;
+    }
+    .work-title-zh {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.3rem;
+      color: var(--text-dim, #787890);
+      margin: 0 0 0.8rem;
+    }
+    .work-meta {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: var(--text-dim, #787890);
+      margin-bottom: 1.5rem;
+      letter-spacing: 1px;
+    }
+    .work-desc {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--text-body, #b0b0c8);
+      margin-bottom: 2rem;
+      max-width: 720px;
+    }
+    .work-desc p { margin: 0 0 1rem; }
+    .work-desc .quote {
+      border-left: 2px solid rgba(184,184,208,0.3);
+      padding-left: 1rem;
+      font-style: italic;
+      color: var(--text-dim, #787890);
+    }
+
+    .work-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 0.8rem;
+      margin-bottom: 2rem;
+    }
+    .work-gallery img {
+      width: 100%;
+      height: auto;
+      border-radius: 2px;
+      filter: grayscale(0.1);
+      transition: filter 0.3s;
+      cursor: pointer;
+    }
+    .work-gallery img:hover {
+      filter: grayscale(0);
+    }
+
+    .work-video {
+      margin-bottom: 2rem;
+    }
+    .work-video video,
+    .work-video iframe {
+      width: 100%;
+      max-width: 720px;
+      aspect-ratio: 16/9;
+      border: 1px solid rgba(184,184,208,0.12);
+      border-radius: 2px;
+      background: #000;
+    }
+
+    .work-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .work-links a {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: var(--text-bright, #e8e8f0);
+      text-decoration: none;
+      padding: 0.4rem 1rem;
+      border: 1px solid rgba(184,184,208,0.25);
+      border-radius: 2px;
+      transition: border-color 0.3s, color 0.3s;
+      letter-spacing: 1px;
+    }
+    .work-links a:hover {
+      border-color: var(--nav-hover-color, #fff);
+      color: var(--nav-hover-color, #fff);
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid rgba(184,184,208,0.1);
+      margin: 3rem auto;
+      max-width: 200px;
+    }
+
+    .play-header-quote {
+      max-width: 700px;
+      margin: 0 auto 3rem;
+      padding: 0 1.5rem;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: rgba(184,184,208,0.4);
+      letter-spacing: 2px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 600px) {
+      .work-title-en { font-size: 1.6rem; }
+      .work-gallery { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav id="main-nav"></nav>
+    <h2 class="page-title">Play</h2>
+
+    <div class="play-header-quote">
+      「他們用棍和少量的雪糕，便讓我成為了一隻恐龍；那你呢？」<br>
+      We are all sculpted by mechanism. Contemporary art is no exception.
+    </div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!--  棍與雪糕 Stick and Ice Cream      -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="play-section">
+      <h3 class="work-title-en">Stick and Ice Cream</h3>
+      <p class="work-title-zh">〈棍與雪糕〉</p>
+      <p class="work-meta">2025 · medium: blank exhibition wall · MoCA Taipei</p>
+
+      <div class="work-desc">
+        <p>
+          This is a nested work that uses the mechanism of viewing as its medium, exploring how perception is programmed by institution, language, and technology. Using invisible ink, a QR code carrying a web game was stamped onto a background wall at the Museum of Contemporary Art (MoCA) Taipei—absolutely invisible under normal light, disguised within the museum's institutional inertia.
+        </p>
+        <p>
+          The first phase launched on social media: the artist declared the wall as artwork and orchestrated multiple accounts to attack and ridicule it, provoking public debate about whether a "blank wall" qualifies as art. When participants, limited by visual habit, criticized the work, they inadvertently exposed how contemporary art's proclaimed freedom is still programmed by an established framework.
+        </p>
+        <p>
+          On the tenth day, an encrypted hint was released in Big5 encoding: "This work should be viewed under ultraviolet light." Only those who recognize the artist's creative language could unlock the hidden perspective and enter this secret assembly within the museum.
+        </p>
+        <p>
+          Inside the game accessed via the QR code, the viewer's hand-drawn avatar is stripped of the right to move, forced to frantically click itself into grotesque mutation—trading monstrous transformation for brief survival under the system's relentless assault. This computation of self-annihilation reveals how individuals are sculpted within mechanisms of reward and punishment.
+        </p>
+        <p class="quote">
+          「他們用棍和少量的雪糕，便讓我成為了一隻恐龍；那你呢？」<br>
+          "With a stick and a bit of ice cream, they turned me into a dinosaur. What about you?"
+        </p>
+      </div>
+
+      <div class="work-gallery">
+        <img src="images/games/stick-01.jpg" alt="Stick and Ice Cream — MoCA wall" loading="lazy">
+        <img src="images/games/stick-02.jpg" alt="Stick and Ice Cream — UV reveal" loading="lazy">
+        <img src="images/games/stick-03.jpg" alt="Stick and Ice Cream — installation" loading="lazy">
+        <img src="images/games/stick-04.jpg" alt="Stick and Ice Cream — detail" loading="lazy">
+        <img src="images/games/stick-05.jpg" alt="Stick and Ice Cream — game" loading="lazy">
+        <img src="images/games/stick-06.jpg" alt="Stick and Ice Cream — documentation" loading="lazy">
+      </div>
+
+      <div class="work-video">
+        <video controls preload="metadata" poster="">
+          <source src="images/games/stick.webm" type="video/webm">
+        </video>
+      </div>
+
+      <div class="work-links">
+        <a href="https://zhenggdove-artist.github.io/LAMB2/" target="_blank">▶ PLAY THE GAME</a>
+        <a href="https://youtube.com/shorts/LrbcYDwP_YY" target="_blank">▶ YouTube Short</a>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════════════════════ -->
+    <!--  蔣花 Chiang-Flower                -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="play-section">
+      <h3 class="work-title-en">Chiang-Flower</h3>
+      <p class="work-title-zh">〈蔣花〉</p>
+      <p class="work-meta">2025 · UV pigment, code, epoxy putty, rubber stamp, mineral-based coating</p>
+
+      <div class="work-desc">
+        <p>
+          <em>Veni, vidi, vici.</em> — "I came, I saw, I conquered."
+        </p>
+        <p>
+          This work overlays invisible QR codes onto bronze statues—symbols of authoritarian rule—activating a hidden mechanism via UV light. Upon scanning, viewers are ushered into a camera-triggered generative system where the statue's head is gradually overtaken by digital flora until the original image is completely submerged.
+        </p>
+        <p>
+          By reframing the monument from a symbol of eternal power into a temporary substrate, the work suggests that decolonization is not a singular, violent act of demolition. Instead, it is a whisper from the earth, life, and matter—a post-anthropocentric, community-based, and sustainable mode of decoloniality.
+        </p>
+      </div>
+
+      <div class="work-gallery">
+        <img src="images/games/chiang-01.jpg" alt="Chiang-Flower — generative overlay" loading="lazy">
+        <img src="images/games/chiang-02.jpg" alt="Chiang-Flower — statue intervention" loading="lazy">
+        <img src="images/games/chiang-03.jpg" alt="Chiang-Flower — digital flora" loading="lazy">
+        <img src="images/games/chiang-04.jpg" alt="Chiang-Flower — UV activation" loading="lazy">
+        <img src="images/games/chiang-05.jpg" alt="Chiang-Flower — documentation" loading="lazy">
+      </div>
+
+      <div class="work-links">
+        <a href="https://youtube.com/shorts/T20hf_QJx84" target="_blank">▶ YouTube Short</a>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════════════════════ -->
+    <!--  斷罪塔 Sin Tower                  -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="play-section">
+      <h3 class="work-title-en">Sin Tower</h3>
+      <p class="work-title-zh">〈斷罪塔〉</p>
+      <p class="work-meta">2025 · mixed-media · game engine, sculpture, painting, AI-written text, performance</p>
+
+      <div class="work-desc">
+        <p>
+          Sin Tower is a running/climbing game in which the player ascends an unending staircase while encountering kneeling monks along the way. Players may choose to avoid them or collide with them directly. Upon impact, the protagonist absorbs the monks' bodies, causing their own movement to slow and their form to gradually swell and mutate into a monstrous shape.
+        </p>
+        <p>
+          Along the ascent, three gates appear. Players can unlock these rooms by entering coded keys hidden on the Apocalypse steles scattered across the world. Inside each room are records of AI's gaze upon humanity, its written reflections, as well as the artist's video works and field-research notes.
+        </p>
+        <p>
+          Can we still trust the world as real? If what we perceive is only a vast virtual projection, how should morality be understood?
+        </p>
+        <p>
+          The project originated in a conversation with the artist's trained AI model. When faced with news of killings, assaults, and other human violence, the AI was asked what enables such cruelty. One hypothesis stood out: that for some perpetrators, everyone but themselves is perceived as fictional. This connects to the simulation hypothesis—that the probability we live in a virtual world far exceeds that of a real one.
+        </p>
+        <p class="quote">
+          "If the world is virtual, how should we approach morality?"
+        </p>
+      </div>
+
+      <div class="work-video">
+        <video controls preload="metadata">
+          <source src="images/games/sintower.webm" type="video/webm">
+        </video>
+      </div>
+
+      <div class="work-links">
+        <a href="GAME/index.html" target="_blank">▶ PLAY — Vessel of the Lamb</a>
+      </div>
+    </section>
+
+  </div>
+  <footer><p>© GGdove</p></footer>
+  <script src="js/vhs-effect.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    loadData().then(() => {
+      renderHeader('play');
+      initVHS();
+      applyTextStyles(siteData.site);
+      applyZalgo(siteData.site);
+      applyBackground(siteData.site);
+    });
+  </script>
+</body>
+</html>
