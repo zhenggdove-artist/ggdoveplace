@@ -76,10 +76,12 @@
     }
     .landing-svg a {
       pointer-events: all;
-      cursor: none;
+      cursor: pointer;
+      text-decoration: none;
     }
     .landing-svg text {
       pointer-events: all;
+      cursor: pointer;
     }
 
     .nav-label {
@@ -89,10 +91,13 @@
       letter-spacing: 4px;
       text-transform: uppercase;
       fill: #b8b8d0;
-      cursor: none;
-      transition: fill 0.3s;
+      cursor: pointer;
+      transition: fill 0.3s, filter 0.3s;
     }
-    .nav-label:hover { fill: #ffffff; }
+    .landing-svg a:hover .nav-label {
+      fill: var(--nav-hover-color, #ffffff);
+      filter: drop-shadow(0 0 8px var(--nav-hover-glow, rgba(255,255,255,0.4)));
+    }
 
     .nav-sub {
       font-family: 'Courier New', monospace;
@@ -100,12 +105,20 @@
       font-style: italic;
       fill: #787890;
       letter-spacing: 1px;
+      transition: fill 0.3s;
+    }
+    .landing-svg a:hover .nav-sub {
+      fill: var(--nav-hover-color, #ffffff);
     }
 
     .nav-ornament {
       font-family: 'Courier New', monospace;
       font-size: 15px;
       fill: rgba(184, 184, 208, 0.35);
+      transition: fill 0.3s;
+    }
+    .landing-svg a:hover .nav-ornament {
+      fill: var(--nav-hover-color, #ffffff);
     }
 
     .dino-cursor {
@@ -182,9 +195,10 @@
       .nav-ornament { font-size: 22px; }
       .dino-cursor { display: none; }
       body.landing-body { cursor: auto; }
-      .landing-svg { pointer-events: auto; }
-      .landing-svg a { cursor: pointer; pointer-events: auto; }
-      .landing-svg text { pointer-events: auto; cursor: pointer; }
+      .landing-svg { pointer-events: auto !important; }
+      .landing-svg a { cursor: pointer !important; pointer-events: auto !important; }
+      .landing-svg text { pointer-events: auto !important; cursor: pointer !important; }
+      .nav-label { cursor: pointer !important; }
       .creature-canvas { cursor: auto; }
       .landing-header { padding: 1rem; }
       .ascii-deco { display: none; }
@@ -506,7 +520,7 @@
         tentacles.push({
           rings: rings, spine: spine,
           spineBase: spine.map(p => ({x:p.x, y:p.y})),
-          birth: Date.now(), growDuration: 300+Math.random()*200,
+          birth: Date.now(), growDuration: 375+Math.random()*250,
           totalRings: TENT_RINGS, color: pal, baseR: baseR,
           wrigglePhase: Math.random()*Math.PI*2,
           wriggleFreq: 1.5+Math.random()*2.5,
