@@ -29,7 +29,12 @@
           "intensity": 1,
           "interval": 30
         },
-        "useDefaultColor": false
+        "useDefaultColor": false,
+        "glitch": {
+          "enabled": true,
+          "intensity": 0.1,
+          "speed": 10
+        }
       },
       "bioH1": {
         "fontSize": "20",
@@ -50,12 +55,12 @@
           "color1": "#ff001e",
           "color2": "#003cff",
           "glowColor": "#c8c0e8",
-          "intensity": 1.0,
-          "speed": 4.0
+          "intensity": 0.2,
+          "speed": 5
         }
       },
       "exhibitionH2": {
-        "fontSize": "",
+        "fontSize": "20",
         "x": "0px",
         "y": "0px",
         "color": "#6a6a8c",
@@ -67,10 +72,15 @@
           "intensity": 1,
           "interval": 30
         },
-        "useDefaultColor": false
+        "useDefaultColor": false,
+        "glitch": {
+          "enabled": true,
+          "intensity": 0.2,
+          "speed": 5
+        }
       },
       "contactH2": {
-        "fontSize": "",
+        "fontSize": "20",
         "x": "0px",
         "y": "0px",
         "color": "#6a6a8c",
@@ -82,7 +92,12 @@
           "intensity": 1,
           "interval": 30
         },
-        "useDefaultColor": false
+        "useDefaultColor": false,
+        "glitch": {
+          "enabled": true,
+          "intensity": 0.2,
+          "speed": 5.5
+        }
       },
       "navLogo": {
         "fontSize": "30",
@@ -97,10 +112,15 @@
           "intensity": 0.4,
           "interval": 0.1
         },
-        "useDefaultColor": true
+        "useDefaultColor": true,
+        "glitch": {
+          "enabled": true,
+          "intensity": 0.1,
+          "speed": 4.5
+        }
       },
       "navLinks": {
-        "fontSize": "",
+        "fontSize": "15",
         "x": "0px",
         "y": "0px",
         "color": "#6a6a8c",
@@ -112,7 +132,12 @@
           "intensity": 1,
           "interval": 30
         },
-        "useDefaultColor": true
+        "useDefaultColor": true,
+        "glitch": {
+          "enabled": true,
+          "intensity": 0.2,
+          "speed": 5
+        }
       }
     },
     "frameSettings": {
