@@ -237,22 +237,22 @@
       <a href="bio.html">
         <text class="nav-ornament" x="115" y="180">&#x2727;</text>
         <text class="nav-label" x="135" y="198">CV</text>
-        <text class="nav-sub" x="115" y="218">&#x0489;&#x030D;&#x0352;&#x0357; &#x1D4AB;&#x1D4C1;&#x1D4B8;&#x1D4BB;&#x1D4BE;&#x1D4C1;&#x1D4AE;</text>
+        <text class="nav-sub" x="115" y="218">&#xB7; profiles</text>
       </a>
       <a href="relic.html">
         <text class="nav-ornament" x="870" y="180" text-anchor="end">&#x2727;</text>
-        <text class="nav-label" x="855" y="198" text-anchor="end">Relic</text>
-        <text class="nav-sub" x="870" y="218" text-anchor="end">&#x0489;&#x030D;&#x0352; &#x1D4B2;&#x1D4C7;&#x1D4C9;&#x1D4BE;&#x1D4BB;&#x1D4B6;&#x1D4B8;&#x1D4C9;&#x1D4C8;</text>
+        <text class="nav-label" x="855" y="198" text-anchor="end">Relics</text>
+        <text class="nav-sub" x="870" y="218" text-anchor="end">&#xB7; artifacts</text>
       </a>
       <a href="exhibition.html">
         <text class="nav-ornament" x="870" y="512" text-anchor="end">&#x2727;</text>
         <text class="nav-label" x="855" y="530" text-anchor="end">Exhibition</text>
-        <text class="nav-sub" x="870" y="550" text-anchor="end">&#x0489;&#x030D;&#x0352; &#x1D4AE;&#x1D4BD;&#x1D4C4;&#x1D4CC;&#x1D4B8;&#x1D4B6;&#x1D4C8;&#x1D4AE;</text>
+        <text class="nav-sub" x="870" y="550" text-anchor="end">&#xB7; showcase</text>
       </a>
       <a href="play.html">
         <text class="nav-ornament" x="115" y="512">&#x2727;</text>
         <text class="nav-label" x="135" y="530">Play</text>
-        <text class="nav-sub" x="115" y="550">&#x0489;&#x030D;&#x0352; &#x1D4B2;&#x1D4B6;&#x1D4C2;&#x1D4AE;</text>
+        <text class="nav-sub" x="115" y="550">&#xB7; games</text>
       </a>
     </svg>
   </div>
@@ -269,7 +269,7 @@
       }
       const nl = (siteData.site && siteData.site.navLabels) || {};
       const labels = document.querySelectorAll('.nav-label');
-      [nl.bio || 'CV', nl.works || 'Relic', nl.exhibition || 'Exhibition', 'Play']
+      [nl.bio || 'CV', 'Relics', nl.exhibition || 'Exhibition', 'Play']
         .forEach((v, i) => { if (labels[i]) labels[i].textContent = v; });
     });
 

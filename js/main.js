@@ -465,9 +465,9 @@ function renderHeader(activePage) {
   }));
   const pages = [
     { id: 'cv',         label: nl.bio         || 'CV',          href: 'bio.html'        },
-    { id: 'relic',      label: nl.works       || 'Relic',       href: 'relic.html'      },
+    { id: 'relic',      label: 'Relics',                         href: 'relic.html'      },
     { id: 'exhibition', label: nl.exhibition  || 'Exhibition',  href: 'exhibition.html' },
-    { id: 'play',       label: 'Play',                          href: '#'               },
+    { id: 'play',       label: 'Play',                          href: 'play.html'       },
     ...customPages
   ];
   nav.innerHTML = `
@@ -663,7 +663,7 @@ function collectExhibitionMedia(exh) {
 function videoEmbedUrl(url) {
   if (!url) return null;
   // YouTube
-  let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{8,11})/);
   if (m) return 'https://www.youtube.com/embed/' + m[1] + '?rel=0&modestbranding=1';
   // Vimeo
   m = url.match(/vimeo\.com\/(\d+)/);
