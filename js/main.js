@@ -15,7 +15,7 @@ async function loadData() {
   // cache:'no-cache' sends a conditional request so browser always gets the
   // latest version after a CMS publish — without this, stale cached data.json
   // would make site settings changes appear to have no effect.
-  const [data, visual] = await Promise.all([
+  let [data, visual] = await Promise.all([
     fetch(DATA_URL,   { cache: 'no-cache' }).then(r => r.json()),
     fetch(VISUAL_URL, { cache: 'no-cache' }).then(r => r.json()).catch(() => ({}))
   ]);
