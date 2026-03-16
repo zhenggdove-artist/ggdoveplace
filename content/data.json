@@ -35,7 +35,7 @@
         "fontSize": "20",
         "x": "0px",
         "y": "-20",
-        "color": "",
+        "color": "#6a6a8c",
         "zalgo": {
           "enabled": true,
           "up": true,
@@ -44,13 +44,13 @@
           "intensity": 1,
           "interval": 30
         },
-        "useDefaultColor": true
+        "useDefaultColor": false
       },
       "exhibitionH2": {
         "fontSize": "",
         "x": "0px",
         "y": "0px",
-        "color": "",
+        "color": "#6a6a8c",
         "zalgo": {
           "enabled": true,
           "up": true,
@@ -59,13 +59,13 @@
           "intensity": 1,
           "interval": 30
         },
-        "useDefaultColor": true
+        "useDefaultColor": false
       },
       "contactH2": {
         "fontSize": "",
         "x": "0px",
         "y": "0px",
-        "color": "",
+        "color": "#6a6a8c",
         "zalgo": {
           "enabled": true,
           "up": true,
@@ -74,20 +74,20 @@
           "intensity": 1,
           "interval": 30
         },
-        "useDefaultColor": true
+        "useDefaultColor": false
       },
       "navLogo": {
         "fontSize": "30",
         "x": "0px",
         "y": "0px",
-        "color": "",
+        "color": "#6a6a8c",
         "zalgo": {
           "enabled": true,
           "up": true,
           "mid": true,
           "down": true,
           "intensity": 0.4,
-          "interval": 0.05
+          "interval": 0.1
         },
         "useDefaultColor": true
       },
@@ -95,7 +95,7 @@
         "fontSize": "",
         "x": "0px",
         "y": "0px",
-        "color": "",
+        "color": "#6a6a8c",
         "zalgo": {
           "enabled": true,
           "up": true,
