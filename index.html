@@ -6,7 +6,6 @@
   <title>GGdove</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* ── Saint font for English titles ── */
     @font-face {
       font-family: 'Saint';
       src: url('fonts/saint.otf') format('opentype');
@@ -32,7 +31,6 @@
       perspective: 900px;
     }
 
-    /* ── Tilt container ── */
     .tilt-scene {
       position: relative;
       width: 100%;
@@ -45,15 +43,14 @@
       transition: transform 0.15s ease-out;
     }
 
-    /* ── TV video ── */
-    .landing-tv {
-      position: relative;
+    /* ── Creature canvas (replaces TV) ── */
+    .creature-canvas {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) translateZ(30px);
       z-index: 2;
-      width: clamp(90px, 12vw, 160px);
-      height: auto;
-      display: block;
-      will-change: transform;
-      transform: translateZ(30px);
+      cursor: none;
     }
 
     /* ── SVG orbital curves + nav ── */
@@ -71,7 +68,6 @@
       cursor: none;
     }
 
-    /* Curves — 3x thicker */
     .orbit-curve {
       fill: none;
       stroke: rgba(184, 184, 208, 0.16);
@@ -79,7 +75,6 @@
       stroke-linecap: round;
     }
 
-    /* Decorative flourish curls — 3x thicker */
     .orbit-curl {
       fill: none;
       stroke: rgba(184, 184, 208, 0.12);
@@ -87,7 +82,6 @@
       stroke-linecap: round;
     }
 
-    /* Traveling shimmer — 3x thicker */
     @keyframes shimmerTravel {
       0%   { stroke-dashoffset: 1400; }
       100% { stroke-dashoffset: 0; }
@@ -101,7 +95,6 @@
       animation: shimmerTravel 10s linear infinite;
     }
 
-    /* ── Navigation text — Saint font, 50% larger ── */
     .nav-label {
       font-family: 'Saint', 'Courier New', monospace;
       font-size: 19.5px;
@@ -112,11 +105,8 @@
       cursor: none;
       transition: fill 0.3s;
     }
-    .nav-label:hover {
-      fill: #ffffff;
-    }
+    .nav-label:hover { fill: #ffffff; }
 
-    /* Decorative sub-label — 50% larger */
     .nav-sub {
       font-family: 'Courier New', monospace;
       font-size: 13.5px;
@@ -125,14 +115,12 @@
       letter-spacing: 1px;
     }
 
-    /* Decorative unicode ornament — 50% larger */
     .nav-ornament {
       font-family: 'Courier New', monospace;
       font-size: 15px;
       fill: rgba(184, 184, 208, 0.35);
     }
 
-    /* ── Dino Cursor ── */
     .dino-cursor {
       position: fixed;
       z-index: 9999;
@@ -142,10 +130,8 @@
       opacity: 0;
       transform: translate(-24px, -24px);
       user-select: none;
-      image-rendering: auto;
     }
 
-    /* ── Subtle scanlines ── */
     .landing-scanlines {
       position: fixed;
       inset: 0;
@@ -153,19 +139,14 @@
       pointer-events: none;
       background: repeating-linear-gradient(
         to bottom,
-        transparent 0px,
-        transparent 3px,
-        rgba(0,0,0,0.03) 3px,
-        rgba(0,0,0,0.03) 6px
+        transparent 0px, transparent 3px,
+        rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 6px
       );
     }
 
-    /* ── Artist name header — Saint font, 50% larger ── */
     .landing-header {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       z-index: 5;
       display: flex;
       justify-content: center;
@@ -179,7 +160,6 @@
       font-family: 'Courier New', monospace;
       font-size: 0.975rem;
       color: rgba(120, 120, 144, 0.4);
-      letter-spacing: 0;
       white-space: nowrap;
     }
 
@@ -191,19 +171,35 @@
       white-space: nowrap;
     }
 
-    /* ── Responsive ── */
+    /* Click counter */
+    .click-counter {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      color: rgba(120, 120, 144, 0);
+      letter-spacing: 3px;
+      transition: color 0.5s;
+      pointer-events: none;
+    }
+    .click-counter.visible {
+      color: rgba(120, 120, 144, 0.5);
+    }
+
     @media (max-width: 768px) {
-      .landing-tv { width: clamp(70px, 19vw, 110px); }
       .nav-label { font-size: 15px; letter-spacing: 2px; }
       .nav-sub { font-size: 10.5px; }
       .dino-cursor { display: none; }
       body.landing-body { cursor: auto; }
       .landing-svg a { cursor: auto; }
-      .landing-header { padding: 1rem 1rem; }
+      .creature-canvas { cursor: auto; }
+      .landing-header { padding: 1rem; }
       .ascii-deco { display: none; }
     }
     @media (max-width: 480px) {
-      .landing-tv { width: clamp(60px, 22vw, 90px); }
       .nav-label { font-size: 13.5px; letter-spacing: 1.5px; }
     }
   </style>
@@ -211,146 +207,100 @@
 <body class="landing-body">
   <div class="landing-scanlines"></div>
 
-  <!-- Header with artist name -->
   <div class="landing-header">
     <span class="ascii-deco">o()xxxx[{:::::::::::::::::::></span>
     <span class="landing-artist">&#xFF61;&#xFF65;&#xFF9F;&#xFF65;&#x2727; GGdove &#x2727;&#xFF65;&#xFF9F;&#xFF65;&#xFF61;</span>
     <span class="ascii-deco">&lt;:::::::::::::::::::}]xxxx()o</span>
   </div>
 
-  <!-- Dino Cursor -->
   <img id="dino-cursor" class="dino-cursor" src="images/cursor-dino.png" alt="" aria-hidden="true">
+
+  <div class="click-counter" id="click-counter"></div>
 
   <div class="landing-wrap">
     <div class="tilt-scene" id="tilt-scene">
 
-      <!-- TV video -->
-      <video class="landing-tv" autoplay loop muted playsinline>
-        <source src="TV.webm" type="video/webm">
-        <img src="TV.gif" alt="TV">
-      </video>
+      <!-- Creature canvas (replaces TV) -->
+      <canvas class="creature-canvas" id="creature-canvas" width="300" height="300"></canvas>
 
       <!-- SVG orbital curves + navigation -->
       <svg class="landing-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
+        <path id="c1" class="orbit-curve" d="M 170,235 C 280,95 720,95 830,235"/>
+        <path class="orbit-shimmer" d="M 170,235 C 280,95 720,95 830,235"/>
+        <path class="orbit-curl" d="M 170,235 C 155,252 143,244 148,228 C 153,214 168,218 170,235"/>
+        <path class="orbit-curl" d="M 830,235 C 845,218 857,226 852,242 C 847,256 832,252 830,235"/>
 
-        <!-- ═══ Curve 1: top arc (CV → RELIC) ═══ -->
-        <path id="c1" class="orbit-curve"
-              d="M 170,235 C 280,95 720,95 830,235"/>
-        <path class="orbit-shimmer"
-              d="M 170,235 C 280,95 720,95 830,235"/>
-        <!-- curl at CV -->
-        <path class="orbit-curl"
-              d="M 170,235 C 155,252 143,244 148,228 C 153,214 168,218 170,235"/>
-        <!-- curl at RELIC -->
-        <path class="orbit-curl"
-              d="M 830,235 C 845,218 857,226 852,242 C 847,256 832,252 830,235"/>
+        <path id="c2" class="orbit-curve" d="M 830,235 C 935,340 935,430 830,485"/>
+        <path class="orbit-shimmer" d="M 830,235 C 935,340 935,430 830,485" style="animation-delay:-2.5s"/>
 
-        <!-- ═══ Curve 2: right arc (RELIC → EXHIBITION) ═══ -->
-        <path id="c2" class="orbit-curve"
-              d="M 830,235 C 935,340 935,430 830,485"/>
-        <path class="orbit-shimmer"
-              d="M 830,235 C 935,340 935,430 830,485"
-              style="animation-delay:-2.5s"/>
+        <path id="c3" class="orbit-curve" d="M 830,485 C 720,615 280,615 170,485"/>
+        <path class="orbit-shimmer" d="M 830,485 C 720,615 280,615 170,485" style="animation-delay:-5s"/>
+        <path class="orbit-curl" d="M 830,485 C 845,500 838,512 822,507 C 808,502 812,485 830,485"/>
+        <path class="orbit-curl" d="M 170,485 C 155,500 143,492 148,476 C 153,462 168,466 170,485"/>
 
-        <!-- ═══ Curve 3: bottom arc (EXHIBITION → PLAY) ═══ -->
-        <path id="c3" class="orbit-curve"
-              d="M 830,485 C 720,615 280,615 170,485"/>
-        <path class="orbit-shimmer"
-              d="M 830,485 C 720,615 280,615 170,485"
-              style="animation-delay:-5s"/>
-        <!-- curl at EXHIBITION -->
-        <path class="orbit-curl"
-              d="M 830,485 C 845,500 838,512 822,507 C 808,502 812,485 830,485"/>
-        <!-- curl at PLAY -->
-        <path class="orbit-curl"
-              d="M 170,485 C 155,500 143,492 148,476 C 153,462 168,466 170,485"/>
+        <path id="c4" class="orbit-curve" d="M 170,485 C 65,430 65,340 170,235"/>
+        <path class="orbit-shimmer" d="M 170,485 C 65,430 65,340 170,235" style="animation-delay:-7.5s"/>
 
-        <!-- ═══ Curve 4: left arc (PLAY → CV) ═══ -->
-        <path id="c4" class="orbit-curve"
-              d="M 170,485 C 65,430 65,340 170,235"/>
-        <path class="orbit-shimmer"
-              d="M 170,485 C 65,430 65,340 170,235"
-              style="animation-delay:-7.5s"/>
-
-        <!-- ═══ Navigation Labels ═══ -->
-
-        <!-- CV — top-left -->
+        <!-- Navigation Labels -->
         <a href="bio.html">
           <text class="nav-ornament" x="115" y="180">&#x2727;</text>
           <text class="nav-label" x="135" y="198">CV</text>
           <text class="nav-sub" x="115" y="218">&#x0489;&#x030D;&#x0352;&#x0357; &#x1D4AB;&#x1D4C1;&#x1D4B8;&#x1D4BB;&#x1D4BE;&#x1D4C1;&#x1D4AE;</text>
         </a>
-
-        <!-- RELIC — top-right -->
         <a href="relic.html">
           <text class="nav-ornament" x="870" y="180" text-anchor="end">&#x2727;</text>
           <text class="nav-label" x="855" y="198" text-anchor="end">Relic</text>
           <text class="nav-sub" x="870" y="218" text-anchor="end">&#x0489;&#x030D;&#x0352; &#x1D4B2;&#x1D4C7;&#x1D4C9;&#x1D4BE;&#x1D4BB;&#x1D4B6;&#x1D4B8;&#x1D4C9;&#x1D4C8;</text>
         </a>
-
-        <!-- EXHIBITION — bottom-right -->
         <a href="exhibition.html">
           <text class="nav-ornament" x="870" y="512" text-anchor="end">&#x2727;</text>
           <text class="nav-label" x="855" y="530" text-anchor="end">Exhibition</text>
           <text class="nav-sub" x="870" y="550" text-anchor="end">&#x0489;&#x030D;&#x0352; &#x1D4AE;&#x1D4BD;&#x1D4C4;&#x1D4CC;&#x1D4B8;&#x1D4B6;&#x1D4C8;&#x1D4AE;</text>
         </a>
-
-        <!-- PLAY — bottom-left -->
         <a href="#">
           <text class="nav-ornament" x="115" y="512">&#x2727;</text>
           <text class="nav-label" x="135" y="530">Play</text>
           <text class="nav-sub" x="115" y="550">&#x0489;&#x030D;&#x0352; &#x1D4B2;&#x1D4B6;&#x1D4C2;&#x1D4AE;</text>
         </a>
-
       </svg>
     </div>
   </div>
 
   <script src="js/main.js"></script>
   <script>
-    // ── Load CMS data ──
+    // ── CMS data ──
     loadData().then(() => {
       applyBackground(siteData.site);
       applyNavHoverColor(siteData.site);
-
-      // Update artist name
       const artistEl = document.querySelector('.landing-artist');
       if (artistEl && siteData.site && siteData.site.title) {
         artistEl.innerHTML = '\uFF61\uFF65\uFF9F\uFF65\u2727 ' + siteData.site.title + ' \u2727\uFF65\uFF9F\uFF65\uFF61';
       }
-
-      // Update nav labels
       const nl = (siteData.site && siteData.site.navLabels) || {};
       const labels = document.querySelectorAll('.nav-label');
-      const map = [nl.bio || 'CV', nl.works || 'Relic', nl.exhibition || 'Exhibition', 'Play'];
-      labels.forEach((t, i) => { if (map[i]) t.textContent = map[i]; });
+      [nl.bio || 'CV', nl.works || 'Relic', nl.exhibition || 'Exhibition', 'Play']
+        .forEach((v, i) => { if (labels[i]) labels[i].textContent = v; });
     });
 
-    // ── 3D Tilt on mousemove ──
+    // ── 3D Tilt ──
     (function() {
       const scene = document.getElementById('tilt-scene');
       if (!scene) return;
-
       document.addEventListener('mousemove', function(e) {
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2;
-        const tiltY = ((e.clientX - cx) / cx) * 6;
-        const tiltX = ((cy - e.clientY) / cy) * 3;
-        scene.style.setProperty('--tiltY', tiltY + 'deg');
-        scene.style.setProperty('--tiltX', tiltX + 'deg');
+        const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+        scene.style.setProperty('--tiltY', ((e.clientX - cx) / cx * 6) + 'deg');
+        scene.style.setProperty('--tiltX', ((cy - e.clientY) / cy * 3) + 'deg');
       });
-
       document.addEventListener('mouseleave', function() {
         scene.style.setProperty('--tiltY', '0deg');
         scene.style.setProperty('--tiltX', '0deg');
       });
     })();
 
-    // ── Dino cursor following mouse ──
+    // ── Dino cursor ──
     (function() {
       const cur = document.getElementById('dino-cursor');
       if (!cur || window.innerWidth < 768) return;
-
       document.addEventListener('mousemove', function(e) {
         cur.style.left = e.clientX + 'px';
         cur.style.top = e.clientY + 'px';
@@ -358,6 +308,216 @@
       });
       document.addEventListener('mouseleave', function() { cur.style.opacity = '0'; });
       document.addEventListener('mouseenter', function() { cur.style.opacity = '1'; });
+    })();
+
+    // ══════════════════════════════════════════════
+    //  CREATURE — writhing coil + tentacles on click
+    // ══════════════════════════════════════════════
+    (function() {
+      const canvas = document.getElementById('creature-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = 300, H = 300;
+      const CX = W / 2, CY = H / 2;
+
+      let clickCount = 0;
+      let bodyThickness = 2;
+      let tentacles = [];
+      let flashAlpha = 0;
+      let redirecting = false;
+
+      const counterEl = document.getElementById('click-counter');
+
+      // ── Main body: a coiling curve defined by control points that writhe ──
+      const SEGS = 8;
+      const spine = [];
+      for (let i = 0; i <= SEGS; i++) {
+        const angle = (i / SEGS) * Math.PI * 3.5;
+        const radius = 15 + i * 6;
+        spine.push({
+          baseX: CX + Math.cos(angle) * radius * 0.4,
+          baseY: CY + Math.sin(angle) * radius * 0.4,
+          x: 0, y: 0,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.3 + Math.random() * 0.4,
+          amp: 3 + Math.random() * 5
+        });
+      }
+
+      // ── Tentacle class ──
+      function spawnTentacles(originX, originY, count) {
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const len = 20 + Math.random() * 40;
+          const segs = 5 + Math.floor(Math.random() * 4);
+          const pts = [];
+          for (let j = 0; j <= segs; j++) {
+            const t = j / segs;
+            pts.push({
+              x: originX + Math.cos(angle + Math.sin(t * 3) * 0.8) * len * t,
+              y: originY + Math.sin(angle + Math.cos(t * 3) * 0.8) * len * t,
+              phase: Math.random() * Math.PI * 2,
+              speed: 0.5 + Math.random() * 1,
+              amp: 2 + Math.random() * 6
+            });
+          }
+          tentacles.push({
+            pts: pts,
+            thickness: 1 + Math.random() * 2,
+            color: `rgba(${160 + Math.random()*60}, ${80 + Math.random()*60}, ${80 + Math.random()*60}, 0.5)`,
+            birth: Date.now(),
+            growT: 0
+          });
+        }
+      }
+
+      // ── Click detection ──
+      canvas.addEventListener('click', function(e) {
+        if (redirecting) return;
+        const rect = canvas.getBoundingClientRect();
+        const mx = (e.clientX - rect.left) * (W / rect.width);
+        const my = (e.clientY - rect.top) * (H / rect.height);
+
+        // Check if click is near the body curve
+        let hit = false;
+        for (let i = 0; i < spine.length; i++) {
+          const dx = spine[i].x - mx;
+          const dy = spine[i].y - my;
+          if (dx * dx + dy * dy < (bodyThickness + 20) * (bodyThickness + 20)) {
+            hit = true;
+            break;
+          }
+        }
+        if (!hit) return;
+
+        clickCount++;
+        bodyThickness += 1.5;
+        flashAlpha = 1;
+
+        // Spawn tentacles from random point along the spine
+        const si = Math.floor(Math.random() * spine.length);
+        spawnTentacles(spine[si].x, spine[si].y, 2 + Math.floor(clickCount * 0.5));
+
+        // Update counter
+        if (counterEl) {
+          counterEl.textContent = clickCount + ' / 10';
+          counterEl.classList.add('visible');
+        }
+
+        // Redirect on 10th click
+        if (clickCount >= 10) {
+          redirecting = true;
+          flashAlpha = 2;
+          setTimeout(function() {
+            window.location.href = 'GAME/index.html';
+          }, 800);
+        }
+      });
+
+      // ── Animation loop ──
+      function animate() {
+        const t = Date.now() * 0.001;
+        ctx.clearRect(0, 0, W, H);
+
+        // Update spine positions
+        for (let i = 0; i < spine.length; i++) {
+          const s = spine[i];
+          s.x = s.baseX + Math.sin(t * s.speed + s.phase) * s.amp;
+          s.y = s.baseY + Math.cos(t * s.speed * 0.7 + s.phase) * s.amp;
+        }
+
+        // ── Draw flash ──
+        if (flashAlpha > 0) {
+          ctx.save();
+          ctx.globalAlpha = Math.min(flashAlpha, 1);
+          ctx.fillStyle = redirecting ? '#ff2020' : '#ffffff';
+          ctx.beginPath();
+          ctx.arc(CX, CY, 60 + bodyThickness * 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+          flashAlpha -= redirecting ? 0.008 : 0.03;
+        }
+
+        // ── Draw tentacles ──
+        for (let ti = 0; ti < tentacles.length; ti++) {
+          const ten = tentacles[ti];
+          ten.growT = Math.min(1, (Date.now() - ten.birth) / 600);
+          const pts = ten.pts;
+          const visCount = Math.floor(pts.length * ten.growT);
+          if (visCount < 2) continue;
+
+          ctx.beginPath();
+          ctx.strokeStyle = ten.color;
+          ctx.lineWidth = ten.thickness * (bodyThickness / 5);
+          ctx.lineCap = 'round';
+
+          const p0 = pts[0];
+          const px0 = p0.x + Math.sin(t * p0.speed + p0.phase) * p0.amp;
+          const py0 = p0.y + Math.cos(t * p0.speed + p0.phase) * p0.amp;
+          ctx.moveTo(px0, py0);
+
+          for (let j = 1; j < visCount; j++) {
+            const p = pts[j];
+            const px = p.x + Math.sin(t * p.speed + p.phase) * p.amp;
+            const py = p.y + Math.cos(t * p.speed + p.phase) * p.amp;
+            ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+
+          // Tentacle tip bulb
+          if (visCount >= pts.length) {
+            const last = pts[pts.length - 1];
+            const lx = last.x + Math.sin(t * last.speed + last.phase) * last.amp;
+            const ly = last.y + Math.cos(t * last.speed + last.phase) * last.amp;
+            ctx.beginPath();
+            ctx.fillStyle = ten.color;
+            ctx.arc(lx, ly, ten.thickness * 0.8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // ── Draw main body curve ──
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(184, 184, 208, ${0.4 + clickCount * 0.06})`;
+        ctx.lineWidth = bodyThickness;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        ctx.moveTo(spine[0].x, spine[0].y);
+        for (let i = 1; i < spine.length - 1; i++) {
+          const xc = (spine[i].x + spine[i + 1].x) / 2;
+          const yc = (spine[i].y + spine[i + 1].y) / 2;
+          ctx.quadraticCurveTo(spine[i].x, spine[i].y, xc, yc);
+        }
+        const last = spine[spine.length - 1];
+        ctx.lineTo(last.x, last.y);
+        ctx.stroke();
+
+        // Body nodes (little circles along spine)
+        for (let i = 0; i < spine.length; i++) {
+          const nodeR = bodyThickness * 0.4 + Math.sin(t * 2 + i) * 0.5;
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(210, 150, 150, ${0.3 + clickCount * 0.05})`;
+          ctx.arc(spine[i].x, spine[i].y, nodeR, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // ── Pulsating glow when agitated ──
+        if (clickCount > 0) {
+          ctx.save();
+          ctx.globalAlpha = 0.03 + clickCount * 0.015 + Math.sin(t * 3) * 0.02;
+          const grad = ctx.createRadialGradient(CX, CY, 0, CX, CY, 80 + clickCount * 10);
+          grad.addColorStop(0, `rgba(210, 80, 80, 0.4)`);
+          grad.addColorStop(1, 'transparent');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+          ctx.restore();
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
     })();
   </script>
 </body>
