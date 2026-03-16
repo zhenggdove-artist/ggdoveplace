@@ -10,205 +10,437 @@
     body.landing-body {
       margin: 0;
       overflow: hidden;
+      background: #04040c;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
     }
-    .landing-wrap {
+
+    /* ── Scanline overlay ── */
+    .landing-scanlines {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(0,0,0,0.06) 2px,
+        rgba(0,0,0,0.06) 4px
+      );
+      mix-blend-mode: multiply;
+    }
+
+    /* ── Main layout ── */
+    .landing-scene {
       position: relative;
       width: 100vw;
       height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 0;
+      z-index: 1;
     }
 
-    /* TV GIF */
-    .landing-tv {
+    /* ── Ambient fire glow behind TV ── */
+    .landing-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(255, 120, 40, 0.12) 0%,
+        rgba(255, 80, 20, 0.06) 30%,
+        rgba(180, 40, 0, 0.03) 50%,
+        transparent 70%
+      );
+      animation: glowPulse 4s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .landing-glow-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -45%);
+      width: 320px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(
+        ellipse,
+        rgba(255, 150, 50, 0.18) 0%,
+        rgba(255, 100, 30, 0.08) 40%,
+        transparent 70%
+      );
+      animation: glowPulseInner 3s ease-in-out infinite 0.5s;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+      50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.05); }
+    }
+
+    @keyframes glowPulseInner {
+      0%, 100% { opacity: 0.6; }
+      30%      { opacity: 1; }
+      70%      { opacity: 0.8; }
+    }
+
+    /* ── Artist name ── */
+    .landing-title {
+      font-family: var(--mono, 'Courier New', monospace);
+      font-size: clamp(0.7rem, 1.4vw, 1rem);
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: rgba(234, 242, 255, 0.85);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeSlideDown 1.2s ease 0.3s forwards;
+      text-shadow: 0 0 20px rgba(119, 85, 238, 0.4);
       position: relative;
       z-index: 2;
-      width: clamp(180px, 28vw, 360px);
-      height: auto;
-      filter: drop-shadow(0 0 40px rgba(255,120,40,0.35));
     }
 
-    /* SVG curves container */
-    .landing-svg {
+    /* ── TV container ── */
+    .landing-tv-wrap {
+      position: relative;
+      opacity: 0;
+      animation: fadeIn 1.8s ease 0s forwards;
+      z-index: 2;
+    }
+
+    .landing-tv {
+      width: clamp(220px, 30vw, 380px);
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 0 60px rgba(255, 120, 40, 0.25))
+              drop-shadow(0 20px 40px rgba(0, 0, 0, 0.6));
+      transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .landing-tv:hover {
+      transform: scale(1.03);
+    }
+
+    /* ── Reflection beneath TV ── */
+    .landing-reflection {
+      width: clamp(160px, 22vw, 280px);
+      height: 30px;
+      margin: -5px auto 0;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(255, 120, 40, 0.15) 0%,
+        transparent 70%
+      );
+      animation: reflectionPulse 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes reflectionPulse {
+      0%, 100% { opacity: 0.5; }
+      50%      { opacity: 0.9; }
+    }
+
+    /* ── Navigation ── */
+    .landing-nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(1.5rem, 4vw, 3.5rem);
+      margin-top: 2.5rem;
+      opacity: 0;
+      animation: fadeSlideUp 1s ease 0.8s forwards;
+      z-index: 2;
+      position: relative;
+    }
+
+    .landing-nav a {
+      font-family: var(--mono, 'Courier New', monospace);
+      font-size: clamp(0.6rem, 1vw, 0.75rem);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: rgba(140, 155, 200, 0.5);
+      position: relative;
+      padding: 0.5rem 0;
+      transition: color 0.4s, text-shadow 0.4s;
+    }
+
+    .landing-nav a::after {
+      content: '';
       position: absolute;
+      bottom: 0;
+      left: 50%;
+      right: 50%;
+      height: 1px;
+      background: var(--nav-hover-color, rgba(210, 150, 150, 0.6));
+      box-shadow: 0 0 8px var(--nav-hover-glow, rgba(210, 150, 150, 0.3));
+      transition: left 0.35s ease, right 0.35s ease;
+    }
+
+    .landing-nav a:hover::after {
+      left: 0;
+      right: 0;
+    }
+
+    .landing-nav a:hover {
+      color: var(--nav-hover-color, rgba(234, 242, 255, 0.95));
+      text-shadow: 0 0 18px var(--nav-hover-glow, rgba(150, 120, 255, 0.5));
+    }
+
+    /* Separator dots between nav items */
+    .landing-nav-dot {
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: rgba(140, 155, 200, 0.25);
+      flex-shrink: 0;
+    }
+
+    /* ── Ember particles ── */
+    .ember-canvas {
+      position: fixed;
       inset: 0;
-      width: 100%;
-      height: 100%;
       z-index: 1;
       pointer-events: none;
     }
-    .landing-svg a {
-      pointer-events: all;
+
+    /* ── Entrance animations ── */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
 
-    /* Metallic gradient definitions */
-    .curve-shadow {
-      fill: none;
-      stroke: rgba(0,0,0,0.35);
-      filter: url(#blur2);
-    }
-    .curve-body {
-      fill: none;
-    }
-    .curve-highlight {
-      fill: none;
-      stroke: rgba(255,255,255,0.25);
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Navigation text on curves */
-    .landing-nav-text {
-      font-family: var(--mono, 'Courier New', monospace);
-      font-size: 18px;
-      letter-spacing: 6px;
-      text-transform: uppercase;
-      fill: var(--text-bright, #eaf2ff);
-      cursor: pointer;
-      transition: fill 0.3s, filter 0.3s;
-      text-decoration: none;
-    }
-    .landing-nav-text:hover {
-      fill: var(--nav-hover-color, #eaf2ff);
-      filter: drop-shadow(0 0 8px var(--nav-hover-glow, rgba(234,242,255,0.55)));
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Shimmer animation along paths */
-    @keyframes shimmer {
-      0%   { stroke-dashoffset: 800; }
-      100% { stroke-dashoffset: 0; }
+    /* ── Corner accent lines ── */
+    .corner-line {
+      position: fixed;
+      background: rgba(119, 85, 238, 0.12);
+      z-index: 2;
+      pointer-events: none;
     }
-    .curve-shimmer {
-      fill: none;
-      stroke: url(#shimmerGrad);
-      stroke-dasharray: 80 720;
-      animation: shimmer 4s linear infinite;
+    .corner-line.top-left-h  { top: 2.5rem; left: 2.5rem; width: 40px; height: 1px; }
+    .corner-line.top-left-v  { top: 2.5rem; left: 2.5rem; width: 1px; height: 40px; }
+    .corner-line.top-right-h { top: 2.5rem; right: 2.5rem; width: 40px; height: 1px; }
+    .corner-line.top-right-v { top: 2.5rem; right: 2.5rem; width: 1px; height: 40px; }
+    .corner-line.bot-left-h  { bottom: 2.5rem; left: 2.5rem; width: 40px; height: 1px; }
+    .corner-line.bot-left-v  { bottom: 2.5rem; left: 2.5rem; width: 1px; height: 40px; }
+    .corner-line.bot-right-h { bottom: 2.5rem; right: 2.5rem; width: 40px; height: 1px; }
+    .corner-line.bot-right-v { bottom: 2.5rem; right: 2.5rem; width: 1px; height: 40px; }
+
+    /* ── Noise texture overlay ── */
+    .landing-noise {
+      position: fixed;
+      inset: 0;
+      z-index: 9;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
     }
 
-    /* Glow pulse for TV */
-    @keyframes tvGlow {
-      0%, 100% { filter: drop-shadow(0 0 40px rgba(255,120,40,0.3)); }
-      50%      { filter: drop-shadow(0 0 60px rgba(255,120,40,0.5)); }
-    }
-    .landing-tv {
-      animation: tvGlow 3s ease-in-out infinite;
-    }
-
-    /* Responsive */
+    /* ── Responsive ── */
     @media (max-width: 600px) {
-      .landing-nav-text { font-size: 13px; letter-spacing: 3px; }
-      .landing-tv { width: clamp(120px, 40vw, 200px); }
+      .landing-title { font-size: 0.65rem; letter-spacing: 0.3em; margin-bottom: 1.5rem; }
+      .landing-tv { width: clamp(180px, 55vw, 260px); }
+      .landing-nav { gap: 1.2rem; margin-top: 2rem; flex-wrap: wrap; justify-content: center; }
+      .landing-nav a { font-size: 0.58rem; letter-spacing: 0.15em; }
+      .landing-glow { width: 350px; height: 350px; }
+      .corner-line { display: none; }
+    }
+
+    @media (max-height: 500px) {
+      .landing-title { margin-bottom: 0.8rem; }
+      .landing-nav { margin-top: 1.2rem; }
+      .landing-tv { width: clamp(140px, 25vh, 220px); }
     }
   </style>
 </head>
 <body class="landing-body">
-  <div class="landing-wrap">
-    <!-- TV GIF center -->
-    <img class="landing-tv" src="TV.gif" alt="TV">
 
-    <!-- SVG orbital metallic curves -->
-    <svg class="landing-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
-      <defs>
-        <!-- Metallic gradient -->
-        <linearGradient id="metalGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%"   stop-color="#6a6a6a"/>
-          <stop offset="20%"  stop-color="#d4d4d4"/>
-          <stop offset="40%"  stop-color="#f0f0f0"/>
-          <stop offset="50%"  stop-color="#ffffff"/>
-          <stop offset="60%"  stop-color="#d4d4d4"/>
-          <stop offset="80%"  stop-color="#8a8a8a"/>
-          <stop offset="100%" stop-color="#5a5a5a"/>
-        </linearGradient>
-        <linearGradient id="metalGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%"   stop-color="#7a7a7a"/>
-          <stop offset="30%"  stop-color="#e0e0e0"/>
-          <stop offset="50%"  stop-color="#ffffff"/>
-          <stop offset="70%"  stop-color="#c0c0c0"/>
-          <stop offset="100%" stop-color="#606060"/>
-        </linearGradient>
-        <!-- Shimmer traveling highlight -->
-        <linearGradient id="shimmerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%"   stop-color="transparent"/>
-          <stop offset="45%"  stop-color="rgba(255,255,255,0.6)"/>
-          <stop offset="50%"  stop-color="rgba(255,255,255,0.9)"/>
-          <stop offset="55%"  stop-color="rgba(255,255,255,0.6)"/>
-          <stop offset="100%" stop-color="transparent"/>
-        </linearGradient>
-        <!-- Blur for shadow -->
-        <filter id="blur2"><feGaussianBlur stdDeviation="3"/></filter>
-        <!-- Glow for curves -->
-        <filter id="glow1">
-          <feGaussianBlur stdDeviation="2" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
+  <!-- Scanlines -->
+  <div class="landing-scanlines"></div>
 
-      <!-- ═══ Curve 1: Top-left to top-right (CV → RELIC) ═══ -->
-      <path id="curve1" d="M 120,180 C 250,60 750,60 880,180" fill="none"/>
-      <!-- Shadow -->
-      <use href="#curve1" class="curve-shadow" stroke-width="8" transform="translate(2,3)"/>
-      <!-- Body -->
-      <use href="#curve1" class="curve-body" stroke="url(#metalGrad1)" stroke-width="5" filter="url(#glow1)"/>
-      <!-- Highlight -->
-      <use href="#curve1" class="curve-highlight" stroke-width="1.5" stroke-dasharray="12 8"/>
-      <!-- Shimmer -->
-      <use href="#curve1" class="curve-shimmer" stroke-width="4"/>
+  <!-- Film grain noise -->
+  <div class="landing-noise"></div>
 
-      <!-- ═══ Curve 2: Top-right to bottom-right (RELIC → EXHIBITION) ═══ -->
-      <path id="curve2" d="M 880,180 C 980,320 980,420 880,530" fill="none"/>
-      <use href="#curve2" class="curve-shadow" stroke-width="8" transform="translate(2,3)"/>
-      <use href="#curve2" class="curve-body" stroke="url(#metalGrad2)" stroke-width="5" filter="url(#glow1)"/>
-      <use href="#curve2" class="curve-highlight" stroke-width="1.5" stroke-dasharray="12 8"/>
-      <use href="#curve2" class="curve-shimmer" stroke-width="4" style="animation-delay:-1s"/>
+  <!-- Ember particles -->
+  <canvas class="ember-canvas" id="ember-canvas"></canvas>
 
-      <!-- ═══ Curve 3: Bottom-right to bottom-left (EXHIBITION → PLAY) ═══ -->
-      <path id="curve3" d="M 880,530 C 750,650 250,650 120,530" fill="none"/>
-      <use href="#curve3" class="curve-shadow" stroke-width="8" transform="translate(2,3)"/>
-      <use href="#curve3" class="curve-body" stroke="url(#metalGrad1)" stroke-width="5" filter="url(#glow1)"/>
-      <use href="#curve3" class="curve-highlight" stroke-width="1.5" stroke-dasharray="12 8"/>
-      <use href="#curve3" class="curve-shimmer" stroke-width="4" style="animation-delay:-2s"/>
+  <!-- Corner accents -->
+  <div class="corner-line top-left-h"></div>
+  <div class="corner-line top-left-v"></div>
+  <div class="corner-line top-right-h"></div>
+  <div class="corner-line top-right-v"></div>
+  <div class="corner-line bot-left-h"></div>
+  <div class="corner-line bot-left-v"></div>
+  <div class="corner-line bot-right-h"></div>
+  <div class="corner-line bot-right-v"></div>
 
-      <!-- ═══ Curve 4: Bottom-left to top-left (PLAY → CV) ═══ -->
-      <path id="curve4" d="M 120,530 C 20,420 20,320 120,180" fill="none"/>
-      <use href="#curve4" class="curve-shadow" stroke-width="8" transform="translate(2,3)"/>
-      <use href="#curve4" class="curve-body" stroke="url(#metalGrad2)" stroke-width="5" filter="url(#glow1)"/>
-      <use href="#curve4" class="curve-highlight" stroke-width="1.5" stroke-dasharray="12 8"/>
-      <use href="#curve4" class="curve-shimmer" stroke-width="4" style="animation-delay:-3s"/>
+  <!-- Main scene -->
+  <div class="landing-scene">
 
-      <!-- Decorative curl endpoints -->
-      <circle cx="120" cy="180" r="4" fill="#d0d0d0" filter="url(#glow1)"/>
-      <circle cx="880" cy="180" r="4" fill="#d0d0d0" filter="url(#glow1)"/>
-      <circle cx="880" cy="530" r="4" fill="#d0d0d0" filter="url(#glow1)"/>
-      <circle cx="120" cy="530" r="4" fill="#d0d0d0" filter="url(#glow1)"/>
+    <!-- Ambient glow -->
+    <div class="landing-glow"></div>
+    <div class="landing-glow-inner"></div>
 
-      <!-- ═══ Navigation Labels ═══ -->
-      <!-- CV — top-left -->
-      <a href="bio.html">
-        <text class="landing-nav-text" x="160" y="140" text-anchor="start">CV</text>
-      </a>
-      <!-- RELIC — top-right -->
-      <a href="relic.html">
-        <text class="landing-nav-text" x="840" y="140" text-anchor="end">Relic</text>
-      </a>
-      <!-- EXHIBITION — bottom-right -->
-      <a href="exhibition.html">
-        <text class="landing-nav-text" x="920" y="400" text-anchor="start">Exhibition</text>
-      </a>
-      <!-- PLAY — bottom-left -->
-      <a href="#">
-        <text class="landing-nav-text" x="80" y="400" text-anchor="end">Play</text>
-      </a>
-    </svg>
+    <!-- Artist title -->
+    <div class="landing-title" id="landing-title">GGdove</div>
+
+    <!-- TV -->
+    <div class="landing-tv-wrap">
+      <img class="landing-tv" src="TV.gif" alt="TV">
+      <div class="landing-reflection"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="landing-nav" id="landing-nav">
+      <a href="bio.html">CV</a>
+      <span class="landing-nav-dot"></span>
+      <a href="relic.html">Relic</a>
+      <span class="landing-nav-dot"></span>
+      <a href="exhibition.html">Exhibition</a>
+      <span class="landing-nav-dot"></span>
+      <a href="#">Play</a>
+    </nav>
   </div>
 
   <script src="js/main.js"></script>
   <script>
+    // ── Load site data & apply settings ──
     loadData().then(() => {
       applyBackground(siteData.site);
+      applyNavHoverColor(siteData.site);
+
+      // Update title from CMS
+      const titleEl = document.getElementById('landing-title');
+      if (titleEl && siteData.site && siteData.site.title) {
+        titleEl.textContent = siteData.site.title;
+      }
+
+      // Update nav labels from CMS
+      const nl = (siteData.site && siteData.site.navLabels) || {};
+      const navEl = document.getElementById('landing-nav');
+      if (navEl) {
+        const customPages = (siteData.customPages || []).map(p => ({
+          label: p.navLabel || p.title || p.id,
+          href: 'custom-page.html?id=' + encodeURIComponent(p.id)
+        }));
+        const pages = [
+          { label: nl.bio        || 'CV',         href: 'bio.html'        },
+          { label: nl.works      || 'Relic',      href: 'relic.html'      },
+          { label: nl.exhibition || 'Exhibition', href: 'exhibition.html' },
+          { label: 'Play',                         href: '#'               },
+          ...customPages
+        ];
+        navEl.innerHTML = pages.map((p, i) => {
+          const dot = i < pages.length - 1
+            ? '<span class="landing-nav-dot"></span>'
+            : '';
+          return `<a href="${p.href}">${p.label}</a>${dot}`;
+        }).join('');
+      }
     });
+
+    // ── Ember / spark particle system ──
+    (function() {
+      const canvas = document.getElementById('ember-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W, H;
+      const embers = [];
+      const EMBER_COUNT = 35;
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // TV center position (approximate)
+      function tvCenter() {
+        const tv = document.querySelector('.landing-tv');
+        if (!tv) return { x: W / 2, y: H / 2 };
+        const r = tv.getBoundingClientRect();
+        return { x: r.left + r.width / 2, y: r.top + r.height * 0.4 };
+      }
+
+      function createEmber() {
+        const c = tvCenter();
+        return {
+          x: c.x + (Math.random() - 0.5) * 80,
+          y: c.y + (Math.random() - 0.5) * 40,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: -(Math.random() * 0.8 + 0.3),
+          size: Math.random() * 2.5 + 0.5,
+          life: 1,
+          decay: Math.random() * 0.004 + 0.002,
+          color: Math.random() > 0.3
+            ? { r: 255, g: 140 + Math.random() * 80, b: 30 + Math.random() * 30 }
+            : { r: 255, g: 200 + Math.random() * 55, b: 120 + Math.random() * 80 }
+        };
+      }
+
+      for (let i = 0; i < EMBER_COUNT; i++) {
+        const e = createEmber();
+        e.life = Math.random();
+        e.y -= Math.random() * H * 0.4;
+        embers.push(e);
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, W, H);
+
+        for (let i = embers.length - 1; i >= 0; i--) {
+          const e = embers[i];
+          e.x += e.vx + Math.sin(Date.now() * 0.001 + i) * 0.15;
+          e.y += e.vy;
+          e.life -= e.decay;
+
+          if (e.life <= 0) {
+            embers[i] = createEmber();
+            continue;
+          }
+
+          const alpha = e.life * 0.6;
+          ctx.beginPath();
+          ctx.arc(e.x, e.y, e.size * e.life, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${e.color.r},${e.color.g},${e.color.b},${alpha})`;
+          ctx.fill();
+
+          // Glow
+          ctx.beginPath();
+          ctx.arc(e.x, e.y, e.size * e.life * 3, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${e.color.r},${e.color.g},${e.color.b},${alpha * 0.15})`;
+          ctx.fill();
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    })();
   </script>
 </body>
 </html>
