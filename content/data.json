@@ -147,7 +147,7 @@
     "subtitle": "名為鴿子的一隻迅猛龍",
     "title": "GGdove",
     "animStagger": true,
-    "galleryLayout": "slideshow",
+    "galleryLayout": "masonry",
     "description": "Portfolio of Zheng Jun Peng",
     "imageSize": "xlarge",
     "zalgoEffect": {
