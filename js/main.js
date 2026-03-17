@@ -10,6 +10,18 @@ let lightboxItems = [];
 let lightboxIndex = 0;
 const INITIAL_SHOW = 9;
 
+// ── Image path fixer ────────────────────────────
+// CMS stores paths as /ggdoveplace/images/... which works on github.io
+// but breaks on custom domain (www.zhenggdove.com). This helper fixes
+// the path at render-time without touching the data object.
+const _onSubpath = location.pathname.startsWith('/ggdoveplace/');
+function fixImg(src) {
+  if (!src || typeof src !== 'string') return src;
+  if (_onSubpath) return src;                         // github.io — keep as-is
+  if (src.startsWith('/ggdoveplace/')) return src.replace('/ggdoveplace/', '/');
+  return src;
+}
+
 // ── Load data ──────────────────────────────────
 async function loadData() {
   // cache:'no-cache' sends a conditional request so browser always gets the
@@ -308,14 +320,14 @@ function applyBackground(site) {
 
   if (type === 'image' && bg.image) {
     const imgSize = bg.imageSize || 'cover';
-    layer.style.backgroundImage   = 'url(' + bg.image + ')';
+    layer.style.backgroundImage   = 'url(' + fixImg(bg.image) + ')';
     layer.style.backgroundSize    = imgSize === 'repeat' ? 'auto' : imgSize;
     layer.style.backgroundRepeat  = imgSize === 'repeat' ? 'repeat' : 'no-repeat';
     layer.style.backgroundPosition = 'center center';
   } else if (type === 'video' && bg.video) {
     const vid = document.createElement('video');
     vid.id          = 'site-bg-video';
-    vid.src         = bg.video;
+    vid.src         = fixImg(bg.video);
     vid.autoplay    = true;
     vid.loop        = true;
     vid.muted       = true;
@@ -526,7 +538,7 @@ function showLightbox(index) {
   if (!lb || lightboxItems.length === 0) return;
   lightboxIndex = (index + lightboxItems.length) % lightboxItems.length;
   const item = lightboxItems[lightboxIndex];
-  img.src = item.image;
+  img.src = fixImg(item.image);
   info.textContent = [item.title, item.year, item.medium, item.dimensions]
     .filter(Boolean).join('  ·  ');
   lb.classList.add('open');
@@ -561,7 +573,7 @@ function renderProjects() {
   ].join(' ');
 
   lightboxItems = projects.map(p => ({
-    image: p.image, title: p.title, year: p.year,
+    image: fixImg(p.image), title: p.title, year: p.year,
     medium: p.medium, dimensions: p.dimensions
   }));
 
@@ -579,7 +591,7 @@ function renderProjects() {
       const el = document.createElement('div');
       el.className = 'gallery-item';
       el.innerHTML = `
-        <img src="${p.image}" alt="${p.title || 'Work ' + p.id}" loading="lazy">
+        <img src="${fixImg(p.image)}" alt="${p.title || 'Work ' + p.id}" loading="lazy">
         <div class="gallery-caption">
           <h3>${p.title || ''}</h3>
           <p>${[p.year, p.medium].filter(Boolean).join('  ·  ')}</p>
@@ -628,7 +640,7 @@ function renderSlideshow(projects, container) {
     container.innerHTML = `
       <div class="slideshow-wrap">
         <div class="slideshow-slide" onclick="showLightbox(${current})">
-          <img src="${p.image}" alt="${p.title || ''}" loading="lazy">
+          <img src="${fixImg(p.image)}" alt="${p.title || ''}" loading="lazy">
           <div class="slideshow-caption">
             <h3>${p.title || ''}</h3>
             <p>${[p.year, p.medium].filter(Boolean).join('  ·  ')}</p>
@@ -711,7 +723,7 @@ function renderMediaItem(item, cls) {
     </div>`;
   }
   return `<figure class="${cls || 'media-item'}">
-    <img src="${item.src || ''}" alt="${item.caption || ''}" loading="lazy">
+    <img src="${fixImg(item.src || '')}" alt="${item.caption || ''}" loading="lazy">
     ${item.caption ? `<figcaption>${item.caption}</figcaption>` : ''}
   </figure>`;
 }
@@ -737,7 +749,7 @@ function mountSlideshow(container, slides, height) {
     } else if (embedUrl) {
       slide.innerHTML = `<video src="${embedUrl}" controls preload="metadata" playsinline></video>`;
     } else if (sl.src) {
-      slide.innerHTML = `<img src="${sl.src}" alt="${sl.caption || ''}" loading="lazy">`;
+      slide.innerHTML = `<img src="${fixImg(sl.src)}" alt="${sl.caption || ''}" loading="lazy">`;
     }
     track.appendChild(slide);
   });
@@ -816,7 +828,7 @@ function renderExhibition() {
     if (images.length) {
       html += '<div class="exh-gallery">';
       images.forEach(m => {
-        html += `<img src="${m.src}" alt="${m.caption || ''}" loading="lazy">`;
+        html += `<img src="${fixImg(m.src)}" alt="${m.caption || ''}" loading="lazy">`;
       });
       html += '</div>';
     }
@@ -876,7 +888,7 @@ function renderExhibitionDetail() {
 
   // Cover image
   if (exh.image) {
-    html += `<div class="exh-gallery"><img src="${exh.image}" alt="${exh.title || ''}" loading="lazy"></div>`;
+    html += `<div class="exh-gallery"><img src="${fixImg(exh.image)}" alt="${exh.title || ''}" loading="lazy"></div>`;
   }
 
   wrap.innerHTML = html;
@@ -902,7 +914,7 @@ function renderExhibitionDetail() {
     if (imgs.length) {
       shtml += '<div class="exh-gallery">';
       imgs.forEach(m => {
-        shtml += `<img src="${m.src}" alt="${m.caption || ''}" loading="lazy">`;
+        shtml += `<img src="${fixImg(m.src)}" alt="${m.caption || ''}" loading="lazy">`;
       });
       shtml += '</div>';
     }
@@ -949,7 +961,7 @@ function renderCustomPage() {
     <div class="custom-page-body">${bodyHtml}</div>
     ${images.length ? `<div class="custom-page-images">
       ${images.map(img => `<figure class="subpage-figure">
-        <img src="${img.src}" alt="${img.caption || ''}" loading="lazy">
+        <img src="${fixImg(img.src)}" alt="${img.caption || ''}" loading="lazy">
         ${img.caption ? `<figcaption>${img.caption}</figcaption>` : ''}
       </figure>`).join('')}
     </div>` : ''}`;
@@ -1032,7 +1044,7 @@ function renderBio() {
   ).join('');
   wrap.innerHTML = `
     <div class="bio-left">
-      <img class="bio-photo" src="${b.photo}" alt="${b.name}">
+      <img class="bio-photo" src="${fixImg(b.photo)}" alt="${b.name}">
       <div class="bio-cv-list">
         <h3>Selected Exhibitions &amp; Residencies</h3>
         <ul>${cvHtml}</ul>
@@ -1052,7 +1064,7 @@ function renderContact() {
   if (!wrap || !siteData) return;
   const c = siteData.contact;
   wrap.innerHTML = `
-    <img class="contact-img" src="${c.image}" alt="Contact">
+    <img class="contact-img" src="${fixImg(c.image)}" alt="Contact">
     <div class="contact-info">
       <h2>Get in Touch</h2>
       <div class="contact-item">
@@ -1077,12 +1089,12 @@ function renderWeapons() {
   const grid = document.getElementById('weapons-grid');
   if (!grid || !siteData) return;
   const weapons = siteData.weapons;
-  lightboxItems = weapons.map(w => ({ image: w.image, title: w.name, year: '', medium: '', dimensions: w.price }));
+  lightboxItems = weapons.map(w => ({ image: fixImg(w.image), title: w.name, year: '', medium: '', dimensions: w.price }));
   weapons.forEach((w, i) => {
     const el = document.createElement('div');
     el.className = 'weapon-card';
     el.innerHTML = `
-      <img src="${w.image}" alt="${w.name}" loading="lazy">
+      <img src="${fixImg(w.image)}" alt="${w.name}" loading="lazy">
       <div class="weapon-name">${w.name}</div>
       ${w.price ? `<div class="weapon-price">${w.price}</div>` : ''}`;
     el.onclick = () => showLightbox(i);
@@ -1102,11 +1114,11 @@ function renderRelic() {
   const offset = lightboxItems.length; // projects already added their items
 
   weapons.forEach((w, i) => {
-    lightboxItems.push({ image: w.image, title: w.name, year: '', medium: '', dimensions: w.price });
+    lightboxItems.push({ image: fixImg(w.image), title: w.name, year: '', medium: '', dimensions: w.price });
     const el = document.createElement('div');
     el.className = 'weapon-card';
     el.innerHTML = `
-      <img src="${w.image}" alt="${w.name}" loading="lazy">
+      <img src="${fixImg(w.image)}" alt="${w.name}" loading="lazy">
       <div class="weapon-name">${w.name}</div>
       ${w.price ? `<div class="weapon-price">${w.price}</div>` : ''}`;
     el.onclick = () => showLightbox(offset + i);
