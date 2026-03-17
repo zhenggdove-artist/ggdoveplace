@@ -607,8 +607,10 @@
         const addCount = Math.floor(prevLen * (0.2 + Math.random()*0.15));
         // Chaotic 3D-like tangling: direction changes, varying tightness, crossovers
         const segLen = 4 + Math.random() * 3;
-        const coilRadius = Math.min(20 + clickCount * 4, 180); // cap coil radius
-        const MARGIN = 40; // keep away from canvas edges
+        // Coil radius: tight limit so creature stays compact
+        const coilRadius = Math.min(20 + clickCount * 3, 70);
+        // Max allowed distance from center (accounts for scaleMul expansion)
+        const maxDist = Math.min(W, H) * 0.3; // 180px from center max
         let curDir = Math.random() < 0.5 ? 1 : -1;
         let curTight = 0.3 + Math.random() * 0.3;
         let flipCountdown = 2 + Math.floor(Math.random() * 4);
@@ -617,13 +619,6 @@
         for (let i = 0; i < addCount; i++) {
           const distToCenter = Math.sqrt((cx-CX)*(cx-CX)+(cy-CY)*(cy-CY));
           const toCenter = Math.atan2(CY - cy, CX - cx);
-
-          // Hard boundary: force angle toward center when near canvas edge
-          const edgeDist = Math.min(cx - MARGIN, W - MARGIN - cx, cy - MARGIN, H - MARGIN - cy);
-          let edgePull = 0;
-          if (edgeDist < 60) {
-            edgePull = 1 - Math.max(0, edgeDist) / 60; // 0→1 as we approach edge
-          }
 
           flipCountdown--;
           if (flipCountdown <= 0) {
@@ -634,13 +629,18 @@
 
           tailAngle += curDir * curTight + (Math.random() - 0.5) * 0.6;
 
-          // Pull toward center: stronger when further out OR near edge
-          const pullStr = Math.max(
-            distToCenter > coilRadius ? 0.5 : 0.15,
-            edgePull * 0.8
-          );
+          // Aggressive pull toward center when outside coil radius
+          let pullStr;
+          if (distToCenter > coilRadius) {
+            // Ramp from 0.6 to 0.95 as distance exceeds coilRadius
+            const excess = (distToCenter - coilRadius) / coilRadius;
+            pullStr = Math.min(0.95, 0.6 + excess * 0.3);
+          } else {
+            pullStr = 0.15;
+          }
           tailAngle = tailAngle * (1 - pullStr) + toCenter * pullStr;
 
+          // Occasionally aim at a random existing body point (crossover)
           if (Math.random() < 0.15 && prevLen > 5) {
             const ri = Math.floor(Math.random() * prevLen);
             const crossAngle = Math.atan2(bodySpineBase[ri].y - cy, bodySpineBase[ri].x - cx);
@@ -649,9 +649,13 @@
 
           cx += Math.cos(tailAngle) * segLen;
           cy += Math.sin(tailAngle) * segLen;
-          // Clamp within canvas bounds
-          cx = Math.max(MARGIN, Math.min(W - MARGIN, cx));
-          cy = Math.max(MARGIN, Math.min(H - MARGIN, cy));
+
+          // Hard clamp: if beyond maxDist, snap back toward center
+          const newDist = Math.sqrt((cx-CX)*(cx-CX)+(cy-CY)*(cy-CY));
+          if (newDist > maxDist) {
+            cx = CX + (cx - CX) * (maxDist / newDist);
+            cy = CY + (cy - CY) * (maxDist / newDist);
+          }
           bodySpineBase.push({ x: cx, y: cy });
         }
 
@@ -790,12 +794,13 @@
           const by = CY + (bodySpineBase[i].y - CY) * scaleMul;
           let fx = bx + wx * wriggleScale;
           let fy = by + wy * wriggleScale;
-          // Soft clamp: push back smoothly when near canvas edge
-          const pad = 20;
-          if (fx < pad) fx = pad + (fx - pad) * 0.1;
-          else if (fx > W - pad) fx = W - pad + (fx - (W - pad)) * 0.1;
-          if (fy < pad) fy = pad + (fy - pad) * 0.1;
-          else if (fy > H - pad) fy = H - pad + (fy - (H - pad)) * 0.1;
+          // Clamp: keep all points within max radius from center
+          const maxR = Math.min(W, H) * 0.38; // ~228px from center
+          const dr = Math.sqrt((fx-CX)*(fx-CX)+(fy-CY)*(fy-CY));
+          if (dr > maxR) {
+            fx = CX + (fx - CX) * (maxR / dr);
+            fy = CY + (fy - CY) * (maxR / dr);
+          }
           bodySpine[i].x = fx;
           bodySpine[i].y = fy;
         }
