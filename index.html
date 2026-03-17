@@ -605,26 +605,40 @@
         let tailAngle = Math.atan2(tail.y - prev2.y, tail.x - prev2.x);
 
         const addCount = Math.floor(prevLen * (0.2 + Math.random()*0.15));
-        const coilDir = Math.random() < 0.5 ? 1 : -1;
-        // Tight spiral: each segment turns ~20-35 degrees
-        const coilTightness = 0.35 + Math.random() * 0.25;
-        // Longer segments so coil path dominates over wriggle noise
-        const segLen = 5 + Math.random() * 4;
-        // Spiral stays within a radius around center
-        const coilRadius = 25 + clickCount * 5;
+        // Chaotic 3D-like tangling: direction changes, varying tightness, crossovers
+        const segLen = 4 + Math.random() * 3;
+        const coilRadius = 20 + clickCount * 4;
+        let curDir = Math.random() < 0.5 ? 1 : -1;
+        let curTight = 0.3 + Math.random() * 0.3;
+        let flipCountdown = 2 + Math.floor(Math.random() * 4); // steps until direction flip
 
         let cx = tail.x, cy = tail.y;
         for (let i = 0; i < addCount; i++) {
           const distToCenter = Math.sqrt((cx-CX)*(cx-CX)+(cy-CY)*(cy-CY));
           const toCenter = Math.atan2(CY - cy, CX - cx);
-          // Constant strong rotation = guaranteed spiral
-          tailAngle += coilDir * coilTightness;
-          // If too far from center, override angle to point inward
-          if (distToCenter > coilRadius) {
-            tailAngle = toCenter + coilDir * 0.5;
+
+          // Randomly flip coil direction and tightness for complex tangling
+          flipCountdown--;
+          if (flipCountdown <= 0) {
+            curDir *= -1;
+            curTight = 0.2 + Math.random() * 0.5;
+            flipCountdown = 2 + Math.floor(Math.random() * 5);
           }
-          // Small random jitter
-          tailAngle += (Math.random() - 0.5) * 0.15;
+
+          // Core rotation + random sharp turns for crossing over itself
+          tailAngle += curDir * curTight + (Math.random() - 0.5) * 0.6;
+
+          // Pull toward center to keep bundled, stronger when further out
+          const pullStr = distToCenter > coilRadius ? 0.5 : 0.15;
+          tailAngle = tailAngle * (1 - pullStr) + toCenter * pullStr;
+
+          // Occasionally aim at a random existing body point (crossover)
+          if (Math.random() < 0.15 && prevLen > 5) {
+            const ri = Math.floor(Math.random() * prevLen);
+            const crossAngle = Math.atan2(bodySpineBase[ri].y - cy, bodySpineBase[ri].x - cx);
+            tailAngle = tailAngle * 0.5 + crossAngle * 0.5;
+          }
+
           cx += Math.cos(tailAngle) * segLen;
           cy += Math.sin(tailAngle) * segLen;
           bodySpineBase.push({ x: cx, y: cy });
@@ -745,15 +759,21 @@
         }
 
         // ── Animate body: multi-frequency irregular writhing ──
-        const wriggleScale = Math.min(1.0, 3.0 / Math.max(1, clickCount));
+        // Wriggle INCREASES with clicks — more tangled = more agitated
+        const wriggleScale = 1.0 + clickCount * 0.3;
         for (let i = 0; i < bodySpine.length; i++) {
           const u = i/bodySpine.length;
+          // Snake-like traveling wave: wave moves along the body over time
           let wx = 0, wy = 0;
           for (let f = 0; f < wormPhases.length; f++) {
             const wp = wormPhases[f];
-            wx += Math.sin(t*wp.freq + u*Math.PI*wp.spatialFreq + wp.phase) * wp.amp;
-            wy += Math.cos(t*wp.freq*0.8 + u*Math.PI*(wp.spatialFreq*0.7) + wp.phase*1.3) * wp.amp*0.6;
+            // Traveling wave: (t*freq - u*spatial) makes wave propagate along spine
+            wx += Math.sin(t*wp.freq - u*Math.PI*wp.spatialFreq + wp.phase) * wp.amp;
+            wy += Math.cos(t*wp.freq*0.8 - u*Math.PI*(wp.spatialFreq*0.7) + wp.phase*1.3) * wp.amp*0.6;
           }
+          // Add higher-frequency serpentine motion that travels along body
+          wx += Math.sin(t*3.5 - i*0.15) * 2.0 * wriggleScale;
+          wy += Math.cos(t*2.8 - i*0.12 + 1.2) * 1.5 * wriggleScale;
           // Scale spine positions outward from center
           const bx = CX + (bodySpineBase[i].x - CX) * scaleMul;
           const by = CY + (bodySpineBase[i].y - CY) * scaleMul;
