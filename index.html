@@ -285,8 +285,8 @@
       if (!isMobile) {
         document.addEventListener('mousemove', function(e) {
           const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-          scene.style.setProperty('--tiltY', ((e.clientX - cx) / cx * 18) + 'deg');
-          scene.style.setProperty('--tiltX', ((cy - e.clientY) / cy * 9) + 'deg');
+          scene.style.setProperty('--tiltY', ((e.clientX - cx) / cx * 54) + 'deg');
+          scene.style.setProperty('--tiltX', ((cy - e.clientY) / cy * 27) + 'deg');
         });
         document.addEventListener('mouseleave', function() {
           scene.style.setProperty('--tiltY', '0deg');
@@ -321,8 +321,8 @@
               gyroWorking = true;
               const beta = e.beta || 0;
               const gamma = e.gamma || 0;
-              targetX = Math.max(-24, Math.min(24, -(beta - 70) / 20 * 12));
-              targetY = Math.max(-36, Math.min(36, gamma / 20 * 24));
+              targetX = Math.max(-72, Math.min(72, -(beta - 70) / 20 * 36));
+              targetY = Math.max(-108, Math.min(108, gamma / 20 * 72));
             });
           }
         }
@@ -333,8 +333,8 @@
           const t = e.touches[0];
           if (!t) return;
           const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-          targetY = (t.clientX - cx) / cx * 24;
-          targetX = (cy - t.clientY) / cy * 12;
+          targetY = (t.clientX - cx) / cx * 72;
+          targetX = (cy - t.clientY) / cy * 36;
         }, { passive: true });
         document.addEventListener('touchend', function() {
           if (gyroWorking) return;
