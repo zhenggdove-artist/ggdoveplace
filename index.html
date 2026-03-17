@@ -520,7 +520,13 @@
         const pal = palettes[Math.floor(Math.random()*palettes.length)];
 
         const gd = 200 + Math.random() * 500;  // random grow duration 200-700ms per tentacle
-        const recoilTarget = 0.75 + Math.random() * 0.15; // retract to 75-90% (randomized per tentacle)
+        // Recoil distance fully randomized:
+        //   strong recoil → target 0.2-0.3 (almost root), fast retract
+        //   weak recoil   → target 0.6-0.7 (mild), slow retract (half speed or less)
+        const recoilRand = Math.random(); // 0=strongest, 1=weakest
+        const recoilTarget = 0.2 + recoilRand * 0.5; // 0.2 (near root) → 0.7 (mild)
+        // Speed inversely proportional: strong recoil = fast, weak = much slower
+        const recoilSpeedMul = 1.0 - recoilRand * 0.7; // 1.0 (fast) → 0.3 (very slow)
         tentacles.push({
           rings: rings, spine: spine,
           spineBase: spine.map(p => ({x:p.x, y:p.y})),
@@ -530,8 +536,8 @@
           wriggleFreq: 1.5+Math.random()*2.5,
           wriggleAmp: 2+Math.random()*4,
           recoilTarget: recoilTarget,
-          recoilDuration: gd * (1 - recoilTarget) * (0.8 + Math.random()*0.4), // random recoil speed
-          relaxDuration: gd * (1 - recoilTarget) / (0.15 + Math.random()*0.1)  // random relax speed ~20%
+          recoilDuration: gd * (1 - recoilTarget) * recoilSpeedMul * (0.8 + Math.random()*0.4),
+          relaxDuration: gd * (1 - recoilTarget) / (0.15 + Math.random()*0.1)
         });
       }
 
