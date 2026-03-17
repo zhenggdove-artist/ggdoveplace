@@ -403,6 +403,7 @@
       let scaleMul = 1.0;
       let redirecting = false;
       let redirectTimer = 0;
+      let bodyGrowth = null; // { prevRings, birth, duration } for animated tail growth
       const counterEl = document.getElementById('click-counter');
 
       const GLYPHS = ['.', '\u00B7', '\u2022', '\u2219', '\u25E6', '\u2218', 'o', '\u00B0', '*', '+'];
@@ -578,37 +579,51 @@
 
         clickCount++;
 
-        // Extend body from tail end: add 20% + random extra length that coils around
-        const tailIdx = bodySpineBase.length - 1;
+        // Extend body from tail end: add 20% + random extra that COILS tightly
+        const prevLen = bodySpineBase.length;
+        const tailIdx = prevLen - 1;
         const tail = bodySpineBase[tailIdx];
-        const prev = bodySpineBase[Math.max(0, tailIdx - 1)];
-        // Direction the tail was heading
-        let tailAngle = Math.atan2(tail.y - prev.y, tail.x - prev.x);
+        const prev2 = bodySpineBase[Math.max(0, tailIdx - 1)];
+        let tailAngle = Math.atan2(tail.y - prev2.y, tail.x - prev2.x);
 
-        const addCount = Math.floor(bodySpineBase.length * (0.2 + Math.random()*0.15));
+        const addCount = Math.floor(prevLen * (0.2 + Math.random()*0.15));
         const coilDir = Math.random() < 0.5 ? 1 : -1;
-        const coilTightness = 0.15 + Math.random() * 0.25; // how fast it curls
-        const segLen = 2.5 + Math.random() * 2;  // spacing between new points
+        // Much tighter coiling — forces spiral around body
+        const coilTightness = 0.3 + Math.random() * 0.4;
+        const segLen = 1.5 + Math.random() * 1.5;
+        // Target radius: coil around center within body's existing extent
+        const bodyRadius = Math.max(20, ...bodySpineBase.map(p =>
+          Math.sqrt((p.x-CX)*(p.x-CX)+(p.y-CY)*(p.y-CY))));
+        const coilRadius = bodyRadius * (0.4 + Math.random()*0.4);
 
         let cx = tail.x, cy = tail.y;
         for (let i = 0; i < addCount; i++) {
-          // Coil: gradually turn toward center, creating a spiral around the body
+          const distToCenter = Math.sqrt((cx-CX)*(cx-CX)+(cy-CY)*(cy-CY));
           const toCenter = Math.atan2(CY - cy, CX - cx);
-          tailAngle += coilDir * coilTightness + (Math.random() - 0.5) * 0.3;
-          // Blend toward center to keep coiling around body
-          tailAngle = tailAngle * 0.85 + toCenter * 0.15;
+          // Strong coil rotation
+          tailAngle += coilDir * coilTightness + (Math.random() - 0.5) * 0.2;
+          // Pull hard toward center if drifting too far, maintaining tight spiral
+          const pullStr = distToCenter > coilRadius ? 0.4 : 0.1;
+          tailAngle = tailAngle * (1 - pullStr) + toCenter * pullStr;
           cx += Math.cos(tailAngle) * segLen;
           cy += Math.sin(tailAngle) * segLen;
           bodySpineBase.push({ x: cx, y: cy });
         }
-        // Rebuild body spine & rings with new length
+
+        // Rebuild spine & rings with new length
         const newSpine = buildSpine(bodySpineBase, bodySpineBase.length);
         bodySpine.length = 0;
         newSpine.forEach(p => bodySpine.push(p));
-        // Rebuild rings array to match new spine length
         const newRings = generateRings(bodySpine, 4, 0.7, BODY_PTS_RING, 2.8, 0.8);
         bodyRings.length = 0;
         newRings.forEach(r => bodyRings.push(r));
+
+        // Animated growth: record how many rings to reveal over time
+        bodyGrowth = {
+          prevRings: prevLen,
+          birth: Date.now(),
+          duration: 300 + Math.random() * 500  // random growth speed per click
+        };
 
         // Spawn tentacles from NEAREST body spine point to click
         const nearIdx = nearestBodySpineIdx(mx, my);
@@ -715,7 +730,16 @@
         const cr = Math.min(255, 220+clickCount*4);
         const cg = Math.max(20, 40-clickCount*3);
         const cb = Math.max(30, 50-clickCount*3);
-        drawRings(bodyRings, bodyRings.length, [cr,cg,cb], Math.min(scaleMul, 2.5));
+        // Animated growth: gradually reveal new rings from tail
+        let bodyVisRings = bodyRings.length;
+        if (bodyGrowth) {
+          const gElapsed = Date.now() - bodyGrowth.birth;
+          const gT = Math.min(1, gElapsed / bodyGrowth.duration);
+          const newCount = bodyRings.length - bodyGrowth.prevRings;
+          bodyVisRings = bodyGrowth.prevRings + Math.ceil(newCount * gT);
+          if (gT >= 1) bodyGrowth = null;
+        }
+        drawRings(bodyRings, bodyVisRings, [cr,cg,cb], Math.min(scaleMul, 2.5));
 
         // ── Animate & draw tentacles ──
         const now = Date.now();
