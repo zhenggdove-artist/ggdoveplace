@@ -292,43 +292,47 @@
       });
 
       // Mobile: gyroscope-driven tilt
-      if (window.innerWidth < 768 && window.DeviceOrientationEvent) {
+      if ('ontouchstart' in window && window.DeviceOrientationEvent) {
         let gyroActive = false;
+        let targetX = 0, targetY = 0;
+        let smoothX = 0, smoothY = 0;
+
         function startGyro() {
           if (gyroActive) return;
           gyroActive = true;
-          // Smoothing values for fluid motion
-          let smoothX = 0, smoothY = 0;
+
           window.addEventListener('deviceorientation', function(e) {
-            // beta = front-back tilt (-180~180), gamma = left-right tilt (-90~90)
-            const beta = e.beta || 0;   // front-back
-            const gamma = e.gamma || 0; // left-right
-            // Map to similar range as mouse tilt (±6deg Y, ±3deg X)
-            // Holding phone ~upright: beta≈60-90, gamma≈0
-            // Normalize: beta offset from ~70 (natural hold angle), gamma from 0
-            const rawX = -(beta - 70) / 30 * 3;  // tilt forward/back → X rotation
-            const rawY = gamma / 30 * 6;          // tilt left/right → Y rotation
-            // Clamp
-            const tX = Math.max(-6, Math.min(6, rawX));
-            const tY = Math.max(-10, Math.min(10, rawY));
-            // Smooth interpolation for fluid feel
-            smoothX += (tX - smoothX) * 0.12;
-            smoothY += (tY - smoothY) * 0.12;
-            scene.style.setProperty('--tiltX', smoothX + 'deg');
-            scene.style.setProperty('--tiltY', smoothY + 'deg');
+            if (e.beta === null && e.gamma === null) return;
+            const beta = e.beta || 0;   // front-back tilt
+            const gamma = e.gamma || 0; // left-right tilt
+            // Holding phone upright: beta≈60-90, gamma≈0
+            targetX = Math.max(-8, Math.min(8, -(beta - 70) / 25 * 4));
+            targetY = Math.max(-12, Math.min(12, gamma / 25 * 8));
           });
+
+          // Smooth animation loop — runs every frame for fluid motion
+          function gyroLoop() {
+            smoothX += (targetX - smoothX) * 0.08;
+            smoothY += (targetY - smoothY) * 0.08;
+            scene.style.setProperty('--tiltX', smoothX.toFixed(2) + 'deg');
+            scene.style.setProperty('--tiltY', smoothY.toFixed(2) + 'deg');
+            requestAnimationFrame(gyroLoop);
+          }
+          gyroLoop();
         }
-        // iOS 13+ requires permission request
+
+        // iOS 13+ requires user-gesture permission request
         if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-          // Attach to first user interaction to request permission
-          document.addEventListener('touchstart', function onTouch() {
+          // Try on first touch interaction
+          function requestGyroPermission() {
             DeviceOrientationEvent.requestPermission().then(function(state) {
               if (state === 'granted') startGyro();
             }).catch(function(){});
-            document.removeEventListener('touchstart', onTouch);
-          }, { once: true });
+          }
+          document.addEventListener('touchend', requestGyroPermission, { once: true });
+          document.addEventListener('click', requestGyroPermission, { once: true });
         } else {
-          // Android / older iOS — just start
+          // Android / older iOS — start directly
           startGyro();
         }
       }
