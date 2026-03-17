@@ -536,7 +536,7 @@
           wriggleFreq: 1.5+Math.random()*2.5,
           wriggleAmp: 2+Math.random()*4,
           recoilTarget: recoilTarget,
-          recoilDuration: gd * (1 - recoilTarget) * recoilSpeedMul * (0.8 + Math.random()*0.4),
+          recoilDuration: gd * (1 - recoilTarget) * recoilSpeedMul * (0.8 + Math.random()*0.4) * 2,
           relaxDuration: gd * (1 - recoilTarget) / (0.15 + Math.random()*0.1)
         });
       }
@@ -736,15 +736,22 @@
               ten.spine[i].x = ten.spineBase[i].x + wave*ten.wriggleAmp*u;
               ten.spine[i].y = ten.spineBase[i].y + wave2*ten.wriggleAmp*0.6*u;
             } else {
-              // Collapse toward cutoff point
+              // Collapse toward cutoff — but with random twisting, not along original path
               const ci = Math.floor(cutoff);
               const cf = cutoff - ci;
               const cx = ten.spineBase[ci].x + (ci < ten.spineBase.length-1 ?
                 (ten.spineBase[ci+1].x - ten.spineBase[ci].x) * cf : 0);
               const cy = ten.spineBase[ci].y + (ci < ten.spineBase.length-1 ?
                 (ten.spineBase[ci+1].y - ten.spineBase[ci].y) * cf : 0);
-              ten.spine[i].x = cx + wave*ten.wriggleAmp*u*0.7;
-              ten.spine[i].y = cy + wave2*ten.wriggleAmp*0.6*u*0.7;
+              // Blend between original position and cutoff, with extra random wriggle
+              const collapse = (i - cutoff) / (ten.spine.length - 1 - cutoff + 0.001);
+              const bx = ten.spineBase[i].x * (1 - collapse) + cx * collapse;
+              const by = ten.spineBase[i].y * (1 - collapse) + cy * collapse;
+              // Extra chaotic twist during recoil — each point gets unique wobble
+              const twist1 = Math.sin(t*ten.wriggleFreq*1.3 + i*1.7 + ten.wrigglePhase*2.1);
+              const twist2 = Math.cos(t*ten.wriggleFreq*0.9 + i*2.3 + ten.wrigglePhase*1.4);
+              ten.spine[i].x = bx + (wave + twist1*1.5)*ten.wriggleAmp*u;
+              ten.spine[i].y = by + (wave2 + twist2*1.5)*ten.wriggleAmp*0.6*u;
             }
           }
           rebuildRings(ten.rings, ten.spine, ten.baseR, 0.85);
