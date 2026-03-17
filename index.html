@@ -577,14 +577,38 @@
         if (!hit) return;
 
         clickCount++;
-        scaleMul *= 1.2;
 
-        // Expand body spine
-        for (let i = 0; i < bodySpineBase.length; i++) {
-          const dx = bodySpineBase[i].x-CX, dy = bodySpineBase[i].y-CY;
-          bodySpineBase[i].x = CX+dx*1.2;
-          bodySpineBase[i].y = CY+dy*1.2;
+        // Extend body from tail end: add 20% + random extra length that coils around
+        const tailIdx = bodySpineBase.length - 1;
+        const tail = bodySpineBase[tailIdx];
+        const prev = bodySpineBase[Math.max(0, tailIdx - 1)];
+        // Direction the tail was heading
+        let tailAngle = Math.atan2(tail.y - prev.y, tail.x - prev.x);
+
+        const addCount = Math.floor(bodySpineBase.length * (0.2 + Math.random()*0.15));
+        const coilDir = Math.random() < 0.5 ? 1 : -1;
+        const coilTightness = 0.15 + Math.random() * 0.25; // how fast it curls
+        const segLen = 2.5 + Math.random() * 2;  // spacing between new points
+
+        let cx = tail.x, cy = tail.y;
+        for (let i = 0; i < addCount; i++) {
+          // Coil: gradually turn toward center, creating a spiral around the body
+          const toCenter = Math.atan2(CY - cy, CX - cx);
+          tailAngle += coilDir * coilTightness + (Math.random() - 0.5) * 0.3;
+          // Blend toward center to keep coiling around body
+          tailAngle = tailAngle * 0.85 + toCenter * 0.15;
+          cx += Math.cos(tailAngle) * segLen;
+          cy += Math.sin(tailAngle) * segLen;
+          bodySpineBase.push({ x: cx, y: cy });
         }
+        // Rebuild body spine & rings with new length
+        const newSpine = buildSpine(bodySpineBase, bodySpineBase.length);
+        bodySpine.length = 0;
+        newSpine.forEach(p => bodySpine.push(p));
+        // Rebuild rings array to match new spine length
+        const newRings = generateRings(bodySpine, 4, 0.7, BODY_PTS_RING, 2.8, 0.8);
+        bodyRings.length = 0;
+        newRings.forEach(r => bodyRings.push(r));
 
         // Spawn tentacles from NEAREST body spine point to click
         const nearIdx = nearestBodySpineIdx(mx, my);
