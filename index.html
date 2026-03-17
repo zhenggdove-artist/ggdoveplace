@@ -536,7 +536,7 @@
           wriggleFreq: 1.5+Math.random()*2.5,
           wriggleAmp: 2+Math.random()*4,
           recoilTarget: recoilTarget,
-          recoilDuration: gd * (1 - recoilTarget) * recoilSpeedMul * (0.8 + Math.random()*0.4) * 2,
+          recoilDuration: gd * (1 - recoilTarget) * recoilSpeedMul * (0.8 + Math.random()*0.4) * 4,
           relaxDuration: gd * (1 - recoilTarget) / (0.15 + Math.random()*0.1)
         });
       }
@@ -750,8 +750,8 @@
               // Extra chaotic twist during recoil — each point gets unique wobble
               const twist1 = Math.sin(t*ten.wriggleFreq*1.3 + i*1.7 + ten.wrigglePhase*2.1);
               const twist2 = Math.cos(t*ten.wriggleFreq*0.9 + i*2.3 + ten.wrigglePhase*1.4);
-              ten.spine[i].x = bx + (wave + twist1*1.5)*ten.wriggleAmp*u;
-              ten.spine[i].y = by + (wave2 + twist2*1.5)*ten.wriggleAmp*0.6*u;
+              ten.spine[i].x = bx + (wave + twist1*2.25)*ten.wriggleAmp*u;
+              ten.spine[i].y = by + (wave2 + twist2*2.25)*ten.wriggleAmp*0.6*u;
             }
           }
           rebuildRings(ten.rings, ten.spine, ten.baseR, 0.85);
