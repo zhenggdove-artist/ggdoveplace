@@ -581,16 +581,20 @@
 
         clickCount++;
 
-        // Pendulum swell: expand 15%, overshoot, settle at +5%
+        // Bouncy swell: A(+3~15%) → B(-3~10%) → C(+3~15%) → damping...
+        // Like a bouncy ball oscillating and settling
         const prevTarget = targetScale;
-        targetScale *= 1.05;  // final resting scale after pendulum
+        const settleGain = 1 + (0.03 + Math.random() * 0.05); // final rest: +3~8%
+        targetScale *= settleGain;
+        const initialBurst = 0.03 + Math.random() * 0.12; // first burst: +3~15%
         scaleAnim = {
           from: prevTarget,
-          peak: prevTarget * 1.15,    // overshoot to +15%
-          dip:  prevTarget * 1.05,    // bounce back to +5% (dip = -10% from peak)
-          to:   targetScale,          // settle at +5%
+          target: targetScale,
+          amplitude: prevTarget * initialBurst,  // initial bounce amplitude
           birth: Date.now(),
-          duration: 400 + Math.random() * 300  // random speed
+          freq: 2.5 + Math.random() * 1.5,       // oscillation frequency (random)
+          damping: 2.5 + Math.random() * 1.5,     // how fast it decays (random)
+          duration: 1200 + Math.random() * 800    // total anim time 1.2~2s
         };
 
         // Extend body from tail end: add 20% + random extra that COILS tightly
@@ -723,24 +727,19 @@
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        // ── Pendulum swell animation ──
+        // ── Bouncy swell: damped spring oscillation ──
         if (scaleAnim) {
           const sa = scaleAnim;
-          const elapsed = (Date.now() - sa.birth) / sa.duration;
-          if (elapsed < 1) {
-            // 3 phases: 0→0.4 expand to peak, 0.4→0.7 dip back, 0.7→1.0 settle
-            if (elapsed < 0.4) {
-              const p = elapsed / 0.4;
-              scaleMul = sa.from + (sa.peak - sa.from) * (1 - Math.pow(1-p, 2)); // ease-out
-            } else if (elapsed < 0.7) {
-              const p = (elapsed - 0.4) / 0.3;
-              scaleMul = sa.peak + (sa.dip - sa.peak) * (1 - Math.pow(1-p, 2));
-            } else {
-              const p = (elapsed - 0.7) / 0.3;
-              scaleMul = sa.dip + (sa.to - sa.dip) * (1 - Math.pow(1-p, 2));
-            }
+          const ms = Date.now() - sa.birth;
+          const tNorm = ms / 1000; // time in seconds for physics
+          if (ms < sa.duration) {
+            // Damped sine: starts big, oscillates smaller each cycle
+            // A * e^(-d*t) * sin(f*2π*t)
+            const decay = Math.exp(-sa.damping * tNorm);
+            const wave = Math.sin(sa.freq * Math.PI * 2 * tNorm);
+            scaleMul = sa.target + sa.amplitude * decay * wave;
           } else {
-            scaleMul = sa.to;
+            scaleMul = sa.target;
             scaleAnim = null;
           }
         }
