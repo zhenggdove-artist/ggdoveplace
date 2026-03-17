@@ -526,7 +526,11 @@
           totalRings: TENT_RINGS, color: pal, baseR: baseR,
           wrigglePhase: Math.random()*Math.PI*2,
           wriggleFreq: 1.5+Math.random()*2.5,
-          wriggleAmp: 2+Math.random()*4
+          wriggleAmp: 2+Math.random()*4,
+          // Per-tentacle recoil: random delay, strength, speed
+          recoilDelay: 0.05 + Math.random()*0.15,   // when recoil starts (0-1 of growDuration after full)
+          recoilStr:   0.08 + Math.random()*0.12,    // how much it contracts (8-20%)
+          recoilSpeed: 2.5 + Math.random()*3.0       // oscillation speed
         });
       }
 
@@ -687,26 +691,30 @@
         for (let ti = 0; ti < tentacles.length; ti++) {
           const ten = tentacles[ti];
           const rawT = Math.min(1, (now-ten.birth)/ten.growDuration);
-          // Recoil easing: overshoot to ~1.15 then snap back to 1.0
-          // like a rope whipping out and bouncing back
-          const growT = rawT < 1
-            ? rawT * (1 + 0.18 * Math.sin(rawT * Math.PI))  // overshoot during growth
-            : 1;
-          // Recoil pull-back on spine: after growth peak, contract tips slightly
-          const recoilPhase = (now - ten.birth) / ten.growDuration;
-          const recoilScale = recoilPhase > 0.85 && recoilPhase < 1.5
-            ? 1 - 0.12 * Math.sin((recoilPhase - 0.85) / 0.65 * Math.PI)
-            : 1;
+          const growT = rawT;
 
-          // Wriggle spine
+          // Recoil: after fully grown, the whole tube contracts shorter then relaxes
+          // Each tentacle has its own timing, strength, and speed
+          const elapsed = (now - ten.birth) / ten.growDuration;
+          let recoilMul = 1;  // 1 = full length, <1 = contracted
+          if (elapsed > 1) {
+            const rc = elapsed - 1 - ten.recoilDelay;
+            if (rc > 0 && rc < 1.2) {
+              // Damped sine: contracts then bounces back to rest
+              recoilMul = 1 - ten.recoilStr * Math.sin(rc * ten.recoilSpeed * Math.PI) * Math.exp(-rc * 3);
+            }
+          }
+
+          // Wriggle spine + recoil contraction
+          const ox = ten.spineBase[0].x, oy = ten.spineBase[0].y;  // anchor = root
           for (let i = 0; i < ten.spine.length; i++) {
             const u = i/ten.spine.length;
             const wave = Math.sin(t*ten.wriggleFreq + u*Math.PI*5 + ten.wrigglePhase);
             const wave2 = Math.cos(t*ten.wriggleFreq*0.6 + u*Math.PI*3 + ten.wrigglePhase);
-            // Apply recoil: tip portions pull back toward origin
-            const rFactor = 1 - u * (1 - recoilScale);
-            ten.spine[i].x = ten.spineBase[i].x * rFactor + CX * (1-rFactor) + wave*ten.wriggleAmp*u;
-            ten.spine[i].y = ten.spineBase[i].y * rFactor + CY * (1-rFactor) + wave2*ten.wriggleAmp*0.6*u;
+            // Contract toward root: each point lerps toward root by (1-recoilMul)*u
+            const contract = 1 - (1 - recoilMul) * u;  // root stays, tip moves most
+            ten.spine[i].x = ox + (ten.spineBase[i].x - ox) * contract + wave*ten.wriggleAmp*u;
+            ten.spine[i].y = oy + (ten.spineBase[i].y - oy) * contract + wave2*ten.wriggleAmp*0.6*u;
           }
           rebuildRings(ten.rings, ten.spine, ten.baseR, 0.85);
 
