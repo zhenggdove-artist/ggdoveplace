@@ -196,7 +196,7 @@
       .nav-ornament { font-size: 22px; }
       .dino-cursor { display: none; }
       body.landing-body { cursor: auto; }
-      .landing-svg { pointer-events: auto !important; }
+      .landing-svg { pointer-events: none !important; }
       .landing-svg a { cursor: pointer !important; pointer-events: auto !important; }
       .landing-svg text { pointer-events: auto !important; cursor: pointer !important; }
       .nav-label { cursor: pointer !important; }
@@ -549,18 +549,19 @@
         return pts;
       }
 
-      canvas.addEventListener('click', function(e) {
+      function handleCreatureClick(clientX, clientY) {
         if (redirecting) return;
         const rect = canvas.getBoundingClientRect();
-        const mx = (e.clientX-rect.left)*(W/rect.width);
-        const my = (e.clientY-rect.top)*(H/rect.height);
+        const mx = (clientX-rect.left)*(W/rect.width);
+        const my = (clientY-rect.top)*(H/rect.height);
 
-        // Hit test
+        // Hit test — bigger radius on mobile for easier tapping
+        const hitR = window.innerWidth < 768 ? 2400 : 800;
         let hit = false;
         const allPts = getAllPoints();
         for (let i = 0; i < allPts.length; i++) {
           const dx = allPts[i].x-mx, dy = allPts[i].y-my;
-          if (dx*dx+dy*dy < 800) { hit = true; break; }
+          if (dx*dx+dy*dy < hitR) { hit = true; break; }
         }
         if (!hit) return;
 
@@ -578,7 +579,6 @@
         const nearIdx = nearestBodySpineIdx(mx, my);
         const count = 2 + Math.floor(clickCount * 1.2);
         for (let i = 0; i < count; i++) {
-          // Cluster around nearest point ±3 spine indices
           const si = Math.max(0, Math.min(bodySpine.length-1,
             nearIdx + Math.floor((Math.random()-0.5)*6)));
           spawnTentacle(bodySpine[si].x, bodySpine[si].y);
@@ -592,7 +592,16 @@
           redirecting = true;
           redirectTimer = Date.now();
         }
+      }
+
+      canvas.addEventListener('click', function(e) {
+        handleCreatureClick(e.clientX, e.clientY);
       });
+      canvas.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        const t = e.changedTouches[0];
+        if (t) handleCreatureClick(t.clientX, t.clientY);
+      }, { passive: false });
 
       // ── Draw rings ──
       function drawRings(rings, visCount, color, sc, growT) {
@@ -677,15 +686,27 @@
         const now = Date.now();
         for (let ti = 0; ti < tentacles.length; ti++) {
           const ten = tentacles[ti];
-          const growT = Math.min(1, (now-ten.birth)/ten.growDuration);
+          const rawT = Math.min(1, (now-ten.birth)/ten.growDuration);
+          // Recoil easing: overshoot to ~1.15 then snap back to 1.0
+          // like a rope whipping out and bouncing back
+          const growT = rawT < 1
+            ? rawT * (1 + 0.18 * Math.sin(rawT * Math.PI))  // overshoot during growth
+            : 1;
+          // Recoil pull-back on spine: after growth peak, contract tips slightly
+          const recoilPhase = (now - ten.birth) / ten.growDuration;
+          const recoilScale = recoilPhase > 0.85 && recoilPhase < 1.5
+            ? 1 - 0.12 * Math.sin((recoilPhase - 0.85) / 0.65 * Math.PI)
+            : 1;
 
           // Wriggle spine
           for (let i = 0; i < ten.spine.length; i++) {
             const u = i/ten.spine.length;
             const wave = Math.sin(t*ten.wriggleFreq + u*Math.PI*5 + ten.wrigglePhase);
             const wave2 = Math.cos(t*ten.wriggleFreq*0.6 + u*Math.PI*3 + ten.wrigglePhase);
-            ten.spine[i].x = ten.spineBase[i].x + wave*ten.wriggleAmp*u;
-            ten.spine[i].y = ten.spineBase[i].y + wave2*ten.wriggleAmp*0.6*u;
+            // Apply recoil: tip portions pull back toward origin
+            const rFactor = 1 - u * (1 - recoilScale);
+            ten.spine[i].x = ten.spineBase[i].x * rFactor + CX * (1-rFactor) + wave*ten.wriggleAmp*u;
+            ten.spine[i].y = ten.spineBase[i].y * rFactor + CY * (1-rFactor) + wave2*ten.wriggleAmp*0.6*u;
           }
           rebuildRings(ten.rings, ten.spine, ten.baseR, 0.85);
 
