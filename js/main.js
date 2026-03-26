@@ -1023,6 +1023,7 @@ function renderBio() {
   if (!wrap || !siteData) return;
   const b = siteData.bio;
   const cvEntries = [
+    { year: '2025', text: '\u201CStick and Ice Cream\u201D \u2013 Site-specific Intervention, Museum of Contemporary Art' },
     { year: '2024', text: 'Melbourne Apocalypse I \u2013 Open Studio, Pseudo Studio, Melbourne, Australia' },
     { year: '2024', text: 'PSEUDO New Media Art Residency, Melbourne, Australia' },
     { year: '2024', text: 'NEXS New Media Art Residency, Taipei, Taiwan' },

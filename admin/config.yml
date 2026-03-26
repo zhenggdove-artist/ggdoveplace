@@ -11,7 +11,7 @@ public_folder: /ggdoveplace/images/uploads
 
 collections:
   - name: projects
-    label: Works (作品)
+    label: Relic — Works (作品)
     files:
       - label: Works Data
         name: works
@@ -29,7 +29,7 @@ collections:
               - { label: Dimensions, name: dimensions, widget: string, required: false }
 
   - name: weapons
-    label: Weapons (武器)
+    label: Relic — Weapons (武器)
     files:
       - label: Weapons Data
         name: weapons_data
@@ -116,7 +116,7 @@ collections:
                   - { label: "Video URL 影片 (YouTube/Vimeo/mp4)", name: video, widget: string, required: false }
 
   - name: bio
-    label: Bio (簡介)
+    label: CV (履歷)
     files:
       - label: Bio Data
         name: bio_data
@@ -177,10 +177,8 @@ collections:
                 collapsed: true
                 hint: "自訂導航列每一項的顯示文字（留空＝預設英文）"
                 fields:
-                  - { label: "Works 頁名稱", name: works, widget: string, default: "Works", required: false }
+                  - { label: "CV 頁名稱", name: bio, widget: string, default: "CV", required: false }
                   - { label: "Exhibition 頁名稱", name: exhibition, widget: string, default: "Exhibition", required: false }
-                  - { label: "Weapons 頁名稱", name: weapons, widget: string, default: "Weapons", required: false }
-                  - { label: "Bio 頁名稱", name: bio, widget: string, default: "Bio", required: false }
                   - { label: "Contact 頁名稱", name: contact, widget: string, default: "Contact", required: false }
               # ━━━ 作品頁 Works Page ━━━
               - label: "📄 作品版型 Gallery Layout"
