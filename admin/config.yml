@@ -10,14 +10,14 @@ media_folder: images/uploads
 public_folder: /ggdoveplace/images/uploads
 
 collections:
-  - name: projects
-    label: Relic — Works (作品)
+  - name: relic
+    label: Relic (作品與物件)
     files:
-      - label: Works Data
-        name: works
+      - label: Relic Data
+        name: relic_data
         file: content/data.json
         fields:
-          - label: Projects
+          - label: "Works 作品"
             name: projects
             widget: list
             fields:
@@ -27,15 +27,7 @@ collections:
               - { label: Year,       name: year,       widget: string, required: false }
               - { label: Medium,     name: medium,     widget: string, required: false }
               - { label: Dimensions, name: dimensions, widget: string, required: false }
-
-  - name: weapons
-    label: Relic — Weapons (武器)
-    files:
-      - label: Weapons Data
-        name: weapons_data
-        file: content/data.json
-        fields:
-          - label: Weapons
+          - label: "Weapons 武器"
             name: weapons
             widget: list
             fields:
