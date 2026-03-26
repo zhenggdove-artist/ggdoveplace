@@ -1105,26 +1105,21 @@ function renderWeapons() {
 
 // ── Relic (combined Works + Weapons) ────────────
 function renderRelic() {
-  // First render Works (projects)
+  // Merge weapons into projects array so they render in one unified gallery
+  if (siteData && siteData.weapons) {
+    const maxId = siteData.projects.reduce((m, p) => Math.max(m, p.id || 0), 0);
+    siteData.weapons.forEach((w, i) => {
+      siteData.projects.push({
+        id: maxId + i + 1,
+        image: w.image,
+        title: w.name || '',
+        year: '',
+        medium: w.price || '',
+        dimensions: ''
+      });
+    });
+  }
   renderProjects();
-
-  // Then render Weapons below, with lightbox index offset
-  const grid = document.getElementById('weapons-grid');
-  if (!grid || !siteData) return;
-  const weapons = siteData.weapons;
-  const offset = lightboxItems.length; // projects already added their items
-
-  weapons.forEach((w, i) => {
-    lightboxItems.push({ image: fixImg(w.image), title: w.name, year: '', medium: '', dimensions: w.price });
-    const el = document.createElement('div');
-    el.className = 'weapon-card';
-    el.innerHTML = `
-      <img src="${fixImg(w.image)}" alt="${w.name}" loading="lazy">
-      <div class="weapon-name">${w.name}</div>
-      ${w.price ? `<div class="weapon-price">${w.price}</div>` : ''}`;
-    el.onclick = () => showLightbox(offset + i);
-    grid.appendChild(el);
-  });
 }
 
 // ── CV Contact Strip ────────────────────────────
