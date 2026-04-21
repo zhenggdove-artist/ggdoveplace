@@ -80,6 +80,11 @@
       border-radius: 2px;
       background: #000;
     }
+    .work-video.work-video--short iframe {
+      max-width: 360px;
+      aspect-ratio: 9/16;
+      display: block;
+    }
 
     .work-links {
       display: flex;
@@ -225,7 +230,7 @@
     <!-- ═══════════════════════════════════ -->
     <!--  斷罪塔 Sin Tower                  -->
     <!-- ═══════════════════════════════════ -->
-    <section class="play-section">
+    <section class="play-section" data-work-id="Sin Tower">
       <h3 class="work-title-en">Sin Tower</h3>
       <p class="work-title-zh">〈斷罪塔〉</p>
       <p class="work-meta">2025 · mixed-media · game engine, sculpture, painting, AI-written text, performance</p>
@@ -312,7 +317,7 @@
     <!-- ═══════════════════════════════════ -->
     <!--  棍與雪糕 Stick and Ice Cream      -->
     <!-- ═══════════════════════════════════ -->
-    <section class="play-section">
+    <section class="play-section" data-work-id="Stick and Ice Cream">
       <h3 class="work-title-en">Stick and Ice Cream</h3>
       <p class="work-title-zh">〈棍與雪糕〉</p>
       <p class="work-meta">2025 · medium: blank exhibition wall · MoCA Taipei</p>
@@ -362,7 +367,7 @@
     <!-- ═══════════════════════════════════ -->
     <!--  蔣花 Chiang-Flower                -->
     <!-- ═══════════════════════════════════ -->
-    <section class="play-section">
+    <section class="play-section" data-work-id="Chiang-Flower">
       <h3 class="work-title-en">Chiang-Flower</h3>
       <p class="work-title-zh">〈蔣花〉</p>
       <p class="work-meta">2025 · UV pigment, code, epoxy putty, rubber stamp, mineral-based coating</p>
@@ -387,8 +392,64 @@
         <img src="images/games/chiang-05.jpg" alt="Chiang-Flower — documentation" loading="lazy">
       </div>
 
+      <div class="work-video work-video--short">
+        <iframe src="https://www.youtube.com/embed/T20hf_QJx84"
+                title="Chiang-Flower"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════════════════════ -->
+    <!--  都市傳說 Urban Legend - All flowers -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="play-section" data-work-id="Urban Legend - All flowers">
+      <h3 class="work-title-en">Urban Legend - All flowers</h3>
+      <p class="work-title-zh">〈都市傳說─全都開成了花〉</p>
+      <p class="work-meta">2025 · web-based generative game · invisible QR code, UV-activated installation</p>
+
+      <div class="work-desc">
+        <p>
+          隨著不明墜落的身影疊加，它們逐漸合成了全新的背景日常。那些無解的消逝漸漸剝落了寫實的色彩，人們看慣了清洗過後的地面，也習慣了繞道而行。
+        </p>
+        <p>
+          最終它們成了不可考證的都市傳說—那些來自虛擬裂縫的靈光，帶著人們最後留下的話語，落成了奇異森林的養分。
+        </p>
+        <p class="quote">
+          作品以隱藏的二維條碼鑲嵌在各個無可疑的墜樓命案現場。抵達樓梯頂部並輸入文字後，你將墜落成一株美麗的植物。
+        </p>
+      </div>
+
+      <div class="work-gallery">
+        <img src="images/games/urban-01.jpg" alt="Urban Legend — site documentation" loading="lazy">
+        <img src="images/games/urban-02.jpg" alt="Urban Legend — hidden QR code" loading="lazy">
+        <img src="images/games/urban-03.jpg" alt="Urban Legend — UV reveal" loading="lazy">
+        <img src="images/games/urban-04.jpg" alt="Urban Legend — generative flora" loading="lazy">
+      </div>
+
+      <div class="work-video">
+        <video controls preload="metadata">
+          <source src="images/games/urban-01.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <div class="work-video">
+        <video controls preload="metadata">
+          <source src="images/games/urban-02.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <div class="work-video">
+        <video controls preload="metadata">
+          <source src="images/games/urban-03.mp4" type="video/mp4">
+        </video>
+      </div>
+
       <div class="work-links">
-        <a href="https://youtube.com/shorts/T20hf_QJx84" target="_blank">▶ YouTube Short</a>
+        <a href="https://zhenggdove-artist.github.io/urban-legend/" target="_blank">▶ PLAY THE GAME</a>
       </div>
     </section>
 
@@ -403,7 +464,55 @@
       applyTextStyles(siteData.site);
       applyZalgo(siteData.site);
       applyBackground(siteData.site);
+      applyPlayVideoOverrides();
     });
+
+    // ── CMS-managed video override ──
+    // If Play collection in the CMS has a videoUrl for a given work title,
+    // swap the hardcoded video element for an embedded player.
+    function applyPlayVideoOverrides() {
+      const works = (siteData && siteData.play && siteData.play.works) || [];
+      works.forEach(w => {
+        if (!w || !w.video || !w.titleEn) return;
+        const section = document.querySelector(
+          `.play-section[data-work-id="${CSS.escape(w.titleEn)}"]`
+        );
+        if (!section) return;
+        const container = section.querySelector('.work-video')
+          || (() => {
+            const d = document.createElement('div');
+            d.className = 'work-video';
+            const desc = section.querySelector('.work-desc');
+            if (desc) desc.after(d);
+            else section.appendChild(d);
+            return d;
+          })();
+        const aspect = (w.aspect || '16/9').trim();
+        container.classList.toggle('work-video--short', aspect === '9/16');
+        container.innerHTML = buildVideoEmbed(w.video, w.titleEn);
+      });
+    }
+
+    function buildVideoEmbed(url, title) {
+      const safe = s => String(s || '').replace(/[&<>"']/g, c =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const t = safe(title);
+      // YouTube: watch?v=, youtu.be/, shorts/
+      let m = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+      if (m) {
+        return `<iframe src="https://www.youtube.com/embed/${m[1]}" title="${t}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+      }
+      // Vimeo
+      m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      if (m) {
+        return `<iframe src="https://player.vimeo.com/video/${m[1]}" title="${t}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+      }
+      // Local video file (mp4 / webm / mov)
+      const type = /\.webm(\?|$)/i.test(url) ? 'video/webm'
+                 : /\.mov(\?|$)/i.test(url)  ? 'video/quicktime'
+                 : 'video/mp4';
+      return `<video controls preload="metadata"><source src="${safe(url)}" type="${type}"></video>`;
+    }
   </script>
 </body>
 </html>

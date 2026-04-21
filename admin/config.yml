@@ -10,6 +10,28 @@ media_folder: images/uploads
 public_folder: /ggdoveplace/images/uploads
 
 collections:
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # 主導航頁面（Main Nav Pages）— 與網站導航一致
+  # Bio → Relic → Play → Exhibition
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  - name: bio
+    label: Bio (簡介)
+    files:
+      - label: Bio Data
+        name: bio_data
+        file: content/data.json
+        fields:
+          - label: Bio
+            name: bio
+            widget: object
+            fields:
+              - { label: Name,     name: name,     widget: string }
+              - { label: Subtitle, name: subtitle, widget: string }
+              - { label: Photo,    name: photo,    widget: image }
+              - { label: Text,     name: text,     widget: text }
+              - { label: CV URL,   name: cv_url,   widget: string, required: false }
+
   - name: relic
     label: Relic (作品與物件)
     files:
@@ -35,6 +57,35 @@ collections:
               - { label: Image, name: image, widget: image }
               - { label: Name,  name: name,  widget: string, required: false }
               - { label: Price, name: price, widget: string, required: false }
+
+  - name: play
+    label: Play (遊戲作品)
+    files:
+      - label: Play Page Data
+        name: play_data
+        file: content/data.json
+        fields:
+          - label: Play 遊戲作品頁
+            name: play
+            widget: object
+            fields:
+              - label: "作品影片 Works Videos"
+                name: works
+                widget: list
+                summary: "{{fields.titleEn}}"
+                hint: "此處可設定 Play 頁每個作品的影片網址（YouTube / Vimeo / 本地 mp4 / webm）。留空則使用預設。"
+                fields:
+                  - { label: "作品 英文標題 Title (EN)", name: titleEn, widget: string }
+                  - { label: "影片網址 Video URL", name: video, widget: string, required: false, hint: "支援 YouTube 完整網址 / YouTube Shorts / Vimeo / 本地 mp4, webm" }
+                  - label: "影片比例 Aspect"
+                    name: aspect
+                    widget: select
+                    options:
+                      - { label: "16:9 橫式", value: "16/9" }
+                      - { label: "9:16 直式（Shorts）", value: "9/16" }
+                      - { label: "4:3", value: "4/3" }
+                      - { label: "1:1", value: "1/1" }
+                    default: "16/9"
 
   - name: exhibition
     label: Exhibition (展覽)
@@ -78,6 +129,27 @@ collections:
                       - { label: "Caption 說明", name: caption, widget: string, required: false }
                       - { label: "Video URL 影片 (YouTube/Vimeo/mp4，填了會顯示影片而非圖片)", name: video, widget: string, required: false }
 
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # 次要頁面 & 系統設定（Secondary / System）
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  - name: contact
+    label: Contact (聯絡)
+    files:
+      - label: Contact Data
+        name: contact_data
+        file: content/data.json
+        fields:
+          - label: Contact
+            name: contact
+            widget: object
+            fields:
+              - { label: Email,         name: email,         widget: string }
+              - { label: Instagram,     name: instagram,     widget: string, required: false }
+              - { label: Instagram URL, name: instagram_url, widget: string, required: false }
+              - { label: Location,      name: location,      widget: string, required: false }
+              - { label: Image,         name: image,         widget: image }
+
   - name: custom_pages
     label: Custom Pages (自訂頁面)
     files:
@@ -106,40 +178,6 @@ collections:
                   - { label: "Image 圖片", name: src, widget: image, required: false }
                   - { label: "Caption 說明", name: caption, widget: string, required: false }
                   - { label: "Video URL 影片 (YouTube/Vimeo/mp4)", name: video, widget: string, required: false }
-
-  - name: bio
-    label: CV (履歷)
-    files:
-      - label: Bio Data
-        name: bio_data
-        file: content/data.json
-        fields:
-          - label: Bio
-            name: bio
-            widget: object
-            fields:
-              - { label: Name,     name: name,     widget: string }
-              - { label: Subtitle, name: subtitle, widget: string }
-              - { label: Photo,    name: photo,    widget: image }
-              - { label: Text,     name: text,     widget: text }
-              - { label: CV URL,   name: cv_url,   widget: string, required: false }
-
-  - name: contact
-    label: Contact (聯絡)
-    files:
-      - label: Contact Data
-        name: contact_data
-        file: content/data.json
-        fields:
-          - label: Contact
-            name: contact
-            widget: object
-            fields:
-              - { label: Email,         name: email,         widget: string }
-              - { label: Instagram,     name: instagram,     widget: string, required: false }
-              - { label: Instagram URL, name: instagram_url, widget: string, required: false }
-              - { label: Location,      name: location,      widget: string, required: false }
-              - { label: Image,         name: image,         widget: image }
 
   - name: site_settings
     label: "Site Settings (網站設定)"
