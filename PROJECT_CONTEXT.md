@@ -129,6 +129,8 @@ npm run dev
 - `shop.html` 已改成資料驅動頁面，商品內容讀取 `content/data.json` 的 `shop` 節點。
 - Decap CMS 已新增 `Shop (商品頁)` collection，對應 `content/data.json > shop`。
 - Shop 後台可編輯 hero、商品區塊、商品欄位、圖片、影片、作品論述、購買提示、退款聲明與 Footer 聯絡資訊。
-- Shop collection 設定了 `media_folder: SHOP` 與 `public_folder: /ggdoveplace/SHOP`，後台新增的 Shop 圖片/影片會集中進 `SHOP/`。
+- Shop collection 設定了 `media_folder: /SHOP` 與 `public_folder: /ggdoveplace/SHOP`，後台新增的 Shop 圖片/影片會集中進根目錄 `SHOP/`。
 - `admin/index.html` 已新增 Shop 即時預覽模板，接近前台酸性/終端機視覺。
 - 自訂頁 `customPages.images` 原本有影片欄位但前台只顯示圖片，已修正為圖片/影片皆可渲染。
+
+2026-05-29 修正：Decap file collection 曾因 Shop 上傳路徑設定錯位，將圖片放進 `content/SHOP/`，但前台會依 `/ggdoveplace/SHOP/...` 請求而 404。Shop 現在以 `media_folder: /SHOP` 搭配 `public_folder: /ggdoveplace/SHOP`，讓後台上傳檔案集中到 repo 根目錄 `SHOP/`。

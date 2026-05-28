@@ -291,6 +291,51 @@
       background: #000;
     }
 
+    .shop-media-button {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      color: inherit;
+      background: transparent;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .shop-media-button img {
+      transition: transform 0.32s ease, filter 0.32s ease;
+    }
+
+    .shop-media-button:hover img {
+      transform: scale(1.035);
+      filter: contrast(1.08);
+    }
+
+    .shop-media-hint {
+      position: absolute;
+      left: 0.8rem;
+      bottom: 0.8rem;
+      padding: 0.38rem 0.55rem;
+      border: 1px solid rgba(206, 255, 42, 0.46);
+      color: var(--shop-acid);
+      background: rgba(0, 0, 0, 0.62);
+      font-family: var(--shop-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      pointer-events: none;
+    }
+
+    .shop-media-button:hover .shop-media-hint,
+    .shop-media-button:focus-visible .shop-media-hint {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .archive-placeholder {
       width: 100%;
       min-height: 100%;
@@ -490,6 +535,93 @@
       min-width: 4.5rem;
     }
 
+    body.shop-gallery-open {
+      overflow: hidden;
+    }
+
+    .shop-lightbox[hidden] {
+      display: none;
+    }
+
+    .shop-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: grid;
+      grid-template-columns: minmax(44px, 0.12fr) minmax(0, 1fr) minmax(44px, 0.12fr);
+      align-items: center;
+      gap: 1rem;
+      padding: clamp(1rem, 4vw, 3rem);
+      background:
+        radial-gradient(circle at 50% 50%, rgba(88, 244, 255, 0.12), transparent 44%),
+        rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .shop-lightbox-figure {
+      margin: 0;
+      min-width: 0;
+      justify-self: center;
+      width: min(980px, 100%);
+    }
+
+    .shop-lightbox-figure img {
+      display: block;
+      width: 100%;
+      max-height: 78vh;
+      object-fit: contain;
+      background: #000;
+      border: 1px solid rgba(206, 255, 42, 0.24);
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    }
+
+    .shop-lightbox-figure figcaption,
+    .shop-lightbox-counter {
+      font-family: var(--shop-mono);
+      color: rgba(214, 222, 240, 0.72);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      margin-top: 0.8rem;
+      min-height: 1rem;
+    }
+
+    .shop-lightbox-counter {
+      color: var(--shop-acid);
+    }
+
+    .shop-lightbox-close,
+    .shop-lightbox-nav {
+      border: 1px solid rgba(206, 255, 42, 0.42);
+      color: var(--shop-acid);
+      background: rgba(0, 0, 0, 0.48);
+      font-family: var(--shop-mono);
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .shop-lightbox-close:hover,
+    .shop-lightbox-nav:hover {
+      color: #000;
+      background: var(--shop-acid);
+      box-shadow: 0 0 28px rgba(206, 255, 42, 0.32);
+    }
+
+    .shop-lightbox-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2.4rem;
+      height: 2.4rem;
+      font-size: 1.1rem;
+    }
+
+    .shop-lightbox-nav {
+      width: clamp(2.4rem, 5vw, 3.4rem);
+      height: clamp(3rem, 8vw, 5rem);
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      justify-self: center;
+    }
+
     @media (max-width: 980px) {
       .shop-hero {
         grid-template-columns: 1fr;
@@ -569,6 +701,16 @@
       .purchase-button {
         width: 100%;
       }
+
+      .shop-lightbox {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+      }
+
+      .shop-lightbox-nav {
+        width: 100%;
+        height: 2.5rem;
+      }
     }
   </style>
 </head>
@@ -609,6 +751,17 @@
       <div class="contact-line" id="shop-contact-phone"><span>Phone</span>聯絡電話：</div>
     </div>
   </footer>
+
+  <div class="shop-lightbox" id="shop-gallery-modal" hidden aria-modal="true" role="dialog" aria-label="Shop detail images">
+    <button class="shop-lightbox-close" id="shop-gallery-close" type="button" aria-label="Close">×</button>
+    <button class="shop-lightbox-nav" id="shop-gallery-prev" type="button" aria-label="Previous image">‹</button>
+    <figure class="shop-lightbox-figure">
+      <img id="shop-gallery-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="">
+      <figcaption id="shop-gallery-caption"></figcaption>
+      <div class="shop-lightbox-counter" id="shop-gallery-counter"></div>
+    </figure>
+    <button class="shop-lightbox-nav" id="shop-gallery-next" type="button" aria-label="Next image">›</button>
+  </div>
 
   <script src="js/vhs-effect.js"></script>
   <script src="js/main.js"></script>

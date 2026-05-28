@@ -8,6 +8,9 @@ let siteData   = null;
 let visualData = null;
 let lightboxItems = [];
 let lightboxIndex = 0;
+let shopGallerySets = [];
+let shopGalleryCurrentSet = [];
+let shopGalleryCurrentIndex = 0;
 const INITIAL_SHOW = 9;
 
 // ── Image path fixer ────────────────────────────
@@ -958,6 +961,37 @@ function renderExhibitionDetail() {
 }
 
 // ── Shop ───────────────────────────────────────
+function normalizeShopDetailImages(product) {
+  const details = Array.isArray(product && product.detailImages) ? product.detailImages : [];
+  return details
+    .map(item => {
+      if (typeof item === 'string') return { src: item, caption: '' };
+      return {
+        src: item && (item.src || item.image || item.url || ''),
+        caption: item && (item.caption || item.title || '')
+      };
+    })
+    .filter(item => item.src)
+    .slice(0, 3);
+}
+
+function getShopGalleryItems(product) {
+  const gallery = [];
+  if (product && product.image) {
+    gallery.push({
+      src: product.image,
+      caption: product.title || product.mediaAlt || ''
+    });
+  }
+  normalizeShopDetailImages(product).forEach(item => {
+    gallery.push({
+      src: item.src,
+      caption: item.caption || (product && product.title) || ''
+    });
+  });
+  return gallery;
+}
+
 function renderShop() {
   const sectionsWrap = document.getElementById('shop-sections');
   if (!sectionsWrap || !siteData) return;
@@ -989,6 +1023,7 @@ function renderShop() {
   if (contactPhoneEl) contactPhoneEl.innerHTML = `<span>Phone</span>${escapeHtml(contact.phoneLabel || '聯絡電話')}：${escapeHtml(contact.phone || '')}`;
 
   const sections = shop.sections || [];
+  shopGallerySets = [];
   sectionsWrap.innerHTML = sections.map((section, sectionIndex) => {
     const layout = section.layout || 'archive';
     const products = section.products || [];
@@ -1000,7 +1035,11 @@ function renderShop() {
           <div class="section-rule"></div>
         </div>
         <div class="${listClass}">
-          ${products.map(product => renderShopProduct(product, layout, purchase)).join('')}
+          ${products.map(product => {
+            const productIndex = shopGallerySets.length;
+            shopGallerySets.push(getShopGalleryItems(product));
+            return renderShopProduct(product, layout, purchase, productIndex);
+          }).join('')}
         </div>
       </section>`;
   }).join('');
@@ -1009,9 +1048,10 @@ function renderShop() {
   if (refund) {
     sectionsWrap.insertAdjacentHTML('beforeend', `<div class="purchase-note">${escapeHtml(refund)}</div>`);
   }
+  initShopGalleryEvents();
 }
 
-function renderShopProduct(product, layout, purchase) {
+function renderShopProduct(product, layout, purchase, productIndex) {
   product = product || {};
   purchase = purchase || {};
   const isArchive = layout === 'archive';
@@ -1031,7 +1071,7 @@ function renderShopProduct(product, layout, purchase) {
   return `
     <article class="${cardClass}" data-code="${escapeHtml(product.code || '')}">
       <div class="${mediaClass}">
-        ${renderShopMedia(product)}
+        ${renderShopMedia(product, productIndex)}
       </div>
       <div class="${bodyClass}">
         <div class="item-kicker">${escapeHtml(product.categoryLabel || '')}</div>
@@ -1048,11 +1088,12 @@ function renderShopProduct(product, layout, purchase) {
     </article>`;
 }
 
-function renderShopMedia(product) {
+function renderShopMedia(product, productIndex) {
   product = product || {};
   const alt = escapeHtml(product.mediaAlt || product.title || '');
   const mediaVideo = product.video || product.videoUrl || '';
   const embedUrl = videoEmbedUrl(mediaVideo);
+  const gallery = shopGallerySets[productIndex] || getShopGalleryItems(product);
   if (embedUrl) {
     if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
       return `<video src="${escapeHtml(fixImg(embedUrl))}" controls preload="metadata" playsinline></video>`;
@@ -1060,9 +1101,91 @@ function renderShopMedia(product) {
     return `<iframe src="${escapeHtml(embedUrl)}" title="${alt}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
   }
   if (product.image) {
-    return `<img src="${escapeHtml(fixImg(product.image))}" alt="${alt}" loading="lazy">`;
+    const img = `<img src="${escapeHtml(fixImg(product.image))}" alt="${alt}" loading="lazy">`;
+    if (gallery.length) {
+      return `<button class="shop-media-button" type="button" onclick="openShopGallery(${Number(productIndex) || 0}, 0)" aria-label="View detail images for ${alt}">
+        ${img}
+        <span class="shop-media-hint">VIEW DETAILS</span>
+      </button>`;
+    }
+    return img;
+  }
+  if (gallery.length) {
+    const first = gallery[0];
+    const firstAlt = escapeHtml(first.caption || product.title || '');
+    return `<button class="shop-media-button" type="button" onclick="openShopGallery(${Number(productIndex) || 0}, 0)" aria-label="View detail images for ${firstAlt}">
+      <img src="${escapeHtml(fixImg(first.src))}" alt="${firstAlt}" loading="lazy">
+      <span class="shop-media-hint">VIEW DETAILS</span>
+    </button>`;
   }
   return `<pre class="archive-placeholder" aria-hidden="true">${escapeHtml(product.placeholder || 'FILE WITHOUT IMAGE')}</pre>`;
+}
+
+function initShopGalleryEvents() {
+  const modal = document.getElementById('shop-gallery-modal');
+  if (!modal || modal.dataset.bound === 'true') return;
+  modal.dataset.bound = 'true';
+
+  const closeBtn = document.getElementById('shop-gallery-close');
+  const prevBtn = document.getElementById('shop-gallery-prev');
+  const nextBtn = document.getElementById('shop-gallery-next');
+
+  if (closeBtn) closeBtn.addEventListener('click', closeShopGallery);
+  if (prevBtn) prevBtn.addEventListener('click', () => stepShopGallery(-1));
+  if (nextBtn) nextBtn.addEventListener('click', () => stepShopGallery(1));
+  modal.addEventListener('click', event => {
+    if (event.target === modal) closeShopGallery();
+  });
+  document.addEventListener('keydown', event => {
+    if (modal.hidden) return;
+    if (event.key === 'Escape') closeShopGallery();
+    if (event.key === 'ArrowLeft') stepShopGallery(-1);
+    if (event.key === 'ArrowRight') stepShopGallery(1);
+  });
+}
+
+function openShopGallery(productIndex, imageIndex) {
+  const gallery = shopGallerySets[Number(productIndex)] || [];
+  if (!gallery.length) return;
+  shopGalleryCurrentSet = gallery;
+  shopGalleryCurrentIndex = Math.max(0, Math.min(Number(imageIndex) || 0, gallery.length - 1));
+  const modal = document.getElementById('shop-gallery-modal');
+  if (!modal) return;
+  modal.hidden = false;
+  document.body.classList.add('shop-gallery-open');
+  updateShopGallery();
+}
+
+function closeShopGallery() {
+  const modal = document.getElementById('shop-gallery-modal');
+  if (!modal) return;
+  modal.hidden = true;
+  document.body.classList.remove('shop-gallery-open');
+}
+
+function stepShopGallery(delta) {
+  if (!shopGalleryCurrentSet.length) return;
+  shopGalleryCurrentIndex = (shopGalleryCurrentIndex + delta + shopGalleryCurrentSet.length) % shopGalleryCurrentSet.length;
+  updateShopGallery();
+}
+
+function updateShopGallery() {
+  const item = shopGalleryCurrentSet[shopGalleryCurrentIndex];
+  if (!item) return;
+  const img = document.getElementById('shop-gallery-image');
+  const caption = document.getElementById('shop-gallery-caption');
+  const counter = document.getElementById('shop-gallery-counter');
+  const prevBtn = document.getElementById('shop-gallery-prev');
+  const nextBtn = document.getElementById('shop-gallery-next');
+  if (img) {
+    img.src = fixImg(item.src);
+    img.alt = item.caption || '';
+  }
+  if (caption) caption.textContent = item.caption || '';
+  if (counter) counter.textContent = `${shopGalleryCurrentIndex + 1} / ${shopGalleryCurrentSet.length}`;
+  const multi = shopGalleryCurrentSet.length > 1;
+  if (prevBtn) prevBtn.hidden = !multi;
+  if (nextBtn) nextBtn.hidden = !multi;
 }
 
 // ── Custom Page ─────────────────────────────────

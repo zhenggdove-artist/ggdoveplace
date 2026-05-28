@@ -89,7 +89,7 @@ collections:
 
   - name: shop
     label: Shop (商品頁)
-    media_folder: SHOP
+    media_folder: /SHOP
     public_folder: /ggdoveplace/SHOP
     files:
       - label: Shop Page Data
@@ -157,9 +157,18 @@ collections:
                       - { label: "媒材 Medium", name: medium, widget: string, required: false }
                       - { label: "尺寸 Dimensions", name: dimensions, widget: string, required: false }
                       - { label: "價格 Price（請含幣值，例如：新台幣 1,000 元）", name: price, widget: string }
-                      - { label: "商品圖片 Image", name: image, widget: image, required: false }
-                      - { label: "商品影片上傳 Video Upload（mp4/webm/mov）", name: video, widget: file, required: false }
+                      - { label: "商品圖片 Image", name: image, widget: image, required: false, media_folder: /SHOP, public_folder: /ggdoveplace/SHOP }
+                      - { label: "商品影片上傳 Video Upload（mp4/webm/mov）", name: video, widget: file, required: false, media_folder: /SHOP, public_folder: /ggdoveplace/SHOP }
                       - { label: "外部影片網址 External Video URL（YouTube/Vimeo，可選）", name: videoUrl, widget: string, required: false }
+                      - label: "商品細節圖 Detail Images（最多三張，點商品圖後顯示）"
+                        name: detailImages
+                        widget: list
+                        required: false
+                        max: 3
+                        summary: "{{fields.caption}} {{fields.src}}"
+                        fields:
+                          - { label: "細節圖 Detail Image", name: src, widget: image, required: false, media_folder: /SHOP, public_folder: /ggdoveplace/SHOP }
+                          - { label: "說明 Caption", name: caption, widget: string, required: false }
                       - { label: "圖片替代文字 Alt", name: mediaAlt, widget: string, required: false }
                       - { label: "無圖片時的 ASCII 佔位文字", name: placeholder, widget: text, required: false }
                       - { label: "作品論述 / 商品描述", name: statement, widget: markdown, required: false }

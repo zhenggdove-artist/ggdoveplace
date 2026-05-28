@@ -1125,6 +1125,9 @@
           product.dimensions ? ['尺寸', product.dimensions] : null,
           product.price ? ['價格', product.price] : null
         ].filter(Boolean);
+        var details = (product.detailImages || []).filter(function(item) {
+          return item && (item.src || item.image || item.url);
+        }).slice(0, 3);
         return h('div', { key: key, style: {
           display: isArchive ? 'grid' : 'flex',
           gridTemplateColumns: isArchive ? 'minmax(180px, 0.8fr) 1fr' : undefined,
@@ -1155,6 +1158,13 @@
               })
             ) : null,
             product.statement ? h('div', { style: { whiteSpace: 'pre-wrap', borderLeft: '1px solid rgba(255,62,219,0.48)', paddingLeft: '0.8rem', color: text, opacity: 0.84, fontFamily: mono, fontSize: '0.75rem', lineHeight: 1.75 } }, product.statement) : null,
+            details.length ? h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.45rem' } },
+              details.map(function(detail, di) {
+                return h('div', { key: di, style: { aspectRatio: '1/1', overflow: 'hidden', border: '1px solid rgba(88,244,255,0.18)', background: '#030307' } },
+                  previewMedia(getAsset, detail)
+                );
+              })
+            ) : null,
             h('div', { style: { marginTop: 'auto', paddingTop: '0.75rem', borderTop: '1px solid rgba(206,255,42,0.14)', display: 'flex', gap: '0.8rem', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' } },
               h('span', { style: { color: acid, fontFamily: mono, fontSize: '0.78rem', letterSpacing: '0.08em' } }, product.price || ''),
               h('span', { style: { border: '1px solid rgba(206,255,42,0.58)', color: acid, padding: '0.5rem 0.8rem', fontFamily: mono, fontSize: '0.66rem', letterSpacing: '0.16em', textTransform: 'uppercase' } }, purchase.buttonLabel || 'Purchase')
