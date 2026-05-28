@@ -1003,6 +1003,8 @@ function getShopSubscription(shop) {
   const fallback = {
     enabled: true,
     name: 'Artistletter（實體手寫信訂閱）',
+    image: '',
+    imageAlt: 'Artistletter 訂閱示意圖',
     price: '每月新台幣三百元',
     description: '訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。',
     buttonLabel: '訂閱',
@@ -1017,11 +1019,13 @@ function getShopSubscription(shop) {
 function renderShopSubscription(subscription) {
   if (!subscription) return '';
   const message = subscription.disabledMessage || '系統建置中，暫停訂閱';
+  const image = subscription.image ? `<div class="subscription-media"><img src="${escapeHtml(fixImg(subscription.image))}" alt="${escapeHtml(subscription.imageAlt || subscription.name || '')}" loading="lazy"></div>` : '';
   return `
     <section class="subscription-panel" aria-labelledby="shop-subscription-title">
       <div class="subscription-ascii" aria-hidden="true">+-------------------- MONTHLY SUPPORT CHANNEL --------------------+</div>
       <div class="subscription-grid">
         <div class="subscription-main">
+          ${image}
           <p class="subscription-kicker">subscription / handwritten mail / artistletter</p>
           <h2 id="shop-subscription-title" class="subscription-title">${escapeHtml(subscription.name || '')}</h2>
           <p class="subscription-copy">${escapeHtml(subscription.description || '')}</p>

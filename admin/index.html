@@ -1136,6 +1136,8 @@
         sub = Object.assign({
           enabled: true,
           name: 'Artistletter（實體手寫信訂閱）',
+          image: '',
+          imageAlt: 'Artistletter 訂閱示意圖',
           price: '每月新台幣三百元',
           description: '訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。',
           buttonLabel: '訂閱',
@@ -1153,6 +1155,14 @@
             '+-------------------- MONTHLY SUPPORT CHANNEL --------------------+'),
           h('div', { style: { display: 'grid', gridTemplateColumns: 'minmax(0,1.25fr) minmax(180px,0.75fr)', gap: '1rem', alignItems: 'end', paddingTop: '0.9rem' } },
             h('div', null,
+              sub.image ? h('div', { style: { marginBottom: '0.9rem', border: '1px solid rgba(88,244,255,0.18)', background: '#030307', overflow: 'hidden' } },
+                h('img', {
+                  src: resolveImg(getAsset, sub.image),
+                  alt: sub.imageAlt || sub.name || '',
+                  loading: 'lazy',
+                  style: { display: 'block', width: '100%', maxHeight: '240px', objectFit: 'cover' }
+                })
+              ) : null,
               h('div', { style: { color: cyan, fontFamily: mono, fontSize: '0.66rem', textTransform: 'uppercase', marginBottom: '0.5rem' } }, 'subscription / handwritten mail / artistletter'),
               h('h2', { style: { margin: 0, color: text, fontFamily: saint, fontSize: '1.8rem', fontWeight: 400, lineHeight: 1.1, textShadow: '-2px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)' } }, sub.name || ''),
               h('p', { style: { margin: '0.75rem 0 0', color: 'rgba(214,222,240,0.84)', fontFamily: mono, fontSize: '0.76rem', lineHeight: 1.7 } }, sub.description || '')
