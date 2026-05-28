@@ -1039,9 +1039,49 @@ function normalizeSubscriptionImagePosition(value) {
   return 'center center';
 }
 
+function normalizeSubscriptionCssValue(value, fallback) {
+  const raw = String(value || '').trim();
+  return raw || fallback;
+}
+
+function buildStyleString(styleMap) {
+  return Object.keys(styleMap)
+    .filter(key => styleMap[key] !== undefined && styleMap[key] !== null && styleMap[key] !== '')
+    .map(key => `${key}: ${styleMap[key]}`)
+    .join('; ');
+}
+
+function getSubscriptionTheme(subscription) {
+  const sub = subscription || {};
+  return {
+    panelBackground: normalizeSubscriptionCssValue(
+      sub.panelBackground,
+      'linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)'
+    ),
+    panelBorderColor: normalizeSubscriptionCssValue(sub.panelBorderColor, 'rgba(206,255,42,0.72)'),
+    panelGlowColor: normalizeSubscriptionCssValue(sub.panelGlowColor, 'rgba(206,255,42,0.12)'),
+    asciiColor: normalizeSubscriptionCssValue(sub.asciiColor, 'rgba(206,255,42,0.66)'),
+    kickerColor: normalizeSubscriptionCssValue(sub.kickerColor, '#58f4ff'),
+    kickerSize: normalizeSubscriptionCssValue(sub.kickerSize, '0.72rem'),
+    titleColor: normalizeSubscriptionCssValue(sub.titleColor, '#d6def0'),
+    titleSize: normalizeSubscriptionCssValue(sub.titleSize, '2.8rem'),
+    copyColor: normalizeSubscriptionCssValue(sub.copyColor, 'rgba(214,222,240,0.86)'),
+    copySize: normalizeSubscriptionCssValue(sub.copySize, '0.9rem'),
+    priceColor: normalizeSubscriptionCssValue(sub.priceColor, '#ceff2a'),
+    priceSize: normalizeSubscriptionCssValue(sub.priceSize, '1.08rem'),
+    buttonTextColor: normalizeSubscriptionCssValue(sub.buttonTextColor, '#000000'),
+    buttonTextSize: normalizeSubscriptionCssValue(sub.buttonTextSize, '0.72rem'),
+    buttonBgColor: normalizeSubscriptionCssValue(sub.buttonBgColor, '#ceff2a'),
+    buttonBorderColor: normalizeSubscriptionCssValue(sub.buttonBorderColor, 'rgba(206,255,42,0.72)'),
+    noteColor: normalizeSubscriptionCssValue(sub.noteColor, 'rgba(214,222,240,0.68)'),
+    noteSize: normalizeSubscriptionCssValue(sub.noteSize, '0.7rem')
+  };
+}
+
 function renderShopSubscription(subscription) {
   if (!subscription) return '';
   const message = subscription.disabledMessage || '系統建置中，暫停訂閱';
+  const theme = getSubscriptionTheme(subscription);
   const imageSize = normalizeSubscriptionImageSize(subscription.imageSize);
   const imageHeight = normalizeSubscriptionImageHeight(subscription.imageHeight);
   const imagePosition = normalizeSubscriptionImagePosition(subscription.imagePosition);
@@ -1051,23 +1091,68 @@ function renderShopSubscription(subscription) {
     `--subscription-image-position:${imagePosition}`
   ].join(';');
   const image = subscription.image ? `<div class="subscription-media subscription-media--${imageSize}" style="${imageStyle}"><img src="${escapeHtml(fixImg(subscription.image))}" alt="${escapeHtml(subscription.imageAlt || subscription.name || '')}" loading="lazy"></div>` : '';
+  const panelStyle = buildStyleString({
+    'background': theme.panelBackground,
+    'border-color': theme.panelBorderColor,
+    'box-shadow': `0 0 34px ${theme.panelGlowColor}, inset 0 0 0 1px rgba(88,244,255,0.16)`
+  });
+  const asciiStyle = buildStyleString({
+    color: theme.asciiColor,
+    'font-family': '"Courier New", monospace',
+    'font-size': '0.62rem',
+    'white-space': 'nowrap',
+    overflow: 'hidden'
+  });
+  const kickerStyle = buildStyleString({
+    color: theme.kickerColor,
+    'font-size': theme.kickerSize,
+    'line-height': 1.5,
+    'text-transform': 'uppercase'
+  });
+  const titleStyle = buildStyleString({
+    color: theme.titleColor,
+    'font-size': theme.titleSize,
+    'line-height': 1.06
+  });
+  const copyStyle = buildStyleString({
+    color: theme.copyColor,
+    'font-size': theme.copySize,
+    'line-height': 1.9
+  });
+  const priceStyle = buildStyleString({
+    color: theme.priceColor,
+    'font-size': theme.priceSize,
+    'line-height': 1.4,
+    'text-shadow': '0 0 18px rgba(206,255,42,0.42)'
+  });
+  const buttonStyle = buildStyleString({
+    color: theme.buttonTextColor,
+    background: theme.buttonBgColor,
+    border: `1px solid ${theme.buttonBorderColor}`,
+    'font-size': theme.buttonTextSize,
+    'text-transform': 'uppercase'
+  });
+  const noteStyle = buildStyleString({
+    color: theme.noteColor,
+    'font-size': theme.noteSize
+  });
   return `
-    <section class="subscription-panel" aria-labelledby="shop-subscription-title">
-      <div class="subscription-ascii" aria-hidden="true">+-------------------- MONTHLY SUPPORT CHANNEL --------------------+</div>
+    <section class="subscription-panel" aria-labelledby="shop-subscription-title" style="${escapeHtml(panelStyle)}">
+      <div class="subscription-ascii" aria-hidden="true" style="${escapeHtml(asciiStyle)}">+-------------------- MONTHLY SUPPORT CHANNEL --------------------+</div>
       <div class="subscription-grid">
         <div class="subscription-main">
           ${image}
-          <p class="subscription-kicker">subscription / handwritten mail / artistletter</p>
-          <h2 id="shop-subscription-title" class="subscription-title">${escapeHtml(subscription.name || '')}</h2>
-          <p class="subscription-copy">${escapeHtml(subscription.description || '')}</p>
+          <p class="subscription-kicker" style="${escapeHtml(kickerStyle)}">subscription / handwritten mail / artistletter</p>
+          <h2 id="shop-subscription-title" class="subscription-title" style="${escapeHtml(titleStyle)}">${escapeHtml(subscription.name || '')}</h2>
+          <p class="subscription-copy" style="${escapeHtml(copyStyle)}">${escapeHtml(subscription.description || '')}</p>
         </div>
         <div class="subscription-action">
-          <div class="subscription-price">${escapeHtml(subscription.price || '每月新台幣三百元')}</div>
-          <a class="subscription-button" href="#" onclick="alert('${escapeJsSingle(message)}'); return false;">${escapeHtml(subscription.buttonLabel || '訂閱')}</a>
-          <p class="subscription-note">${escapeHtml(subscription.cancelNotice || '隨時可取消訂閱')}</p>
+          <div class="subscription-price" style="${escapeHtml(priceStyle)}">${escapeHtml(subscription.price || '每月新台幣三百元')}</div>
+          <a class="subscription-button" href="#" style="${escapeHtml(buttonStyle)}" onclick="alert('${escapeJsSingle(message)}'); return false;">${escapeHtml(subscription.buttonLabel || '訂閱')}</a>
+          <p class="subscription-note" style="${escapeHtml(noteStyle)}">${escapeHtml(subscription.cancelNotice || '隨時可取消訂閱')}</p>
         </div>
       </div>
-      <div class="subscription-ascii bottom" aria-hidden="true">+-----------------------------------------------------------------+</div>
+      <div class="subscription-ascii bottom" aria-hidden="true" style="${escapeHtml(asciiStyle)}">+-----------------------------------------------------------------+</div>
     </section>`;
 }
 

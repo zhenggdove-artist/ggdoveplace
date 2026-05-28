@@ -1129,6 +1129,35 @@
     return 'center center';
   }
 
+  function normalizeSubscriptionCssValue(value, fallback) {
+    var raw = String(value || '').trim();
+    return raw || fallback;
+  }
+
+  function getSubscriptionTheme(sub) {
+    sub = sub || {};
+    return {
+      panelBackground: normalizeSubscriptionCssValue(sub.panelBackground, 'linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)'),
+      panelBorderColor: normalizeSubscriptionCssValue(sub.panelBorderColor, 'rgba(206,255,42,0.72)'),
+      panelGlowColor: normalizeSubscriptionCssValue(sub.panelGlowColor, 'rgba(206,255,42,0.12)'),
+      asciiColor: normalizeSubscriptionCssValue(sub.asciiColor, 'rgba(206,255,42,0.66)'),
+      kickerColor: normalizeSubscriptionCssValue(sub.kickerColor, '#58f4ff'),
+      kickerSize: normalizeSubscriptionCssValue(sub.kickerSize, '0.72rem'),
+      titleColor: normalizeSubscriptionCssValue(sub.titleColor, '#d6def0'),
+      titleSize: normalizeSubscriptionCssValue(sub.titleSize, '2.8rem'),
+      copyColor: normalizeSubscriptionCssValue(sub.copyColor, 'rgba(214,222,240,0.86)'),
+      copySize: normalizeSubscriptionCssValue(sub.copySize, '0.9rem'),
+      priceColor: normalizeSubscriptionCssValue(sub.priceColor, '#ceff2a'),
+      priceSize: normalizeSubscriptionCssValue(sub.priceSize, '1.08rem'),
+      buttonTextColor: normalizeSubscriptionCssValue(sub.buttonTextColor, '#000000'),
+      buttonTextSize: normalizeSubscriptionCssValue(sub.buttonTextSize, '0.72rem'),
+      buttonBgColor: normalizeSubscriptionCssValue(sub.buttonBgColor, '#ceff2a'),
+      buttonBorderColor: normalizeSubscriptionCssValue(sub.buttonBorderColor, 'rgba(206,255,42,0.72)'),
+      noteColor: normalizeSubscriptionCssValue(sub.noteColor, 'rgba(214,222,240,0.68)'),
+      noteSize: normalizeSubscriptionCssValue(sub.noteSize, '0.7rem')
+    };
+  }
+
   // ── Shop Preview ─────────────────────────
   var ShopPreview = createClass({
     getInitialState: function() {
@@ -1196,12 +1225,31 @@
           imageSize: 'contain',
           imageHeight: '260px',
           imagePosition: 'center center',
+          panelBackground: 'linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)',
+          panelBorderColor: 'rgba(206,255,42,0.72)',
+          panelGlowColor: 'rgba(206,255,42,0.12)',
+          asciiColor: 'rgba(206,255,42,0.66)',
+          kickerColor: '#58f4ff',
+          kickerSize: '0.72rem',
+          titleColor: '#d6def0',
+          titleSize: '2.8rem',
+          copyColor: 'rgba(214,222,240,0.86)',
+          copySize: '0.9rem',
           price: '每月新台幣三百元',
+          priceColor: '#ceff2a',
+          priceSize: '1.08rem',
           description: '訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。',
           buttonLabel: '訂閱',
-          cancelNotice: '隨時可取消訂閱'
+          buttonTextColor: '#000000',
+          buttonTextSize: '0.72rem',
+          buttonBgColor: '#ceff2a',
+          buttonBorderColor: 'rgba(206,255,42,0.72)',
+          cancelNotice: '隨時可取消訂閱',
+          noteColor: 'rgba(214,222,240,0.68)',
+          noteSize: '0.7rem'
         }, sub || {});
         if (sub.enabled === false || sub.enabled === 'false') return null;
+        var theme = getSubscriptionTheme(sub);
         var imageSize = normalizeSubscriptionImageSize(sub.imageSize);
         var imageHeight = normalizeSubscriptionImageHeight(sub.imageHeight);
         var imagePosition = normalizeSubscriptionImagePosition(sub.imagePosition);
@@ -1232,11 +1280,11 @@
         return h('section', { style: {
           margin: '0 0 2rem',
           padding: '1.1rem',
-          border: '1px solid rgba(206,255,42,0.72)',
-          background: 'linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)',
-          boxShadow: '0 0 34px rgba(206,255,42,0.12), inset 0 0 0 1px rgba(88,244,255,0.16)'
+          border: '1px solid ' + theme.panelBorderColor,
+          background: theme.panelBackground,
+          boxShadow: '0 0 34px ' + theme.panelGlowColor + ', inset 0 0 0 1px rgba(88,244,255,0.16)'
         }},
-          h('div', { style: { color: 'rgba(206,255,42,0.66)', fontFamily: mono, fontSize: '0.62rem', whiteSpace: 'nowrap', overflow: 'hidden' } },
+          h('div', { style: { color: theme.asciiColor, fontFamily: mono, fontSize: '0.62rem', whiteSpace: 'nowrap', overflow: 'hidden' } },
             '+-------------------- MONTHLY SUPPORT CHANNEL --------------------+'),
           h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', marginTop: '0.6rem', marginBottom: '0.8rem', flexWrap: 'wrap' } },
             h('div', { style: { color: dim, fontFamily: mono, fontSize: '0.64rem', letterSpacing: '0.18em', textTransform: 'uppercase' } }, 'preview mode'),
@@ -1256,14 +1304,14 @@
                     style: imageStyle
                   })
                 ) : null,
-                h('div', { style: { color: cyan, fontFamily: mono, fontSize: '0.66rem', textTransform: 'uppercase', marginBottom: '0.5rem' } }, 'subscription / handwritten mail / artistletter'),
-                h('h2', { style: { margin: 0, color: text, fontFamily: saint, fontSize: '1.8rem', fontWeight: 400, lineHeight: 1.1, textShadow: '-2px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)' } }, sub.name || ''),
-                h('p', { style: { margin: '0.75rem 0 0', color: 'rgba(214,222,240,0.84)', fontFamily: mono, fontSize: '0.76rem', lineHeight: 1.7 } }, sub.description || '')
+                h('div', { style: { color: theme.kickerColor, fontFamily: mono, fontSize: theme.kickerSize, textTransform: 'uppercase', marginBottom: '0.5rem' } }, 'subscription / handwritten mail / artistletter'),
+                h('h2', { style: { margin: 0, color: theme.titleColor, fontFamily: saint, fontSize: theme.titleSize, fontWeight: 400, lineHeight: 1.1, textShadow: '-2px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)' } }, sub.name || ''),
+                h('p', { style: { margin: '0.75rem 0 0', color: theme.copyColor, fontFamily: mono, fontSize: theme.copySize, lineHeight: 1.7 } }, sub.description || '')
               ),
               h('div', { style: { borderLeft: '1px solid rgba(88,244,255,0.32)', paddingLeft: '1rem', fontFamily: mono } },
-                h('div', { style: { color: acid, fontSize: '0.95rem', marginBottom: '0.8rem' } }, sub.price || '每月新台幣三百元'),
-                h('span', { style: { display: 'inline-block', color: '#000', background: acid, border: '1px solid rgba(206,255,42,0.72)', padding: '0.62rem 1rem', fontSize: '0.72rem', textTransform: 'uppercase' } }, sub.buttonLabel || '訂閱'),
-                h('div', { style: { marginTop: '0.8rem', color: 'rgba(214,222,240,0.68)', fontSize: '0.7rem' } }, sub.cancelNotice || '隨時可取消訂閱')
+                h('div', { style: { color: theme.priceColor, fontSize: theme.priceSize, marginBottom: '0.8rem', textShadow: '0 0 18px rgba(206,255,42,0.42)' } }, sub.price || '每月新台幣三百元'),
+                h('span', { style: { display: 'inline-block', color: theme.buttonTextColor, background: theme.buttonBgColor, border: '1px solid ' + theme.buttonBorderColor, padding: '0.62rem 1rem', fontSize: theme.buttonTextSize, textTransform: 'uppercase' } }, sub.buttonLabel || '訂閱'),
+                h('div', { style: { marginTop: '0.8rem', color: theme.noteColor, fontSize: theme.noteSize } }, sub.cancelNotice || '隨時可取消訂閱')
               )
             )
           )
