@@ -265,14 +265,18 @@
 
     .subscription-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.28fr) minmax(260px, 0.72fr);
+      grid-template-columns: minmax(0, 1.48fr) minmax(240px, 0.52fr);
       gap: 2rem;
       align-items: end;
       padding: 1.2rem 0 0;
     }
 
     .subscription-media {
+      grid-column: 1;
+      grid-row: 1;
       margin: 0 0 1rem;
+      width: var(--subscription-image-width, 100%);
+      max-width: 100%;
       border: 1px solid rgba(88, 244, 255, 0.18);
       background: #030307;
       overflow: hidden;
@@ -294,6 +298,18 @@
     .subscription-media--auto img {
       height: auto;
       object-fit: contain;
+    }
+
+    .subscription-heading {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .subscription-heading .subscription-kicker {
+      margin-bottom: 0;
     }
 
     .subscription-kicker {
@@ -318,14 +334,18 @@
     }
 
     .subscription-copy {
+      grid-column: 1 / -1;
+      grid-row: 3;
       max-width: 58rem;
-      margin: 1rem 0 0;
+      margin: 0.25rem 0 0;
       color: rgba(214, 222, 240, 0.86);
       font-size: 0.9rem;
       line-height: 1.9;
     }
 
     .subscription-action {
+      grid-column: 2;
+      grid-row: 1;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -804,6 +824,14 @@
       .subscription-grid {
         grid-template-columns: 1fr;
         gap: 1.4rem;
+      }
+
+      .subscription-media,
+      .subscription-heading,
+      .subscription-copy,
+      .subscription-action {
+        grid-column: auto;
+        grid-row: auto;
       }
 
       .subscription-action {

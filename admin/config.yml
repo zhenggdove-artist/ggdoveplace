@@ -146,6 +146,7 @@ collections:
                       - { label: "Top 上方", value: "center top" }
                       - { label: "Bottom 下方", value: "center bottom" }
                     default: "center center"
+                  - { label: "示意圖寬度 Image Width", name: imageWidth, widget: string, required: false, default: "100%" }
                   - { label: "區塊背景 Panel Background", name: panelBackground, widget: string, required: false, default: "linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)" }
                   - { label: "區塊邊框顏色 Panel Border Color", name: panelBorderColor, widget: string, required: false, default: "rgba(206,255,42,0.72)" }
                   - { label: "區塊光暈顏色 Panel Glow Color", name: panelGlowColor, widget: string, required: false, default: "rgba(206,255,42,0.12)" }

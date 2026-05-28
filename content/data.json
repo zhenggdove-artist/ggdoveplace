@@ -709,6 +709,7 @@
       "imageSize": "contain",
       "imageHeight": "260px",
       "imagePosition": "center center",
+      "imageWidth": "100%",
       "panelBackground": "linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)",
       "panelBorderColor": "rgba(206,255,42,0.72)",
       "panelGlowColor": "rgba(206,255,42,0.12)",

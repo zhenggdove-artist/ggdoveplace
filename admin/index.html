@@ -228,6 +228,15 @@
   <script src="https://unpkg.com/decap-cms@3.9.0/dist/decap-cms.js"></script>
   <script>
   // ── Inject site CSS into preview iframe ──
+  CMS.registerPreviewStyle(`
+    @font-face {
+      font-family: 'Saint';
+      src: url('/fonts/saint.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  `, { raw: true });
   CMS.registerPreviewStyle('https://zhenggdove-artist.github.io/ggdoveplace/css/style.css');
   CMS.registerPreviewStyle([
     ':root{--bg:#06030f;--bg-2:#0d0820;--bg-3:#110d28;',
@@ -1122,6 +1131,15 @@
     return '260px';
   }
 
+  function normalizeSubscriptionImageWidth(value) {
+    var raw = String(value || '100%').trim();
+    if (!raw) return '100%';
+    if (raw === 'auto' || raw === 'fit-content' || raw === 'max-content' || raw === 'min-content') return raw;
+    if (/^\d+(\.\d+)?(px|rem|em|vh|vw|%)$/.test(raw)) return raw;
+    if (/^\d+(\.\d+)?$/.test(raw)) return raw + 'px';
+    return raw;
+  }
+
   function normalizeSubscriptionImagePosition(value) {
     var normalized = String(value || 'center center').trim().toLowerCase();
     if (normalized === 'center top' || normalized === 'top') return 'center top';
@@ -1232,6 +1250,7 @@
           imageSize: 'contain',
           imageHeight: '260px',
           imagePosition: 'center center',
+          imageWidth: '100%',
           panelBackground: 'linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)',
           panelBorderColor: 'rgba(206,255,42,0.72)',
           panelGlowColor: 'rgba(206,255,42,0.12)',
@@ -1266,13 +1285,17 @@
         var theme = getSubscriptionTheme(sub);
         var imageSize = normalizeSubscriptionImageSize(sub.imageSize);
         var imageHeight = normalizeSubscriptionImageHeight(sub.imageHeight);
+        var imageWidth = normalizeSubscriptionImageWidth(sub.imageWidth);
         var imagePosition = normalizeSubscriptionImagePosition(sub.imagePosition);
         var imageWrapStyle = {
           marginBottom: '0.9rem',
           border: '1px solid rgba(88,244,255,0.18)',
           background: '#030307',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          width: imageWidth,
+          maxWidth: '100%'
         };
+        imageWrapStyle['--subscription-image-width'] = imageWidth;
         imageWrapStyle['--subscription-image-height'] = imageHeight;
         imageWrapStyle['--subscription-image-fit'] = imageSize === 'auto' ? 'contain' : imageSize;
         imageWrapStyle['--subscription-image-position'] = imagePosition;
@@ -1291,6 +1314,23 @@
           objectPosition: imagePosition,
           background: '#030307'
         };
+        var desktopSubscription = !isMobilePreview;
+        var subscriptionGridStyle = {
+          display: 'grid',
+          gridTemplateColumns: desktopSubscription ? 'minmax(0,1.48fr) minmax(180px,0.52fr)' : '1fr',
+          gap: '1rem',
+          alignItems: 'end',
+          paddingTop: '0.9rem'
+        };
+        var headingStyle = desktopSubscription
+          ? { gridColumn: '1 / -1', gridRow: '2', display: 'flex', flexDirection: 'column', gap: '0.45rem' }
+          : { display: 'flex', flexDirection: 'column', gap: '0.45rem' };
+        var copyBlockStyle = desktopSubscription
+          ? { gridColumn: '1 / -1', gridRow: '3', margin: '0.25rem 0 0', color: theme.copyColor, fontFamily: theme.copyFontFamily, fontSize: theme.copySize, lineHeight: 1.7 }
+          : { margin: '0.25rem 0 0', color: theme.copyColor, fontFamily: theme.copyFontFamily, fontSize: theme.copySize, lineHeight: 1.7 };
+        var actionStyle = desktopSubscription
+          ? { gridColumn: '2', gridRow: '1', borderLeft: '1px solid rgba(88,244,255,0.32)', paddingLeft: '1rem', fontFamily: mono }
+          : { borderTop: '1px solid rgba(88,244,255,0.32)', paddingTop: '1.2rem', fontFamily: mono };
         return h('section', { style: {
           margin: '0 0 2rem',
           padding: '1.1rem',
@@ -1308,21 +1348,21 @@
             )
           ),
           h('div', { style: previewViewportStyle },
-            h('div', { style: { display: 'grid', gridTemplateColumns: 'minmax(0,1.25fr) minmax(180px,0.75fr)', gap: '1rem', alignItems: 'end', paddingTop: '0.9rem' } },
-              h('div', null,
-                sub.image ? h('div', { style: imageWrapStyle },
-                  h('img', {
-                    src: resolveImg(getAsset, sub.image),
-                    alt: sub.imageAlt || sub.name || '',
-                    loading: 'lazy',
-                    style: imageStyle
-                  })
-                ) : null,
-                h('div', { style: { color: theme.kickerColor, fontFamily: theme.kickerFontFamily, fontSize: theme.kickerSize, textTransform: 'uppercase', marginBottom: '0.5rem' } }, 'subscription / handwritten mail / artistletter'),
-                h('h2', { style: { margin: 0, color: theme.titleColor, fontFamily: theme.titleFontFamily, fontSize: theme.titleSize, fontWeight: 400, lineHeight: 1.1, textShadow: '-2px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)' } }, sub.name || ''),
-                h('p', { style: { margin: '0.75rem 0 0', color: theme.copyColor, fontFamily: theme.copyFontFamily, fontSize: theme.copySize, lineHeight: 1.7 } }, sub.description || '')
+            h('div', { style: subscriptionGridStyle },
+              sub.image ? h('div', { style: imageWrapStyle },
+                h('img', {
+                  src: resolveImg(getAsset, sub.image),
+                  alt: sub.imageAlt || sub.name || '',
+                  loading: 'lazy',
+                  style: imageStyle
+                })
+              ) : null,
+              h('div', { style: headingStyle },
+                h('div', { style: { color: theme.kickerColor, fontFamily: theme.kickerFontFamily, fontSize: theme.kickerSize, textTransform: 'uppercase', marginBottom: '0' } }, 'subscription / handwritten mail / artistletter'),
+                h('h2', { style: { margin: 0, color: theme.titleColor, fontFamily: theme.titleFontFamily, fontSize: theme.titleSize, fontWeight: 400, lineHeight: 1.1, textShadow: '-2px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)' } }, sub.name || '')
               ),
-              h('div', { style: { borderLeft: '1px solid rgba(88,244,255,0.32)', paddingLeft: '1rem', fontFamily: mono } },
+              h('p', { style: copyBlockStyle }, sub.description || ''),
+              h('div', { style: actionStyle },
                 h('div', { style: { color: theme.priceColor, fontFamily: theme.priceFontFamily, fontSize: theme.priceSize, marginBottom: '0.8rem', textShadow: '0 0 18px rgba(206,255,42,0.42)' } }, sub.price || '每月新台幣三百元'),
                 h('span', { style: { display: 'inline-block', color: theme.buttonTextColor, background: theme.buttonBgColor, border: '1px solid ' + theme.buttonBorderColor, padding: '0.62rem 1rem', fontFamily: theme.buttonFontFamily, fontSize: theme.buttonTextSize, textTransform: 'uppercase' } }, sub.buttonLabel || '訂閱'),
                 h('div', { style: { marginTop: '0.8rem', color: theme.noteColor, fontFamily: theme.noteFontFamily, fontSize: theme.noteSize } }, sub.cancelNotice || '隨時可取消訂閱')

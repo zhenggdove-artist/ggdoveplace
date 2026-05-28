@@ -1032,6 +1032,15 @@ function normalizeSubscriptionImageHeight(value) {
   return '260px';
 }
 
+function normalizeSubscriptionImageWidth(value) {
+  const raw = String(value || '100%').trim();
+  if (!raw) return '100%';
+  if (raw === 'auto' || raw === 'fit-content' || raw === 'max-content' || raw === 'min-content') return raw;
+  if (/^\d+(\.\d+)?(px|rem|em|vh|vw|%)$/.test(raw)) return raw;
+  if (/^\d+(\.\d+)?$/.test(raw)) return `${raw}px`;
+  return raw;
+}
+
 function normalizeSubscriptionImagePosition(value) {
   const normalized = String(value || 'center center').trim().toLowerCase();
   if (normalized === 'center top' || normalized === 'top') return 'center top';
@@ -1091,8 +1100,10 @@ function renderShopSubscription(subscription) {
   const theme = getSubscriptionTheme(subscription);
   const imageSize = normalizeSubscriptionImageSize(subscription.imageSize);
   const imageHeight = normalizeSubscriptionImageHeight(subscription.imageHeight);
+  const imageWidth = normalizeSubscriptionImageWidth(subscription.imageWidth);
   const imagePosition = normalizeSubscriptionImagePosition(subscription.imagePosition);
   const imageStyle = [
+    `--subscription-image-width:${imageWidth}`,
     `--subscription-image-height:${imageHeight}`,
     `--subscription-image-fit:${imageSize === 'auto' ? 'contain' : imageSize}`,
     `--subscription-image-position:${imagePosition}`
@@ -1153,12 +1164,12 @@ function renderShopSubscription(subscription) {
     <section class="subscription-panel" aria-labelledby="shop-subscription-title" style="${escapeHtml(panelStyle)}">
       <div class="subscription-ascii" aria-hidden="true" style="${escapeHtml(asciiStyle)}">+-------------------- MONTHLY SUPPORT CHANNEL --------------------+</div>
       <div class="subscription-grid">
-        <div class="subscription-main">
-          ${image}
+        ${image}
+        <div class="subscription-heading">
           <p class="subscription-kicker" style="${escapeHtml(kickerStyle)}">subscription / handwritten mail / artistletter</p>
           <h2 id="shop-subscription-title" class="subscription-title" style="${escapeHtml(titleStyle)}">${escapeHtml(subscription.name || '')}</h2>
-          <p class="subscription-copy" style="${escapeHtml(copyStyle)}">${escapeHtml(subscription.description || '')}</p>
         </div>
+        <p class="subscription-copy" style="${escapeHtml(copyStyle)}">${escapeHtml(subscription.description || '')}</p>
         <div class="subscription-action">
           <div class="subscription-price" style="${escapeHtml(priceStyle)}">${escapeHtml(subscription.price || '每月新台幣三百元')}</div>
           <a class="subscription-button" href="#" style="${escapeHtml(buttonStyle)}" onclick="alert('${escapeJsSingle(message)}'); return false;">${escapeHtml(subscription.buttonLabel || '訂閱')}</a>
