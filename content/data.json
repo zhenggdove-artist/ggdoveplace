@@ -688,12 +688,12 @@
   ],
   "shop": {
     "hero": {
-      "kicker": "/relic_market :: static_archive :: no_api",
+      "kicker": "︻╦̵̵̿╤──",
       "title": "Shop",
       "terminalLines": [
-        "catalog mounted: /SHOP",
-        "payment state: pending review",
-        "purchase buttons: frontend alert only"
+        "︻╦̵̵̿╤──",
+        "︻╦̵̵̿╤──",
+        "︻╦̵̵̿╤──"
       ]
     },
     "purchase": {
