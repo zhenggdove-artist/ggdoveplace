@@ -1061,20 +1061,27 @@ function getSubscriptionTheme(subscription) {
     panelBorderColor: normalizeSubscriptionCssValue(sub.panelBorderColor, 'rgba(206,255,42,0.72)'),
     panelGlowColor: normalizeSubscriptionCssValue(sub.panelGlowColor, 'rgba(206,255,42,0.12)'),
     asciiColor: normalizeSubscriptionCssValue(sub.asciiColor, 'rgba(206,255,42,0.66)'),
+    asciiFontFamily: normalizeSubscriptionCssValue(sub.asciiFontFamily, '"Courier New", monospace'),
     kickerColor: normalizeSubscriptionCssValue(sub.kickerColor, '#58f4ff'),
     kickerSize: normalizeSubscriptionCssValue(sub.kickerSize, '0.72rem'),
+    kickerFontFamily: normalizeSubscriptionCssValue(sub.kickerFontFamily, '"Courier New", monospace'),
     titleColor: normalizeSubscriptionCssValue(sub.titleColor, '#d6def0'),
     titleSize: normalizeSubscriptionCssValue(sub.titleSize, '2.8rem'),
+    titleFontFamily: normalizeSubscriptionCssValue(sub.titleFontFamily, 'var(--shop-saint)'),
     copyColor: normalizeSubscriptionCssValue(sub.copyColor, 'rgba(214,222,240,0.86)'),
     copySize: normalizeSubscriptionCssValue(sub.copySize, '0.9rem'),
+    copyFontFamily: normalizeSubscriptionCssValue(sub.copyFontFamily, '"Courier New", monospace'),
     priceColor: normalizeSubscriptionCssValue(sub.priceColor, '#ceff2a'),
     priceSize: normalizeSubscriptionCssValue(sub.priceSize, '1.08rem'),
+    priceFontFamily: normalizeSubscriptionCssValue(sub.priceFontFamily, '"Courier New", monospace'),
     buttonTextColor: normalizeSubscriptionCssValue(sub.buttonTextColor, '#000000'),
     buttonTextSize: normalizeSubscriptionCssValue(sub.buttonTextSize, '0.72rem'),
+    buttonFontFamily: normalizeSubscriptionCssValue(sub.buttonFontFamily, '"Courier New", monospace'),
     buttonBgColor: normalizeSubscriptionCssValue(sub.buttonBgColor, '#ceff2a'),
     buttonBorderColor: normalizeSubscriptionCssValue(sub.buttonBorderColor, 'rgba(206,255,42,0.72)'),
     noteColor: normalizeSubscriptionCssValue(sub.noteColor, 'rgba(214,222,240,0.68)'),
-    noteSize: normalizeSubscriptionCssValue(sub.noteSize, '0.7rem')
+    noteSize: normalizeSubscriptionCssValue(sub.noteSize, '0.7rem'),
+    noteFontFamily: normalizeSubscriptionCssValue(sub.noteFontFamily, '"Courier New", monospace')
   };
 }
 
@@ -1098,29 +1105,33 @@ function renderShopSubscription(subscription) {
   });
   const asciiStyle = buildStyleString({
     color: theme.asciiColor,
-    'font-family': '"Courier New", monospace',
+    'font-family': theme.asciiFontFamily,
     'font-size': '0.62rem',
     'white-space': 'nowrap',
     overflow: 'hidden'
   });
   const kickerStyle = buildStyleString({
     color: theme.kickerColor,
+    'font-family': theme.kickerFontFamily,
     'font-size': theme.kickerSize,
     'line-height': 1.5,
     'text-transform': 'uppercase'
   });
   const titleStyle = buildStyleString({
     color: theme.titleColor,
+    'font-family': theme.titleFontFamily,
     'font-size': theme.titleSize,
     'line-height': 1.06
   });
   const copyStyle = buildStyleString({
     color: theme.copyColor,
+    'font-family': theme.copyFontFamily,
     'font-size': theme.copySize,
     'line-height': 1.9
   });
   const priceStyle = buildStyleString({
     color: theme.priceColor,
+    'font-family': theme.priceFontFamily,
     'font-size': theme.priceSize,
     'line-height': 1.4,
     'text-shadow': '0 0 18px rgba(206,255,42,0.42)'
@@ -1129,11 +1140,13 @@ function renderShopSubscription(subscription) {
     color: theme.buttonTextColor,
     background: theme.buttonBgColor,
     border: `1px solid ${theme.buttonBorderColor}`,
+    'font-family': theme.buttonFontFamily,
     'font-size': theme.buttonTextSize,
     'text-transform': 'uppercase'
   });
   const noteStyle = buildStyleString({
     color: theme.noteColor,
+    'font-family': theme.noteFontFamily,
     'font-size': theme.noteSize
   });
   return `
