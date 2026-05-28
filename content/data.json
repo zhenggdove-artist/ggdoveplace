@@ -698,15 +698,15 @@
     },
     "purchase": {
       "buttonLabel": "Purchase",
-      "disabledMessage": "系統建置中，暫停購買",
+      "disabledMessage": "金流系統建置中，購買請直接私訊Instagram：gg_dove",
       "refundNotice": "實體藝術品與數位商品售出後恕不退款"
     },
     "contactInfo": {
       "heading": "Contact Info",
       "emailLabel": "聯絡信箱",
-      "email": "",
-      "phoneLabel": "聯絡電話",
-      "phone": ""
+      "email": "zhenggdove@gmail.com",
+      "phoneLabel": "Instagram",
+      "phone": "https://www.instagram.com/gg_dove/"
     },
     "sections": [
       {
