@@ -294,6 +294,66 @@
     return src;
   }
 
+  function videoEmbedUrl(url) {
+    if (!url) return '';
+    var u = String(url).trim();
+    var yt = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^&?/]+)/);
+    if (yt) return 'https://www.youtube.com/embed/' + yt[1];
+    var vm = u.match(/vimeo\.com\/(\d+)/);
+    if (vm) return 'https://player.vimeo.com/video/' + vm[1];
+    return u;
+  }
+
+  function isVideoFile(url) {
+    return /^(blob:)/.test(url || '') || /\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(url || '');
+  }
+
+  function previewMedia(getAsset, item, style) {
+    item = item || {};
+    var mediaStyle = Object.assign({
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      background: '#05050a',
+      display: 'block'
+    }, style || {});
+    var rawVideo = item.video || item.videoUrl || '';
+    if (rawVideo) {
+      var resolvedVideo = resolveImg(getAsset, rawVideo);
+      var embed = videoEmbedUrl(rawVideo);
+      if (isVideoFile(resolvedVideo) || isVideoFile(rawVideo)) {
+        return h('video', { src: resolvedVideo, controls: true, muted: true, playsInline: true, style: mediaStyle });
+      }
+      return h('iframe', {
+        src: embed,
+        title: item.caption || item.title || 'Video',
+        frameBorder: '0',
+        allowFullScreen: true,
+        style: Object.assign({}, mediaStyle, { border: '0' })
+      });
+    }
+    var image = item.src || item.image || '';
+    if (image) {
+      return h('img', {
+        src: resolveImg(getAsset, image),
+        alt: item.caption || item.mediaAlt || item.title || '',
+        loading: 'lazy',
+        style: mediaStyle
+      });
+    }
+    return h('pre', {
+      style: {
+        margin: 0,
+        padding: '1rem',
+        whiteSpace: 'pre-wrap',
+        color: 'rgba(206,255,42,0.6)',
+        fontFamily: '"Courier New",monospace',
+        fontSize: '0.62rem',
+        lineHeight: 1.35
+      }
+    }, item.placeholder || 'FILE WITHOUT IMAGE');
+  }
+
   var WorksPreview = createClass({
     render: function() {
       var entry     = this.props.entry;
@@ -340,7 +400,7 @@
         h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.4rem', marginTop: '1rem' } },
           list.map(function(w, i) {
             return h('div', { key: i, style: { background: '#0d0820', overflow: 'hidden' } },
-              h('img', { src: w.image || '', alt: w.name || '', loading: 'lazy',
+              h('img', { src: resolveImg(getAsset, w.image), alt: w.name || '', loading: 'lazy',
                 style: { width: '100%', aspectRatio: '1/1', objectFit: 'cover', display: 'block', background: '#110d28' } }),
               h('div', { style: { padding: '0.6rem 0.7rem' } },
                 h('div', { style: { color: '#eee8ff', fontFamily: 'Georgia,serif', fontSize: '0.9rem' } }, w.name || ''),
@@ -354,6 +414,68 @@
   });
   CMS.registerPreviewTemplate('weapons', WeaponsPreview);
   CMS.registerPreviewTemplate('weapons_data', WeaponsPreview);
+
+  // Relic Preview (current main Relic page: Works + Weapons)
+  var RelicPreview = createClass({
+    render: function() {
+      var entry    = this.props.entry;
+      var getAsset = this.props.getAsset;
+      var projects = entry.getIn(['data', 'projects']);
+      var weapons  = entry.getIn(['data', 'weapons']);
+      var works = projects && projects.toJS ? projects.toJS() : [];
+      var relics = weapons && weapons.toJS ? weapons.toJS() : [];
+      var combined = works.map(function(p) {
+        return { type: 'Work', image: p.image, title: p.title, meta: [p.year, p.medium, p.dimensions].filter(Boolean).join('  ·  ') };
+      }).concat(relics.map(function(w) {
+        return { type: 'Object', image: w.image, title: w.name, meta: w.price || '' };
+      }));
+      if (!combined.length) return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } }, 'No relic items yet.');
+      return h('div', null,
+        h('h2', { className: 'page-title' }, 'Relics — Live Preview'),
+        h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: '1.1rem', marginTop: '1rem' } },
+          combined.map(function(item, i) {
+            return h('div', { key: i, style: { background: '#0d0820', border: '1px solid rgba(120,85,255,0.16)', overflow: 'hidden' } },
+              previewMedia(getAsset, item, { width: '100%', aspectRatio: '4/3', height: 'auto' }),
+              h('div', { style: { padding: '0.65rem 0.75rem' } },
+                h('div', { style: { color: '#7755ff', fontFamily: '"Courier New",monospace', fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '0.25rem' } }, item.type),
+                h('div', { style: { color: '#eee8ff', fontFamily: 'Georgia,serif', fontSize: '0.92rem', lineHeight: 1.35 } }, item.title || ''),
+                item.meta ? h('div', { style: { color: '#6a6080', fontFamily: '"Courier New",monospace', fontSize: '0.68rem', marginTop: '0.25rem' } }, item.meta) : null
+              )
+            );
+          })
+        )
+      );
+    }
+  });
+  CMS.registerPreviewTemplate('relic', RelicPreview);
+  CMS.registerPreviewTemplate('relic_data', RelicPreview);
+
+  // Play Preview
+  var PlayPreview = createClass({
+    render: function() {
+      var entry    = this.props.entry;
+      var getAsset = this.props.getAsset;
+      var play     = entry.getIn(['data', 'play']);
+      if (!play) return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } }, 'No play data yet.');
+      var p = play.toJS ? play.toJS() : play;
+      var works = p.works || [];
+      return h('div', null,
+        h('h2', { className: 'page-title' }, 'Play — Video Preview'),
+        h('div', { style: { display: 'grid', gap: '1.4rem', marginTop: '1rem' } },
+          works.map(function(work, i) {
+            return h('div', { key: i, style: { background: '#0d0820', border: '1px solid rgba(120,85,255,0.16)', padding: '1rem' } },
+              h('div', { style: { color: '#eee8ff', fontFamily: 'Georgia,serif', fontSize: '1rem', marginBottom: '0.7rem' } }, work.titleEn || ('Play item ' + (i + 1))),
+              h('div', { style: { width: '100%', aspectRatio: work.aspect || '16/9', background: '#05050a', overflow: 'hidden' } },
+                previewMedia(getAsset, { video: work.video, title: work.titleEn })
+              )
+            );
+          })
+        )
+      );
+    }
+  });
+  CMS.registerPreviewTemplate('play', PlayPreview);
+  CMS.registerPreviewTemplate('play_data', PlayPreview);
 
   // ── Bio Preview ───────────────────────────────
   var BioPreview = createClass({
@@ -492,11 +614,11 @@
       };
 
       var navLabels = [
-        nl.works      || 'Works',
-        nl.weapons    || 'Weapons',
+        nl.bio        || 'CV',
+        nl.relic      || nl.weapons || 'Relics',
         nl.exhibition || 'Exhibition',
-        nl.bio        || 'Bio',
-        nl.contact    || 'Contact'
+        nl.play       || 'Play',
+        nl.shop       || 'Shop'
       ];
 
       // Nav logo style
@@ -635,8 +757,8 @@
           // Page body
           h('div', { style: { padding: '2rem', overflow: 'visible' } },
 
-            // Works
-            h('h2', { style: pageTitleSty }, applyZ(nl.works || 'Works', 'pageTitle')),
+            // Relics
+            h('h2', { style: pageTitleSty }, applyZ(nl.relic || nl.weapons || 'Relics', 'pageTitle')),
             h('div', { style: {
               display: 'grid', gridTemplateColumns: 'repeat(3,1fr)',
               gap: '1rem', marginBottom: '0.5rem'
@@ -684,11 +806,11 @@
 
             divider,
 
-            // Contact
-            h('h2', { style: pageTitleSty }, applyZ(nl.contact || 'Contact', 'pageTitle')),
+            // Play / Shop
+            h('h2', { style: pageTitleSty }, applyZ((nl.play || 'Play') + ' / ' + (nl.shop || 'Shop'), 'pageTitle')),
             h('div', { style: { overflow: 'visible', marginBottom: '0.5rem' } },
-              h('h2', { style: ctH2Sty }, applyZ('Get in Touch', 'contactH2')),
-              metaP('email@example.com  \xb7  @instagram')
+              h('h2', { style: ctH2Sty }, applyZ('Editable media + shop catalog', 'contactH2')),
+              metaP('Play videos and Shop products are edited in their own CMS sections')
             )
           )
         ),
@@ -972,6 +1094,126 @@
   CMS.registerPreviewTemplate('exhibition', ExhibitionPreview);
   CMS.registerPreviewTemplate('exhibition_data', ExhibitionPreview);
 
+  // ── Shop Preview ─────────────────────────
+  var ShopPreview = createClass({
+    render: function() {
+      var entry    = this.props.entry;
+      var getAsset = this.props.getAsset;
+      var shop     = entry.getIn(['data', 'shop']);
+      if (!shop) return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } }, 'No shop data yet.');
+
+      var s = shop.toJS ? shop.toJS() : shop;
+      var hero = s.hero || {};
+      var purchase = s.purchase || {};
+      var contact = s.contactInfo || {};
+      var sections = s.sections || [];
+      var terminalLines = hero.terminalLines || [];
+      var acid = '#ceff2a';
+      var cyan = '#58f4ff';
+      var pink = '#ff3edb';
+      var text = '#d6def0';
+      var dim = '#7b819b';
+      var mono = '"Courier New",monospace';
+      var saint = '"Saint","Courier New",monospace';
+
+      var productCard = function(product, layout, key) {
+        product = product || {};
+        var isArchive = layout === 'archive';
+        var meta = [
+          product.year ? ['年份', product.year] : null,
+          product.medium ? ['媒材', product.medium] : null,
+          product.dimensions ? ['尺寸', product.dimensions] : null,
+          product.price ? ['價格', product.price] : null
+        ].filter(Boolean);
+        return h('div', { key: key, style: {
+          display: isArchive ? 'grid' : 'flex',
+          gridTemplateColumns: isArchive ? 'minmax(180px, 0.8fr) 1fr' : undefined,
+          flexDirection: isArchive ? undefined : 'column',
+          border: '1px solid rgba(206,255,42,0.24)',
+          background: 'linear-gradient(135deg, rgba(206,255,42,0.08), transparent 36%), rgba(4,4,12,0.9)',
+          boxShadow: 'inset 0 0 0 1px rgba(255,62,219,0.08)',
+          minHeight: isArchive ? '260px' : 'auto',
+          overflow: 'hidden'
+        }},
+          h('div', { style: {
+            aspectRatio: isArchive ? '4/3' : '1/1',
+            minHeight: isArchive ? '220px' : undefined,
+            borderRight: isArchive ? '1px solid rgba(206,255,42,0.16)' : '0',
+            borderBottom: isArchive ? '0' : '1px solid rgba(206,255,42,0.16)',
+            background: '#030307',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden'
+          }}, previewMedia(getAsset, product)),
+          h('div', { style: { padding: isArchive ? '1.2rem' : '0.95rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' } },
+            h('div', { style: { color: pink, fontFamily: mono, fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase' } }, product.categoryLabel || product.code || ''),
+            h('h3', { style: { margin: 0, color: text, fontFamily: saint, fontWeight: 400, fontSize: isArchive ? '1.45rem' : '1.05rem', letterSpacing: '0.08em', lineHeight: 1.25 } }, product.title || ''),
+            meta.length ? h('div', { style: { display: 'grid', gridTemplateColumns: isArchive ? 'repeat(2,minmax(0,1fr))' : '1fr', gap: '0.35rem 0.8rem', color: text, opacity: 0.84, fontFamily: mono, fontSize: '0.72rem', lineHeight: 1.55 } },
+              meta.map(function(m, i) {
+                return h('div', { key: i }, h('span', { style: { color: dim } }, m[0] + ': '), m[1]);
+              })
+            ) : null,
+            product.statement ? h('div', { style: { whiteSpace: 'pre-wrap', borderLeft: '1px solid rgba(255,62,219,0.48)', paddingLeft: '0.8rem', color: text, opacity: 0.84, fontFamily: mono, fontSize: '0.75rem', lineHeight: 1.75 } }, product.statement) : null,
+            h('div', { style: { marginTop: 'auto', paddingTop: '0.75rem', borderTop: '1px solid rgba(206,255,42,0.14)', display: 'flex', gap: '0.8rem', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' } },
+              h('span', { style: { color: acid, fontFamily: mono, fontSize: '0.78rem', letterSpacing: '0.08em' } }, product.price || ''),
+              h('span', { style: { border: '1px solid rgba(206,255,42,0.58)', color: acid, padding: '0.5rem 0.8rem', fontFamily: mono, fontSize: '0.66rem', letterSpacing: '0.16em', textTransform: 'uppercase' } }, purchase.buttonLabel || 'Purchase')
+            )
+          )
+        );
+      };
+
+      return h('div', { style: {
+        background: '#000',
+        color: text,
+        padding: '1.4rem',
+        fontFamily: mono,
+        border: '1px solid rgba(206,255,42,0.22)'
+      }},
+        h('div', { style: { color: 'rgba(206,255,42,0.55)', letterSpacing: '0.12em', fontSize: '0.68rem', marginBottom: '1rem' } },
+          'o()xxxx[{:::::::::::::::::::>  GGdove / Shop  <:::::::::::::::::::}]xxxx()o'),
+        h('div', { style: { display: 'grid', gridTemplateColumns: 'minmax(0,1.4fr) minmax(220px,0.6fr)', gap: '1.2rem', alignItems: 'end', borderBottom: '1px solid rgba(206,255,42,0.22)', paddingBottom: '1.2rem', marginBottom: '1.6rem' } },
+          h('div', null,
+            h('div', { style: { color: cyan, fontSize: '0.66rem', letterSpacing: '0.24em', textTransform: 'uppercase', marginBottom: '0.55rem' } }, hero.kicker || '/relic_market :: static_archive :: no_api'),
+            h('h1', { style: { margin: 0, fontFamily: saint, fontSize: '3rem', fontWeight: 400, letterSpacing: '0.12em', textTransform: 'uppercase', textShadow: '-3px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)' } }, hero.title || 'Shop')
+          ),
+          h('div', { style: { border: '1px solid rgba(88,244,255,0.22)', background: 'rgba(0,0,0,0.44)', padding: '0.8rem', color: 'rgba(214,222,240,0.72)', fontSize: '0.68rem', lineHeight: 1.75 } },
+            (terminalLines.length ? terminalLines : ['catalog mounted: /SHOP', 'payment state: pending review']).map(function(line, i) {
+              return h('div', { key: i }, h('span', { style: { color: acid } }, '> '), line);
+            })
+          )
+        ),
+        sections.map(function(section, si) {
+          var layout = section.layout || 'archive';
+          var products = section.products || [];
+          return h('section', { key: si, style: { marginBottom: '2.4rem' } },
+            h('div', { style: { display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' } },
+              h('h2', { style: { margin: 0, color: acid, fontFamily: mono, fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', whiteSpace: 'nowrap' } }, section.label || ''),
+              h('div', { style: { height: '1px', flex: 1, background: 'linear-gradient(90deg, rgba(206,255,42,0.58), transparent)' } })
+            ),
+            h('div', { style: {
+              display: 'grid',
+              gridTemplateColumns: layout === 'archive' ? '1fr' : 'repeat(auto-fill,minmax(180px,1fr))',
+              gap: '1rem'
+            }},
+              products.map(function(product, pi) { return productCard(product, layout, pi); })
+            )
+          );
+        }),
+        purchase.refundNotice ? h('div', { style: { marginTop: '1rem', padding: '0.9rem 1rem', border: '1px dashed rgba(255,62,219,0.42)', color: text, background: 'rgba(255,62,219,0.045)', fontSize: '0.74rem', letterSpacing: '0.08em', textAlign: 'center' } }, purchase.refundNotice) : null,
+        h('footer', { style: { marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(206,255,42,0.22)', color: 'rgba(214,222,240,0.7)' } },
+          h('h2', { style: { margin: '0 0 0.7rem', color: acid, fontFamily: saint, fontWeight: 400, fontSize: '1rem', letterSpacing: '0.24em', textTransform: 'uppercase' } }, contact.heading || 'Contact Info'),
+          h('div', null,
+            h('div', null, (contact.emailLabel || '聯絡信箱') + ': ' + (contact.email || '')),
+            h('div', null, (contact.phoneLabel || '聯絡電話') + ': ' + (contact.phone || ''))
+          )
+        )
+      );
+    }
+  });
+  CMS.registerPreviewTemplate('shop', ShopPreview);
+  CMS.registerPreviewTemplate('shop_data', ShopPreview);
+
   // ── Custom Pages Preview ──────────────────────
   var CustomPagesPreview = createClass({
     render: function() {
@@ -996,8 +1238,9 @@
             p.body ? h('p', { style: { color: '#c8c0e8', fontSize: '0.88rem', lineHeight: 1.7, margin: '0 0 1rem', whiteSpace: 'pre-wrap' } }, p.body.slice(0, 300) + (p.body.length > 300 ? '…' : '')) : null,
             images.length ? h('div', { style: { display: 'flex', gap: '0.7rem', flexWrap: 'wrap', marginTop: '0.5rem' } },
               images.map(function(img, j) {
-                return h('img', { key: j, src: resolveImg(getAsset, img.src), alt: img.caption || '', loading: 'lazy',
-                  style: { width: '120px', height: '90px', objectFit: 'cover', background: '#0d0820' } });
+                return h('div', { key: j, style: { width: '120px', height: '90px', background: '#0d0820', overflow: 'hidden' } },
+                  previewMedia(getAsset, img, { width: '120px', height: '90px' })
+                );
               })
             ) : null
           );

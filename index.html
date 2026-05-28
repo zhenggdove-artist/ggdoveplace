@@ -256,6 +256,11 @@
         <text class="nav-label" x="135" y="530">Play</text>
         <text class="nav-sub" x="115" y="550">&#xB7; games</text>
       </a>
+      <a href="shop.html">
+        <text class="nav-ornament" x="500" y="618" text-anchor="middle">&#x2727;</text>
+        <text class="nav-label" x="500" y="636" text-anchor="middle">Shop</text>
+        <text class="nav-sub" x="500" y="656" text-anchor="middle">&#xB7; market</text>
+      </a>
     </svg>
   </div>
 
@@ -271,7 +276,7 @@
       }
       const nl = (siteData.site && siteData.site.navLabels) || {};
       const labels = document.querySelectorAll('.nav-label');
-      [nl.bio || 'CV', 'Relics', nl.exhibition || 'Exhibition', 'Play']
+      [nl.bio || 'CV', nl.relic || nl.weapons || 'Relics', nl.exhibition || 'Exhibition', nl.play || 'Play', nl.shop || 'Shop']
         .forEach((v, i) => { if (labels[i]) labels[i].textContent = v; });
     });
 

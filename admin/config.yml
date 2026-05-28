@@ -12,7 +12,7 @@ public_folder: /ggdoveplace/images/uploads
 collections:
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   # 主導航頁面（Main Nav Pages）— 與網站導航一致
-  # Bio → Relic → Play → Exhibition
+  # Bio → Relic → Exhibition → Play → Shop
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   - name: bio
@@ -86,6 +86,83 @@ collections:
                       - { label: "4:3", value: "4/3" }
                       - { label: "1:1", value: "1/1" }
                     default: "16/9"
+
+  - name: shop
+    label: Shop (商品頁)
+    media_folder: SHOP
+    public_folder: /ggdoveplace/SHOP
+    files:
+      - label: Shop Page Data
+        name: shop_data
+        file: content/data.json
+        fields:
+          - label: Shop 商品頁
+            name: shop
+            widget: object
+            fields:
+              - label: "頁首 Hero"
+                name: hero
+                widget: object
+                collapsed: false
+                fields:
+                  - { label: "小字標籤 Kicker", name: kicker, widget: string, required: false }
+                  - { label: "頁面大標題 Title", name: title, widget: string, default: "Shop" }
+                  - label: "終端機狀態列 Terminal Lines"
+                    name: terminalLines
+                    widget: list
+                    required: false
+                    field: { label: "Line", name: line, widget: string }
+              - label: "購買與金流審核文字"
+                name: purchase
+                widget: object
+                collapsed: false
+                fields:
+                  - { label: "按鈕文字 Button Label", name: buttonLabel, widget: string, default: "Purchase" }
+                  - { label: "點擊提示 Alert Message", name: disabledMessage, widget: string, default: "系統建置中，暫停購買" }
+                  - { label: "退款聲明 Refund Notice", name: refundNotice, widget: string, default: "實體藝術品與數位商品售出後恕不退款" }
+              - label: "頁尾聯絡資訊 Contact Info"
+                name: contactInfo
+                widget: object
+                collapsed: false
+                fields:
+                  - { label: "標題 Heading", name: heading, widget: string, default: "Contact Info" }
+                  - { label: "Email 欄位名稱", name: emailLabel, widget: string, default: "聯絡信箱" }
+                  - { label: "Email", name: email, widget: string, required: false }
+                  - { label: "Phone 欄位名稱", name: phoneLabel, widget: string, default: "聯絡電話" }
+                  - { label: "Phone", name: phone, widget: string, required: false }
+              - label: "商品區塊 Sections"
+                name: sections
+                widget: list
+                summary: "{{fields.label}}"
+                collapsed: false
+                fields:
+                  - { label: "區塊 ID", name: id, widget: string, required: false, hint: "只做內部辨識，例如 relics 或 stamps" }
+                  - { label: "區塊標題 Label", name: label, widget: string }
+                  - label: "版型 Layout"
+                    name: layout
+                    widget: select
+                    options:
+                      - { label: "Archive 檔案室列表（實體作品）", value: "archive" }
+                      - { label: "Stamp Grid 印章商品格狀", value: "stamp-grid" }
+                    default: "archive"
+                  - label: "商品 Products"
+                    name: products
+                    widget: list
+                    summary: "{{fields.title}} — {{fields.price}}"
+                    fields:
+                      - { label: "檔案代碼 Code", name: code, widget: string, required: false }
+                      - { label: "商品類型標籤 Category Label", name: categoryLabel, widget: string, required: false }
+                      - { label: "商品名稱 Title", name: title, widget: string }
+                      - { label: "年份 Year", name: year, widget: string, required: false }
+                      - { label: "媒材 Medium", name: medium, widget: string, required: false }
+                      - { label: "尺寸 Dimensions", name: dimensions, widget: string, required: false }
+                      - { label: "價格 Price（請含幣值，例如：新台幣 1,000 元）", name: price, widget: string }
+                      - { label: "商品圖片 Image", name: image, widget: image, required: false }
+                      - { label: "商品影片上傳 Video Upload（mp4/webm/mov）", name: video, widget: file, required: false }
+                      - { label: "外部影片網址 External Video URL（YouTube/Vimeo，可選）", name: videoUrl, widget: string, required: false }
+                      - { label: "圖片替代文字 Alt", name: mediaAlt, widget: string, required: false }
+                      - { label: "無圖片時的 ASCII 佔位文字", name: placeholder, widget: text, required: false }
+                      - { label: "作品論述 / 商品描述", name: statement, widget: markdown, required: false }
 
   - name: exhibition
     label: Exhibition (展覽)
@@ -208,8 +285,10 @@ collections:
                 hint: "自訂導航列每一項的顯示文字（留空＝預設英文）"
                 fields:
                   - { label: "CV 頁名稱", name: bio, widget: string, default: "CV", required: false }
+                  - { label: "Relics 頁名稱", name: relic, widget: string, default: "Relics", required: false }
                   - { label: "Exhibition 頁名稱", name: exhibition, widget: string, default: "Exhibition", required: false }
-                  - { label: "Contact 頁名稱", name: contact, widget: string, default: "Contact", required: false }
+                  - { label: "Play 頁名稱", name: play, widget: string, default: "Play", required: false }
+                  - { label: "Shop 頁名稱", name: shop, widget: string, default: "Shop", required: false }
               # ━━━ 作品頁 Works Page ━━━
               - label: "📄 作品版型 Gallery Layout"
                 name: galleryLayout

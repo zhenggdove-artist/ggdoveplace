@@ -5,7 +5,10 @@
       "exhibition": "Exhibition",
       "weapons": "Relics",
       "bio": "Bio",
-      "contact": "Contact"
+      "contact": "Contact",
+      "relic": "Relics",
+      "play": "Play",
+      "shop": "Shop"
     },
     "fonts": {
       "heading": "georgia",
@@ -683,6 +686,129 @@
       "year": "2023"
     }
   ],
+  "shop": {
+    "hero": {
+      "kicker": "/relic_market :: static_archive :: no_api",
+      "title": "Shop",
+      "terminalLines": [
+        "catalog mounted: /SHOP",
+        "payment state: pending review",
+        "purchase buttons: frontend alert only"
+      ]
+    },
+    "purchase": {
+      "buttonLabel": "Purchase",
+      "disabledMessage": "系統建置中，暫停購買",
+      "refundNotice": "實體藝術品與數位商品售出後恕不退款"
+    },
+    "contactInfo": {
+      "heading": "Contact Info",
+      "emailLabel": "聯絡信箱",
+      "email": "",
+      "phoneLabel": "聯絡電話",
+      "phone": ""
+    },
+    "sections": [
+      {
+        "id": "relics",
+        "label": "Relics / Mixed Media",
+        "layout": "archive",
+        "products": [
+          {
+            "code": "ARCHIVE:R-001",
+            "categoryLabel": "Physical Relic",
+            "title": "〈無人知悉的角落 I〉",
+            "year": "2025",
+            "medium": "Mixed Media",
+            "dimensions": "55 x 35 cm",
+            "price": "新台幣 20,000 元",
+            "image": "",
+            "video": "",
+            "mediaAlt": "〈無人知悉的角落 I〉",
+            "placeholder": "+-------------------------------+\n|  UNKNOWN WALL FRAGMENT       |\n|  CIVILIZATION / NOISE / ASH  |\n|                               |\n|  . . .  x x x  . . .         |\n|  /////  /////  /////         |\n|  0101  COLLAPSE  1010        |\n|                               |\n|  FILE WITHOUT IMAGE          |\n+-------------------------------+",
+            "statement": "我將那無人知悉的遺址壁面鑿下販售。上頭描繪的或許是文明毀滅的戰爭，也或許只是尋常的兒童塗鴉，誰知道呢？你們之中又有什麼是真正值得保存下來的呢？那混沌中，文明的盜火賊。"
+          },
+          {
+            "code": "ARCHIVE:R-002",
+            "categoryLabel": "Physical Relic",
+            "title": "〈月之盒 MoonBox〉",
+            "year": "2025",
+            "medium": "Mixed Media",
+            "dimensions": "15.0 x 8.0 x 8.0 cm",
+            "price": "新台幣 3,000 元",
+            "image": "/ggdoveplace/SHOP/IMG_4722.PNG",
+            "video": "",
+            "mediaAlt": "〈月之盒 MoonBox〉",
+            "placeholder": "",
+            "statement": "作品論述：月之盒作為一件可收藏的混合媒材物件，將月面、容器與入口憑證的想像封存於小型檔案中，像一枚等待被啟動的私人遺物。"
+          }
+        ]
+      },
+      {
+        "id": "stamps",
+        "label": "Game Entrance Stamps",
+        "layout": "stamp-grid",
+        "products": [
+          {
+            "code": "STAMP:G-001",
+            "categoryLabel": "Digital Stamp",
+            "title": "〈Chiang-Flower〉Game entrance Stamp",
+            "year": "2025",
+            "medium": "",
+            "dimensions": "",
+            "price": "新台幣 1,000 元",
+            "image": "/ggdoveplace/SHOP/Game01.PNG",
+            "video": "",
+            "mediaAlt": "〈Chiang-Flower〉Game entrance Stamp",
+            "placeholder": "",
+            "statement": ""
+          },
+          {
+            "code": "STAMP:G-002",
+            "categoryLabel": "Digital Stamp",
+            "title": "〈UrbanLegend-Rat〉Game entrance Stamp",
+            "year": "2026",
+            "medium": "",
+            "dimensions": "",
+            "price": "新台幣 1,500 元",
+            "image": "/ggdoveplace/SHOP/UrbanLegend_Rat02.jpeg",
+            "video": "",
+            "mediaAlt": "〈UrbanLegend-Rat〉Game entrance Stamp",
+            "placeholder": "",
+            "statement": ""
+          },
+          {
+            "code": "STAMP:G-003",
+            "categoryLabel": "Digital Key",
+            "title": "〈MoonKey01〉",
+            "year": "2025",
+            "medium": "",
+            "dimensions": "",
+            "price": "新台幣 1,000 元",
+            "image": "/ggdoveplace/SHOP/MoonkeyI.PNG",
+            "video": "",
+            "mediaAlt": "〈MoonKey01〉",
+            "placeholder": "",
+            "statement": ""
+          },
+          {
+            "code": "STAMP:G-004",
+            "categoryLabel": "Digital Key",
+            "title": "〈MoonKey02 & Moonkey01〉",
+            "year": "2025",
+            "medium": "",
+            "dimensions": "",
+            "price": "新台幣 1,000 元",
+            "image": "/ggdoveplace/SHOP/MoonkeyI02.PNG",
+            "video": "",
+            "mediaAlt": "〈MoonKey02 & Moonkey01〉",
+            "placeholder": "",
+            "statement": ""
+          }
+        ]
+      }
+    ]
+  },
   "weapons": [
     {
       "id": 1,

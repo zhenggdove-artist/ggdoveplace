@@ -1,0 +1,13 @@
+Add local JS libraries for offline stability
+
+Downloaded and added local copies of all external dependencies:
+- lib/react.min.js (React 18)
+- lib/react-dom.min.js (ReactDOM 18)
+- lib/three.min.js (Three.js r128)
+- lib/babel.min.js (Babel standalone)
+
+This ensures the game works even if external CDNs are unavailable.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>

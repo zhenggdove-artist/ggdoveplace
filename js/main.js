@@ -91,6 +91,22 @@ function _coerceBool(v, def) {
   return def;
 }
 
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeJsSingle(value) {
+  return String(value || '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\r?\n/g, '\\n');
+}
+
 // ── 逐元素文字樣式套用 ─────────────────────────
 // ── 單位正規化：純數字自動補 px（如使用者輸入 200 → 200px）
 function normLen(val) {
@@ -498,16 +514,17 @@ function renderHeader(activePage) {
   }));
   const pages = [
     { id: 'cv',         label: nl.bio         || 'CV',          href: 'bio.html'        },
-    { id: 'relic',      label: 'Relics',                         href: 'relic.html'      },
+    { id: 'relic',      label: nl.relic       || nl.weapons || 'Relics', href: 'relic.html' },
     { id: 'exhibition', label: nl.exhibition  || 'Exhibition',  href: 'exhibition.html' },
-    { id: 'play',       label: 'Play',                          href: 'play.html'       },
+    { id: 'play',       label: nl.play        || 'Play',        href: 'play.html'       },
+    { id: 'shop',       label: nl.shop        || 'Shop',        href: 'shop.html'       },
     ...customPages
   ];
   nav.innerHTML = `
-    <a class="nav-logo" href="index.html">${siteData.site.title}</a>
+    <a class="nav-logo" href="index.html">${escapeHtml(siteData.site.title)}</a>
     <ul class="nav-links">
       ${pages.map(p =>
-        `<li><a href="${p.href}" ${p.id === activePage ? 'class="active"' : ''}>${p.label}</a></li>`
+        `<li><a href="${escapeHtml(p.href)}" ${p.id === activePage ? 'class="active"' : ''}>${escapeHtml(p.label)}</a></li>`
       ).join('')}
     </ul>`;
 }
@@ -709,22 +726,24 @@ function videoEmbedUrl(url) {
 // Render a single media item: video iframe/player or <img>
 function renderMediaItem(item, cls) {
   const embedUrl = videoEmbedUrl(item.video || '');
+  const caption = escapeHtml(item.caption || '');
+  const className = escapeHtml(cls || 'media-item');
   if (embedUrl) {
     // Direct video file
     if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
-      return `<div class="${cls || 'media-item'} media-video">
-        <video src="${embedUrl}" controls preload="metadata" playsinline></video>
-        ${item.caption ? `<figcaption>${item.caption}</figcaption>` : ''}
+      return `<div class="${className} media-video">
+        <video src="${escapeHtml(fixImg(embedUrl))}" controls preload="metadata" playsinline></video>
+        ${caption ? `<figcaption>${caption}</figcaption>` : ''}
       </div>`;
     }
-    return `<div class="${cls || 'media-item'} media-video">
-      <iframe src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>
-      ${item.caption ? `<figcaption>${item.caption}</figcaption>` : ''}
+    return `<div class="${className} media-video">
+      <iframe src="${escapeHtml(embedUrl)}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>
+      ${caption ? `<figcaption>${caption}</figcaption>` : ''}
     </div>`;
   }
-  return `<figure class="${cls || 'media-item'}">
-    <img src="${fixImg(item.src || '')}" alt="${item.caption || ''}" loading="lazy">
-    ${item.caption ? `<figcaption>${item.caption}</figcaption>` : ''}
+  return `<figure class="${className}">
+    <img src="${escapeHtml(fixImg(item.src || ''))}" alt="${caption}" loading="lazy">
+    ${caption ? `<figcaption>${caption}</figcaption>` : ''}
   </figure>`;
 }
 
@@ -938,6 +957,114 @@ function renderExhibitionDetail() {
   });
 }
 
+// ── Shop ───────────────────────────────────────
+function renderShop() {
+  const sectionsWrap = document.getElementById('shop-sections');
+  if (!sectionsWrap || !siteData) return;
+
+  const shop = siteData.shop || {};
+  const hero = shop.hero || {};
+  const purchase = shop.purchase || {};
+  const contact = shop.contactInfo || {};
+
+  const kickerEl = document.getElementById('shop-kicker');
+  const titleEl = document.getElementById('shop-title');
+  const terminalEl = document.getElementById('shop-terminal');
+  const contactHeadingEl = document.getElementById('shop-contact-heading');
+  const contactEmailEl = document.getElementById('shop-contact-email');
+  const contactPhoneEl = document.getElementById('shop-contact-phone');
+
+  if (kickerEl) kickerEl.textContent = hero.kicker || '/relic_market :: static_archive :: no_api';
+  if (titleEl) titleEl.textContent = hero.title || 'Shop';
+  if (terminalEl) {
+    const lines = hero.terminalLines && hero.terminalLines.length
+      ? hero.terminalLines
+      : ['catalog mounted: /SHOP', 'payment state: pending review', 'purchase buttons: frontend alert only'];
+    terminalEl.innerHTML = lines.map(line =>
+      `<p><span>&gt;</span> ${escapeHtml(line)}</p>`
+    ).join('');
+  }
+  if (contactHeadingEl) contactHeadingEl.textContent = contact.heading || 'Contact Info';
+  if (contactEmailEl) contactEmailEl.innerHTML = `<span>Email</span>${escapeHtml(contact.emailLabel || '聯絡信箱')}：${escapeHtml(contact.email || '')}`;
+  if (contactPhoneEl) contactPhoneEl.innerHTML = `<span>Phone</span>${escapeHtml(contact.phoneLabel || '聯絡電話')}：${escapeHtml(contact.phone || '')}`;
+
+  const sections = shop.sections || [];
+  sectionsWrap.innerHTML = sections.map((section, sectionIndex) => {
+    const layout = section.layout || 'archive';
+    const products = section.products || [];
+    const listClass = layout === 'archive' ? 'archive-list' : 'stamp-grid';
+    return `
+      <section class="shop-section" aria-labelledby="shop-section-${sectionIndex}">
+        <div class="section-heading">
+          <h2 id="shop-section-${sectionIndex}" class="section-label">${escapeHtml(section.label || '')}</h2>
+          <div class="section-rule"></div>
+        </div>
+        <div class="${listClass}">
+          ${products.map(product => renderShopProduct(product, layout, purchase)).join('')}
+        </div>
+      </section>`;
+  }).join('');
+
+  const refund = purchase.refundNotice || '實體藝術品與數位商品售出後恕不退款';
+  if (refund) {
+    sectionsWrap.insertAdjacentHTML('beforeend', `<div class="purchase-note">${escapeHtml(refund)}</div>`);
+  }
+}
+
+function renderShopProduct(product, layout, purchase) {
+  product = product || {};
+  purchase = purchase || {};
+  const isArchive = layout === 'archive';
+  const cardClass = isArchive ? 'archive-card' : 'stamp-card';
+  const mediaClass = isArchive ? 'archive-media' : 'stamp-media';
+  const bodyClass = isArchive ? 'archive-body' : 'stamp-body';
+  const buttonLabel = purchase.buttonLabel || 'Purchase';
+  const message = purchase.disabledMessage || '系統建置中，暫停購買';
+  const meta = [
+    product.year ? ['年份', product.year] : null,
+    product.medium ? ['媒材', product.medium] : null,
+    product.dimensions ? ['尺寸', product.dimensions] : null,
+    product.price ? ['價格', product.price] : null
+  ].filter(Boolean);
+  const statement = product.statement ? markdownToHtml(product.statement) : '';
+
+  return `
+    <article class="${cardClass}" data-code="${escapeHtml(product.code || '')}">
+      <div class="${mediaClass}">
+        ${renderShopMedia(product)}
+      </div>
+      <div class="${bodyClass}">
+        <div class="item-kicker">${escapeHtml(product.categoryLabel || '')}</div>
+        <h3 class="item-title">${escapeHtml(product.title || '')}</h3>
+        <div class="shop-meta">
+          ${meta.map(([label, value]) => `<div><span>${label}：</span>${escapeHtml(value)}</div>`).join('')}
+        </div>
+        ${statement ? `<div class="archive-statement">${statement}</div>` : ''}
+        <div class="purchase-row">
+          <div class="price-tag">${escapeHtml(product.price || '')}</div>
+          <a class="purchase-button" href="#" onclick="alert('${escapeJsSingle(message)}'); return false;">${escapeHtml(buttonLabel)}</a>
+        </div>
+      </div>
+    </article>`;
+}
+
+function renderShopMedia(product) {
+  product = product || {};
+  const alt = escapeHtml(product.mediaAlt || product.title || '');
+  const mediaVideo = product.video || product.videoUrl || '';
+  const embedUrl = videoEmbedUrl(mediaVideo);
+  if (embedUrl) {
+    if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
+      return `<video src="${escapeHtml(fixImg(embedUrl))}" controls preload="metadata" playsinline></video>`;
+    }
+    return `<iframe src="${escapeHtml(embedUrl)}" title="${alt}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
+  }
+  if (product.image) {
+    return `<img src="${escapeHtml(fixImg(product.image))}" alt="${alt}" loading="lazy">`;
+  }
+  return `<pre class="archive-placeholder" aria-hidden="true">${escapeHtml(product.placeholder || 'FILE WITHOUT IMAGE')}</pre>`;
+}
+
 // ── Custom Page ─────────────────────────────────
 // Renders custom-page.html — reads ?id= from URL, shows title + body + images
 function renderCustomPage() {
@@ -954,16 +1081,13 @@ function renderCustomPage() {
   }
 
   const bodyHtml = markdownToHtml(page.body || '');
-  const images   = page.images || [];
+  const mediaItems = page.images || [];
 
   wrap.innerHTML = `
-    <h1 class="page-title">${page.title || page.navLabel || ''}</h1>
+    <h1 class="page-title">${escapeHtml(page.title || page.navLabel || '')}</h1>
     <div class="custom-page-body">${bodyHtml}</div>
-    ${images.length ? `<div class="custom-page-images">
-      ${images.map(img => `<figure class="subpage-figure">
-        <img src="${fixImg(img.src)}" alt="${img.caption || ''}" loading="lazy">
-        ${img.caption ? `<figcaption>${img.caption}</figcaption>` : ''}
-      </figure>`).join('')}
+    ${mediaItems.length ? `<div class="custom-page-images">
+      ${mediaItems.map(item => renderMediaItem(item, 'subpage-figure')).join('')}
     </div>` : ''}`;
 }
 
