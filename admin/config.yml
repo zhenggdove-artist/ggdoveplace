@@ -120,6 +120,18 @@ collections:
                   - { label: "按鈕文字 Button Label", name: buttonLabel, widget: string, default: "Purchase" }
                   - { label: "點擊提示 Alert Message", name: disabledMessage, widget: string, default: "系統建置中，暫停購買" }
                   - { label: "退款聲明 Refund Notice", name: refundNotice, widget: string, default: "實體藝術品與數位商品售出後恕不退款" }
+              - label: "訂閱制服務 Subscription"
+                name: subscription
+                widget: object
+                collapsed: false
+                fields:
+                  - { label: "啟用 Enabled", name: enabled, widget: boolean, default: true }
+                  - { label: "服務名稱 Service Name", name: name, widget: string, default: "Artistletter（實體手寫信訂閱）" }
+                  - { label: "訂閱費用 Price", name: price, widget: string, default: "每月新台幣三百元" }
+                  - { label: "服務內容 Description", name: description, widget: text, default: "訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。" }
+                  - { label: "按鈕文字 Button Label", name: buttonLabel, widget: string, default: "訂閱" }
+                  - { label: "點擊提示 Alert Message", name: disabledMessage, widget: string, default: "系統建置中，暫停訂閱" }
+                  - { label: "取消聲明 Cancel Notice", name: cancelNotice, widget: string, default: "隨時可取消訂閱" }
               - label: "頁尾聯絡資訊 Contact Info"
                 name: contactInfo
                 widget: object

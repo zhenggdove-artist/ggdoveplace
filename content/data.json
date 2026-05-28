@@ -701,6 +701,15 @@
       "disabledMessage": "系統建置中，暫停購買",
       "refundNotice": "實體藝術品與數位商品售出後恕不退款"
     },
+    "subscription": {
+      "enabled": true,
+      "name": "Artistletter（實體手寫信訂閱）",
+      "price": "每月新台幣三百元",
+      "description": "訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。",
+      "buttonLabel": "訂閱",
+      "disabledMessage": "系統建置中，暫停訂閱",
+      "cancelNotice": "隨時可取消訂閱"
+    },
     "contactInfo": {
       "heading": "Contact Info",
       "emailLabel": "聯絡信箱",

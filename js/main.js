@@ -14,15 +14,22 @@ let shopGalleryCurrentIndex = 0;
 const INITIAL_SHOW = 9;
 
 // ── Image path fixer ────────────────────────────
-// CMS stores paths as /ggdoveplace/images/... which works on github.io
-// but breaks on custom domain (www.zhenggdove.com). This helper fixes
-// the path at render-time without touching the data object.
+// CMS media paths can be saved as /ggdoveplace/images/..., /images/...,
+// images/..., /SHOP/... or SHOP/... depending on whether the file was
+// uploaded or selected from the media library. Normalize at render time so
+// the same content works on GitHub Pages subpath and the custom domain.
 const _onSubpath = location.pathname.startsWith('/ggdoveplace/');
 function fixImg(src) {
   if (!src || typeof src !== 'string') return src;
-  if (_onSubpath) return src;                         // github.io — keep as-is
-  if (src.startsWith('/ggdoveplace/')) return src.replace('/ggdoveplace/', '/');
-  return src;
+  const value = src.trim();
+  if (/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(value)) return value;
+  if (_onSubpath) {
+    if (value.startsWith('/ggdoveplace/')) return value;
+    if (value.startsWith('/')) return '/ggdoveplace' + value;
+    return value;
+  }
+  if (value.startsWith('/ggdoveplace/')) return value.replace('/ggdoveplace/', '/');
+  return value;
 }
 
 // ── Load data ──────────────────────────────────
@@ -992,6 +999,43 @@ function getShopGalleryItems(product) {
   return gallery;
 }
 
+function getShopSubscription(shop) {
+  const fallback = {
+    enabled: true,
+    name: 'Artistletter（實體手寫信訂閱）',
+    price: '每月新台幣三百元',
+    description: '訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。',
+    buttonLabel: '訂閱',
+    disabledMessage: '系統建置中，暫停訂閱',
+    cancelNotice: '隨時可取消訂閱'
+  };
+  const sub = Object.assign({}, fallback, (shop && shop.subscription) || {});
+  if (sub.enabled === false || sub.enabled === 'false') return null;
+  return sub;
+}
+
+function renderShopSubscription(subscription) {
+  if (!subscription) return '';
+  const message = subscription.disabledMessage || '系統建置中，暫停訂閱';
+  return `
+    <section class="subscription-panel" aria-labelledby="shop-subscription-title">
+      <div class="subscription-ascii" aria-hidden="true">+-------------------- MONTHLY SUPPORT CHANNEL --------------------+</div>
+      <div class="subscription-grid">
+        <div class="subscription-main">
+          <p class="subscription-kicker">subscription / handwritten mail / artistletter</p>
+          <h2 id="shop-subscription-title" class="subscription-title">${escapeHtml(subscription.name || '')}</h2>
+          <p class="subscription-copy">${escapeHtml(subscription.description || '')}</p>
+        </div>
+        <div class="subscription-action">
+          <div class="subscription-price">${escapeHtml(subscription.price || '每月新台幣三百元')}</div>
+          <a class="subscription-button" href="#" onclick="alert('${escapeJsSingle(message)}'); return false;">${escapeHtml(subscription.buttonLabel || '訂閱')}</a>
+          <p class="subscription-note">${escapeHtml(subscription.cancelNotice || '隨時可取消訂閱')}</p>
+        </div>
+      </div>
+      <div class="subscription-ascii bottom" aria-hidden="true">+-----------------------------------------------------------------+</div>
+    </section>`;
+}
+
 function renderShop() {
   const sectionsWrap = document.getElementById('shop-sections');
   if (!sectionsWrap || !siteData) return;
@@ -1000,6 +1044,7 @@ function renderShop() {
   const hero = shop.hero || {};
   const purchase = shop.purchase || {};
   const contact = shop.contactInfo || {};
+  const subscription = getShopSubscription(shop);
 
   const kickerEl = document.getElementById('shop-kicker');
   const titleEl = document.getElementById('shop-title');
@@ -1024,7 +1069,7 @@ function renderShop() {
 
   const sections = shop.sections || [];
   shopGallerySets = [];
-  sectionsWrap.innerHTML = sections.map((section, sectionIndex) => {
+  sectionsWrap.innerHTML = renderShopSubscription(subscription) + sections.map((section, sectionIndex) => {
     const layout = section.layout || 'archive';
     const products = section.products || [];
     const listClass = layout === 'archive' ? 'archive-list' : 'stamp-grid';

@@ -153,6 +153,13 @@
     }
 
     .shop-kicker,
+    .subscription-panel,
+    .subscription-kicker,
+    .subscription-copy,
+    .subscription-price,
+    .subscription-button,
+    .subscription-note,
+    .subscription-ascii,
     .section-label,
     .item-kicker,
     .shop-meta,
@@ -198,6 +205,147 @@
 
     .shop-terminal span {
       color: var(--shop-acid);
+    }
+
+    .subscription-panel {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      margin: -1.6rem 0 4.8rem;
+      padding: 1.5rem;
+      border: 1px solid var(--shop-line-strong);
+      background:
+        linear-gradient(135deg, rgba(206, 255, 42, 0.14), transparent 34%),
+        linear-gradient(225deg, rgba(255, 62, 219, 0.14), transparent 42%),
+        rgba(0, 0, 0, 0.82);
+      box-shadow:
+        0 0 48px rgba(206, 255, 42, 0.16),
+        inset 0 0 0 1px rgba(88, 244, 255, 0.18),
+        inset 0 0 42px rgba(255, 62, 219, 0.08);
+    }
+
+    .subscription-panel::before {
+      content: ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .";
+      position: absolute;
+      inset: 0.7rem 0.9rem auto;
+      z-index: -1;
+      color: rgba(88, 244, 255, 0.18);
+      font-family: var(--shop-mono);
+      font-size: 0.72rem;
+      line-height: 1.4;
+      word-break: break-all;
+      pointer-events: none;
+    }
+
+    .subscription-panel::after {
+      content: "";
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      width: 34%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--shop-pink), var(--shop-cyan));
+      box-shadow: 0 0 22px rgba(255, 62, 219, 0.5);
+      pointer-events: none;
+    }
+
+    .subscription-ascii {
+      color: rgba(206, 255, 42, 0.68);
+      font-size: 0.68rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .subscription-ascii.bottom {
+      margin-top: 1.35rem;
+      color: rgba(255, 62, 219, 0.52);
+    }
+
+    .subscription-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.28fr) minmax(260px, 0.72fr);
+      gap: 2rem;
+      align-items: end;
+      padding: 1.2rem 0 0;
+    }
+
+    .subscription-kicker {
+      margin: 0 0 0.75rem;
+      color: var(--shop-cyan);
+      font-size: 0.72rem;
+      line-height: 1.5;
+      text-transform: uppercase;
+    }
+
+    .subscription-title {
+      margin: 0;
+      color: var(--shop-text);
+      font-family: var(--shop-saint);
+      font-size: 2.8rem;
+      font-weight: normal;
+      line-height: 1.06;
+      text-shadow:
+        -3px 0 rgba(255, 62, 219, 0.58),
+        2px 0 rgba(88, 244, 255, 0.46),
+        0 0 32px rgba(206, 255, 42, 0.24);
+    }
+
+    .subscription-copy {
+      max-width: 58rem;
+      margin: 1rem 0 0;
+      color: rgba(214, 222, 240, 0.86);
+      font-size: 0.9rem;
+      line-height: 1.9;
+    }
+
+    .subscription-action {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      padding-left: 1.3rem;
+      border-left: 1px solid rgba(88, 244, 255, 0.32);
+    }
+
+    .subscription-price {
+      color: var(--shop-acid);
+      font-size: 1.08rem;
+      line-height: 1.4;
+      text-shadow: 0 0 18px rgba(206, 255, 42, 0.42);
+    }
+
+    .subscription-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 3rem;
+      min-width: 9rem;
+      padding: 0.75rem 1.2rem;
+      border: 1px solid var(--shop-line-strong);
+      color: #000;
+      background: var(--shop-acid);
+      font-size: 0.8rem;
+      line-height: 1;
+      text-decoration: none;
+      text-transform: uppercase;
+      box-shadow: 0 0 30px rgba(206, 255, 42, 0.32);
+      transition: color 0.22s, border-color 0.22s, box-shadow 0.22s, background 0.22s;
+    }
+
+    .subscription-button:hover {
+      color: var(--shop-acid);
+      border-color: var(--shop-pink);
+      background: rgba(255, 62, 219, 0.08);
+      box-shadow: 0 0 30px rgba(255, 62, 219, 0.34);
+    }
+
+    .subscription-note {
+      margin: 0;
+      color: rgba(214, 222, 240, 0.68);
+      font-family: 'Courier New', monospace;
+      font-size: 0.72rem;
+      line-height: 1.5;
     }
 
     .shop-section {
@@ -627,6 +775,18 @@
         grid-template-columns: 1fr;
       }
 
+      .subscription-grid {
+        grid-template-columns: 1fr;
+        gap: 1.4rem;
+      }
+
+      .subscription-action {
+        padding-left: 0;
+        border-left: 0;
+        border-top: 1px solid rgba(88, 244, 255, 0.32);
+        padding-top: 1.2rem;
+      }
+
       .archive-card {
         grid-template-columns: 1fr;
       }
@@ -677,6 +837,10 @@
         grid-template-columns: 1fr;
       }
 
+      .subscription-title {
+        font-size: 2.25rem;
+      }
+
       .purchase-row {
         align-items: flex-start;
         flex-direction: column;
@@ -691,6 +855,19 @@
       .archive-body,
       .stamp-body {
         padding: 1rem;
+      }
+
+      .subscription-panel {
+        margin-top: -1rem;
+        padding: 1rem;
+      }
+
+      .subscription-title {
+        font-size: 1.8rem;
+      }
+
+      .subscription-button {
+        width: 100%;
       }
 
       .archive-placeholder {

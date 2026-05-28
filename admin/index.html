@@ -270,17 +270,32 @@
     return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
   }
 
+  function normalizePublicMediaPath(src) {
+    if (!src || typeof src !== 'string') return src || '';
+    var value = src.trim();
+    if (/^(?:blob:|data:|https?:|\/\/)/i.test(value)) return value;
+    var onSubpath = location.pathname.indexOf('/ggdoveplace/') === 0;
+    if (onSubpath) {
+      if (value.indexOf('/ggdoveplace/') === 0) return value;
+      if (value.charAt(0) === '/') return '/ggdoveplace' + value;
+      return value;
+    }
+    if (value.indexOf('/ggdoveplace/') === 0) return value.replace('/ggdoveplace/', '/');
+    return value;
+  }
+
   // ── Works Preview ─────────────────────────────
   // 共用：解析圖片 URL（支援 blob URL、HTTPS、相對路徑、Decap v3 AssetProxy）
   function resolveImg(getAsset, src) {
     if (!src) return '';
     // 已是完整 URL（blob: / https: / http:）→ 直接用
-    if (/^(blob:|https?:)/.test(src)) return src;
+    if (/^(blob:|data:|https?:|\/\/)/.test(src)) return src;
+    var normalizedSrc = normalizePublicMediaPath(src);
     // 嘗試透過 getAsset 取得 blob 或 CDN URL
     try {
       var a = getAsset(src);
-      if (!a) return src;
-      if (typeof a === 'string') return a || src;
+      if (!a) return normalizedSrc;
+      if (typeof a === 'string') return normalizePublicMediaPath(a || normalizedSrc);
       // ImmutableJS Map（Decap v2 style）
       if (typeof a.get === 'function') {
         var u = a.get('url'); if (u) return u;
@@ -291,7 +306,7 @@
       var s = a.toString();
       if (s && s !== '[object Object]') return s;
     } catch(e) {}
-    return src;
+    return normalizedSrc;
   }
 
   function videoEmbedUrl(url) {
@@ -1105,6 +1120,7 @@
       var s = shop.toJS ? shop.toJS() : shop;
       var hero = s.hero || {};
       var purchase = s.purchase || {};
+      var subscription = s.subscription || {};
       var contact = s.contactInfo || {};
       var sections = s.sections || [];
       var terminalLines = hero.terminalLines || [];
@@ -1115,6 +1131,40 @@
       var dim = '#7b819b';
       var mono = '"Courier New",monospace';
       var saint = '"Saint","Courier New",monospace';
+
+      var subscriptionBlock = function(sub) {
+        sub = Object.assign({
+          enabled: true,
+          name: 'Artistletter（實體手寫信訂閱）',
+          price: '每月新台幣三百元',
+          description: '訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。',
+          buttonLabel: '訂閱',
+          cancelNotice: '隨時可取消訂閱'
+        }, sub || {});
+        if (sub.enabled === false || sub.enabled === 'false') return null;
+        return h('section', { style: {
+          margin: '0 0 2rem',
+          padding: '1.1rem',
+          border: '1px solid rgba(206,255,42,0.72)',
+          background: 'linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)',
+          boxShadow: '0 0 34px rgba(206,255,42,0.12), inset 0 0 0 1px rgba(88,244,255,0.16)'
+        }},
+          h('div', { style: { color: 'rgba(206,255,42,0.66)', fontFamily: mono, fontSize: '0.62rem', whiteSpace: 'nowrap', overflow: 'hidden' } },
+            '+-------------------- MONTHLY SUPPORT CHANNEL --------------------+'),
+          h('div', { style: { display: 'grid', gridTemplateColumns: 'minmax(0,1.25fr) minmax(180px,0.75fr)', gap: '1rem', alignItems: 'end', paddingTop: '0.9rem' } },
+            h('div', null,
+              h('div', { style: { color: cyan, fontFamily: mono, fontSize: '0.66rem', textTransform: 'uppercase', marginBottom: '0.5rem' } }, 'subscription / handwritten mail / artistletter'),
+              h('h2', { style: { margin: 0, color: text, fontFamily: saint, fontSize: '1.8rem', fontWeight: 400, lineHeight: 1.1, textShadow: '-2px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)' } }, sub.name || ''),
+              h('p', { style: { margin: '0.75rem 0 0', color: 'rgba(214,222,240,0.84)', fontFamily: mono, fontSize: '0.76rem', lineHeight: 1.7 } }, sub.description || '')
+            ),
+            h('div', { style: { borderLeft: '1px solid rgba(88,244,255,0.32)', paddingLeft: '1rem', fontFamily: mono } },
+              h('div', { style: { color: acid, fontSize: '0.95rem', marginBottom: '0.8rem' } }, sub.price || '每月新台幣三百元'),
+              h('span', { style: { display: 'inline-block', color: '#000', background: acid, border: '1px solid rgba(206,255,42,0.72)', padding: '0.62rem 1rem', fontSize: '0.72rem', textTransform: 'uppercase' } }, sub.buttonLabel || '訂閱'),
+              h('div', { style: { marginTop: '0.8rem', color: 'rgba(214,222,240,0.68)', fontSize: '0.7rem' } }, sub.cancelNotice || '隨時可取消訂閱')
+            )
+          )
+        );
+      };
 
       var productCard = function(product, layout, key) {
         product = product || {};
@@ -1193,6 +1243,7 @@
             })
           )
         ),
+        subscriptionBlock(subscription),
         sections.map(function(section, si) {
           var layout = section.layout || 'archive';
           var products = section.products || [];
@@ -1410,17 +1461,41 @@
     _draftKey = routeKey();
     setTimeout(function() { tryRestoreDraft(_draftKey); }, 1200);
 
+    function normalizeStoredMediaPath(fieldName, value) {
+      if (!value || typeof value !== 'string') return value;
+      var key = String(fieldName || '').toLowerCase();
+      if (!/^(image|src|photo|video)$/.test(key)) return value;
+      var v = value.trim();
+      if (!v || /^(?:blob:|data:|https?:|\/\/)/i.test(v)) return value;
+      if (v.indexOf('/ggdoveplace/') === 0) return v;
+      if (v.indexOf('/SHOP/') === 0 || v.indexOf('/images/') === 0) return '/ggdoveplace' + v;
+      if (v.indexOf('SHOP/') === 0 || v.indexOf('images/') === 0) return '/ggdoveplace/' + v;
+      return value;
+    }
+
+    function normalizeEntryMediaPaths(value, fieldName) {
+      if (value && typeof value.map === 'function' && typeof value.toJS === 'function') {
+        return value.map(function(child, childKey) {
+          return normalizeEntryMediaPaths(child, childKey);
+        });
+      }
+      return normalizeStoredMediaPath(fieldName, value);
+    }
+
     // 存檔成功後清除草稿（Decap CMS editorial workflow 的 preSave 事件）
     if (window.CMS && window.CMS.registerEventListener) {
       window.CMS.registerEventListener({
         name: 'preSave',
-        handler: function() {
+        handler: function(event) {
           _dirty = false;
           clearTimeout(_saveTimer);
           if (_draftKey) {
             try { localStorage.removeItem(_draftKey); } catch(e) {}
           }
           hideBanner();
+          if (event && event.entry && typeof event.entry.get === 'function') {
+            return normalizeEntryMediaPaths(event.entry.get('data'));
+          }
         }
       });
     }
