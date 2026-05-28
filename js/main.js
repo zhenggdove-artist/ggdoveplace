@@ -1005,6 +1005,9 @@ function getShopSubscription(shop) {
     name: 'Artistletter（實體手寫信訂閱）',
     image: '',
     imageAlt: 'Artistletter 訂閱示意圖',
+    imageSize: 'contain',
+    imageHeight: '260px',
+    imagePosition: 'center center',
     price: '每月新台幣三百元',
     description: '訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。',
     buttonLabel: '訂閱',
@@ -1016,10 +1019,38 @@ function getShopSubscription(shop) {
   return sub;
 }
 
+function normalizeSubscriptionImageSize(value) {
+  const normalized = String(value || 'contain').trim().toLowerCase();
+  if (normalized === 'cover' || normalized === 'auto') return normalized;
+  return 'contain';
+}
+
+function normalizeSubscriptionImageHeight(value) {
+  const raw = String(value || '260px').trim();
+  if (/^\d+(\.\d+)?(px|rem|em|vh|vw|%)$/.test(raw)) return raw;
+  if (/^\d+(\.\d+)?$/.test(raw)) return `${raw}px`;
+  return '260px';
+}
+
+function normalizeSubscriptionImagePosition(value) {
+  const normalized = String(value || 'center center').trim().toLowerCase();
+  if (normalized === 'center top' || normalized === 'top') return 'center top';
+  if (normalized === 'center bottom' || normalized === 'bottom') return 'center bottom';
+  return 'center center';
+}
+
 function renderShopSubscription(subscription) {
   if (!subscription) return '';
   const message = subscription.disabledMessage || '系統建置中，暫停訂閱';
-  const image = subscription.image ? `<div class="subscription-media"><img src="${escapeHtml(fixImg(subscription.image))}" alt="${escapeHtml(subscription.imageAlt || subscription.name || '')}" loading="lazy"></div>` : '';
+  const imageSize = normalizeSubscriptionImageSize(subscription.imageSize);
+  const imageHeight = normalizeSubscriptionImageHeight(subscription.imageHeight);
+  const imagePosition = normalizeSubscriptionImagePosition(subscription.imagePosition);
+  const imageStyle = [
+    `--subscription-image-height:${imageHeight}`,
+    `--subscription-image-fit:${imageSize === 'auto' ? 'contain' : imageSize}`,
+    `--subscription-image-position:${imagePosition}`
+  ].join(';');
+  const image = subscription.image ? `<div class="subscription-media subscription-media--${imageSize}" style="${imageStyle}"><img src="${escapeHtml(fixImg(subscription.image))}" alt="${escapeHtml(subscription.imageAlt || subscription.name || '')}" loading="lazy"></div>` : '';
   return `
     <section class="subscription-panel" aria-labelledby="shop-subscription-title">
       <div class="subscription-ascii" aria-hidden="true">+-------------------- MONTHLY SUPPORT CHANNEL --------------------+</div>

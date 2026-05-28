@@ -129,6 +129,23 @@ collections:
                   - { label: "服務名稱 Service Name", name: name, widget: string, default: "Artistletter（實體手寫信訂閱）" }
                   - { label: "示意圖 Image", name: image, widget: image, required: false, media_folder: /SHOP, public_folder: /ggdoveplace/SHOP }
                   - { label: "示意圖替代文字 Alt", name: imageAlt, widget: string, required: false }
+                  - label: "示意圖尺寸 Image Size"
+                    name: imageSize
+                    widget: select
+                    options:
+                      - { label: "Contain 完整顯示", value: "contain" }
+                      - { label: "Cover 填滿裁切", value: "cover" }
+                      - { label: "Auto 原尺寸", value: "auto" }
+                    default: "contain"
+                  - { label: "示意圖高度 Image Height", name: imageHeight, widget: string, required: false, default: "260px" }
+                  - label: "示意圖對齊 Image Position"
+                    name: imagePosition
+                    widget: select
+                    options:
+                      - { label: "Center 中央", value: "center center" }
+                      - { label: "Top 上方", value: "center top" }
+                      - { label: "Bottom 下方", value: "center bottom" }
+                    default: "center center"
                   - { label: "訂閱費用 Price", name: price, widget: string, default: "每月新台幣三百元" }
                   - { label: "服務內容 Description", name: description, widget: text, default: "訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。" }
                   - { label: "按鈕文字 Button Label", name: buttonLabel, widget: string, default: "訂閱" }

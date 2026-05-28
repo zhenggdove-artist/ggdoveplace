@@ -276,14 +276,24 @@
       border: 1px solid rgba(88, 244, 255, 0.18);
       background: #030307;
       overflow: hidden;
+      --subscription-image-height: 260px;
+      --subscription-image-fit: contain;
+      --subscription-image-position: center center;
     }
 
     .subscription-media img {
       display: block;
       width: 100%;
-      max-height: 260px;
-      object-fit: cover;
+      height: var(--subscription-image-height, auto);
+      object-fit: var(--subscription-image-fit, contain);
+      object-position: var(--subscription-image-position, center center);
+      max-height: none;
       background: #030307;
+    }
+
+    .subscription-media--auto img {
+      height: auto;
+      object-fit: contain;
     }
 
     .subscription-kicker {
@@ -876,10 +886,6 @@
       .subscription-panel {
         margin-top: -1rem;
         padding: 1rem;
-      }
-
-      .subscription-media img {
-        max-height: 220px;
       }
 
       .subscription-title {

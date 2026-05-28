@@ -1109,8 +1109,31 @@
   CMS.registerPreviewTemplate('exhibition', ExhibitionPreview);
   CMS.registerPreviewTemplate('exhibition_data', ExhibitionPreview);
 
+  function normalizeSubscriptionImageSize(value) {
+    var normalized = String(value || 'contain').trim().toLowerCase();
+    if (normalized === 'cover' || normalized === 'auto') return normalized;
+    return 'contain';
+  }
+
+  function normalizeSubscriptionImageHeight(value) {
+    var raw = String(value || '260px').trim();
+    if (/^\d+(\.\d+)?(px|rem|em|vh|vw|%)$/.test(raw)) return raw;
+    if (/^\d+(\.\d+)?$/.test(raw)) return raw + 'px';
+    return '260px';
+  }
+
+  function normalizeSubscriptionImagePosition(value) {
+    var normalized = String(value || 'center center').trim().toLowerCase();
+    if (normalized === 'center top' || normalized === 'top') return 'center top';
+    if (normalized === 'center bottom' || normalized === 'bottom') return 'center bottom';
+    return 'center center';
+  }
+
   // ── Shop Preview ─────────────────────────
   var ShopPreview = createClass({
+    getInitialState: function() {
+      return { previewMode: 'desktop' };
+    },
     render: function() {
       var entry    = this.props.entry;
       var getAsset = this.props.getAsset;
@@ -1131,6 +1154,38 @@
       var dim = '#7b819b';
       var mono = '"Courier New",monospace';
       var saint = '"Saint","Courier New",monospace';
+      var previewMode = this.state.previewMode || 'desktop';
+      var isMobilePreview = previewMode === 'mobile';
+      var self = this;
+      var previewViewportStyle = isMobilePreview ? {
+        width: '390px',
+        maxWidth: '100%',
+        margin: '0 auto',
+        padding: '0.5rem',
+        border: '1px solid rgba(88,244,255,0.2)',
+        background: '#040409',
+        boxShadow: '0 0 0 1px rgba(206,255,42,0.08) inset'
+      } : {
+        width: '100%'
+      };
+      var previewButtonStyle = function(active) {
+        return {
+          padding: '0.42rem 0.78rem',
+          border: '1px solid ' + (active ? 'rgba(206,255,42,0.78)' : 'rgba(88,244,255,0.22)'),
+          background: active ? 'rgba(206,255,42,0.12)' : 'rgba(0,0,0,0.32)',
+          color: active ? acid : text,
+          fontFamily: mono,
+          fontSize: '0.66rem',
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+          cursor: 'pointer'
+        };
+      };
+      var setPreviewMode = function(mode) {
+        return function() {
+          if (self.state.previewMode !== mode) self.setState({ previewMode: mode });
+        };
+      };
 
       var subscriptionBlock = function(sub) {
         sub = Object.assign({
@@ -1138,12 +1193,42 @@
           name: 'Artistletter（實體手寫信訂閱）',
           image: '',
           imageAlt: 'Artistletter 訂閱示意圖',
+          imageSize: 'contain',
+          imageHeight: '260px',
+          imagePosition: 'center center',
           price: '每月新台幣三百元',
           description: '訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。',
           buttonLabel: '訂閱',
           cancelNotice: '隨時可取消訂閱'
         }, sub || {});
         if (sub.enabled === false || sub.enabled === 'false') return null;
+        var imageSize = normalizeSubscriptionImageSize(sub.imageSize);
+        var imageHeight = normalizeSubscriptionImageHeight(sub.imageHeight);
+        var imagePosition = normalizeSubscriptionImagePosition(sub.imagePosition);
+        var imageWrapStyle = {
+          marginBottom: '0.9rem',
+          border: '1px solid rgba(88,244,255,0.18)',
+          background: '#030307',
+          overflow: 'hidden'
+        };
+        imageWrapStyle['--subscription-image-height'] = imageHeight;
+        imageWrapStyle['--subscription-image-fit'] = imageSize === 'auto' ? 'contain' : imageSize;
+        imageWrapStyle['--subscription-image-position'] = imagePosition;
+        var imageStyle = imageSize === 'auto' ? {
+          display: 'block',
+          width: '100%',
+          height: 'auto',
+          objectFit: 'contain',
+          objectPosition: imagePosition,
+          background: '#030307'
+        } : {
+          display: 'block',
+          width: '100%',
+          height: imageHeight,
+          objectFit: imageSize,
+          objectPosition: imagePosition,
+          background: '#030307'
+        };
         return h('section', { style: {
           margin: '0 0 2rem',
           padding: '1.1rem',
@@ -1153,24 +1238,33 @@
         }},
           h('div', { style: { color: 'rgba(206,255,42,0.66)', fontFamily: mono, fontSize: '0.62rem', whiteSpace: 'nowrap', overflow: 'hidden' } },
             '+-------------------- MONTHLY SUPPORT CHANNEL --------------------+'),
-          h('div', { style: { display: 'grid', gridTemplateColumns: 'minmax(0,1.25fr) minmax(180px,0.75fr)', gap: '1rem', alignItems: 'end', paddingTop: '0.9rem' } },
-            h('div', null,
-              sub.image ? h('div', { style: { marginBottom: '0.9rem', border: '1px solid rgba(88,244,255,0.18)', background: '#030307', overflow: 'hidden' } },
-                h('img', {
-                  src: resolveImg(getAsset, sub.image),
-                  alt: sub.imageAlt || sub.name || '',
-                  loading: 'lazy',
-                  style: { display: 'block', width: '100%', maxHeight: '240px', objectFit: 'cover' }
-                })
-              ) : null,
-              h('div', { style: { color: cyan, fontFamily: mono, fontSize: '0.66rem', textTransform: 'uppercase', marginBottom: '0.5rem' } }, 'subscription / handwritten mail / artistletter'),
-              h('h2', { style: { margin: 0, color: text, fontFamily: saint, fontSize: '1.8rem', fontWeight: 400, lineHeight: 1.1, textShadow: '-2px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)' } }, sub.name || ''),
-              h('p', { style: { margin: '0.75rem 0 0', color: 'rgba(214,222,240,0.84)', fontFamily: mono, fontSize: '0.76rem', lineHeight: 1.7 } }, sub.description || '')
-            ),
-            h('div', { style: { borderLeft: '1px solid rgba(88,244,255,0.32)', paddingLeft: '1rem', fontFamily: mono } },
-              h('div', { style: { color: acid, fontSize: '0.95rem', marginBottom: '0.8rem' } }, sub.price || '每月新台幣三百元'),
-              h('span', { style: { display: 'inline-block', color: '#000', background: acid, border: '1px solid rgba(206,255,42,0.72)', padding: '0.62rem 1rem', fontSize: '0.72rem', textTransform: 'uppercase' } }, sub.buttonLabel || '訂閱'),
-              h('div', { style: { marginTop: '0.8rem', color: 'rgba(214,222,240,0.68)', fontSize: '0.7rem' } }, sub.cancelNotice || '隨時可取消訂閱')
+          h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', marginTop: '0.6rem', marginBottom: '0.8rem', flexWrap: 'wrap' } },
+            h('div', { style: { color: dim, fontFamily: mono, fontSize: '0.64rem', letterSpacing: '0.18em', textTransform: 'uppercase' } }, 'preview mode'),
+            h('div', { style: { display: 'inline-flex', gap: '0.4rem' } },
+              h('button', { type: 'button', onClick: setPreviewMode('desktop'), style: previewButtonStyle(!isMobilePreview) }, 'Desktop'),
+              h('button', { type: 'button', onClick: setPreviewMode('mobile'), style: previewButtonStyle(isMobilePreview) }, 'Mobile')
+            )
+          ),
+          h('div', { style: previewViewportStyle },
+            h('div', { style: { display: 'grid', gridTemplateColumns: 'minmax(0,1.25fr) minmax(180px,0.75fr)', gap: '1rem', alignItems: 'end', paddingTop: '0.9rem' } },
+              h('div', null,
+                sub.image ? h('div', { style: imageWrapStyle },
+                  h('img', {
+                    src: resolveImg(getAsset, sub.image),
+                    alt: sub.imageAlt || sub.name || '',
+                    loading: 'lazy',
+                    style: imageStyle
+                  })
+                ) : null,
+                h('div', { style: { color: cyan, fontFamily: mono, fontSize: '0.66rem', textTransform: 'uppercase', marginBottom: '0.5rem' } }, 'subscription / handwritten mail / artistletter'),
+                h('h2', { style: { margin: 0, color: text, fontFamily: saint, fontSize: '1.8rem', fontWeight: 400, lineHeight: 1.1, textShadow: '-2px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)' } }, sub.name || ''),
+                h('p', { style: { margin: '0.75rem 0 0', color: 'rgba(214,222,240,0.84)', fontFamily: mono, fontSize: '0.76rem', lineHeight: 1.7 } }, sub.description || '')
+              ),
+              h('div', { style: { borderLeft: '1px solid rgba(88,244,255,0.32)', paddingLeft: '1rem', fontFamily: mono } },
+                h('div', { style: { color: acid, fontSize: '0.95rem', marginBottom: '0.8rem' } }, sub.price || '每月新台幣三百元'),
+                h('span', { style: { display: 'inline-block', color: '#000', background: acid, border: '1px solid rgba(206,255,42,0.72)', padding: '0.62rem 1rem', fontSize: '0.72rem', textTransform: 'uppercase' } }, sub.buttonLabel || '訂閱'),
+                h('div', { style: { marginTop: '0.8rem', color: 'rgba(214,222,240,0.68)', fontSize: '0.7rem' } }, sub.cancelNotice || '隨時可取消訂閱')
+              )
             )
           )
         );
