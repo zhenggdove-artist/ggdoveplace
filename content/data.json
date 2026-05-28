@@ -717,6 +717,14 @@
           {
             "mediaAlt": "〈無人知悉的角落 I〉",
             "price": "新台幣 20,000 元",
+            "detailImages": [
+              {
+                "src": "/ggdoveplace/SHOP/project-09.jpg"
+              },
+              {
+                "src": "/ggdoveplace/SHOP/project-08.jpg"
+              }
+            ],
             "code": "ARCHIVE:R-001",
             "dimensions": "55 x 35 cm",
             "statement": "我將那無人知悉的遺址壁面鑿下販售。上頭描繪的或許是文明毀滅的戰爭，也或許只是尋常的兒童塗鴉，誰知道呢？你們之中又有什麼是真正值得保存下來的呢？那混沌中，文明的盜火賊。",
@@ -726,12 +734,19 @@
             "title": "〈無人知悉的角落 I〉",
             "video": "",
             "image": "/ggdoveplace/SHOP/s__79716365.jpg",
-            "detailImages": [],
             "year": "2025"
           },
           {
             "mediaAlt": "〈無人知悉的角落II〉",
             "price": "新台幣 20,000 元",
+            "detailImages": [
+              {
+                "src": "/ggdoveplace/SHOP/project-02.jpg"
+              },
+              {
+                "src": "/ggdoveplace/SHOP/project-03.jpg"
+              }
+            ],
             "code": "ARCHIVE:R-002",
             "dimensions": "55 x 35 cm",
             "statement": "\n我將那無人知悉的遺址\n壁面鑿下販售。 \n \n \n上頭描繪的或許是文明\n毀滅的戰爭， \n \n \n也或許只是尋常的兒童\n塗鴉，誰知道呢？ \n \n \n你們之中又有什麼是真\n正值得保存下來的呢？",
@@ -741,7 +756,6 @@
             "title": "〈無人知悉的角落II〉",
             "video": "",
             "image": "/ggdoveplace/SHOP/s__82264103.jpg",
-            "detailImages": [],
             "year": "2025"
           }
         ]
@@ -754,6 +768,7 @@
           {
             "mediaAlt": "〈Chiang-Flower〉Game entrance Stamp",
             "price": "新台幣 1,000 元",
+            "detailImages": [],
             "code": "STAMP:G-001",
             "dimensions": "",
             "statement": "",
@@ -763,12 +778,12 @@
             "title": "〈Chiang-Flower〉Game entrance Stamp",
             "video": "",
             "image": "/ggdoveplace/SHOP/Game01.PNG",
-            "detailImages": [],
             "year": "2025"
           },
           {
             "mediaAlt": "〈UrbanLegend-Rat〉Game entrance Stamp",
             "price": "新台幣 1,500 元",
+            "detailImages": [],
             "code": "STAMP:G-002",
             "dimensions": "",
             "statement": "",
@@ -778,12 +793,12 @@
             "title": "〈UrbanLegend-Rat〉Game entrance Stamp",
             "video": "",
             "image": "/ggdoveplace/SHOP/UrbanLegend_Rat02.jpeg",
-            "detailImages": [],
             "year": "2026"
           },
           {
             "mediaAlt": "〈MoonKey01〉",
             "price": "新台幣 1,000 元",
+            "detailImages": [],
             "code": "STAMP:G-003",
             "dimensions": "",
             "statement": "",
@@ -793,12 +808,12 @@
             "title": "〈MoonKey01〉",
             "video": "",
             "image": "/ggdoveplace/SHOP/MoonkeyI.PNG",
-            "detailImages": [],
             "year": "2025"
           },
           {
             "mediaAlt": "〈MoonKey02 & Moonkey01〉",
             "price": "新台幣 1,000 元",
+            "detailImages": [],
             "code": "STAMP:G-004",
             "dimensions": "",
             "statement": "",
@@ -808,7 +823,6 @@
             "title": "〈MoonKey02 & Moonkey01〉",
             "video": "",
             "image": "/ggdoveplace/SHOP/MoonkeyI02.PNG",
-            "detailImages": [],
             "year": "2025"
           }
         ]
