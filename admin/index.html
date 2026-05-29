@@ -1405,6 +1405,10 @@
         product = product || {};
         var isArchive = layout === 'archive';
         var isFeatureVideo = layout === 'feature-video';
+        var mediaWidth = normalizeShopMediaWidth(product.mediaWidth, '100%');
+        var mediaHeight = normalizeShopMediaHeight(product.mediaHeight, isFeatureVideo ? '520px' : '100%');
+        var mediaFit = normalizeShopMediaFit(product.mediaFit, isFeatureVideo ? 'contain' : 'cover');
+        var mediaPosition = normalizeShopMediaPosition(product.mediaPosition, 'center center');
         var meta = [
           product.year ? ['年份', product.year] : null,
           product.medium ? ['媒材', product.medium] : null,
