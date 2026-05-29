@@ -435,6 +435,7 @@
     }
 
     .archive-card,
+    .feature-video-card,
     .stamp-card {
       position: relative;
       overflow: hidden;
@@ -448,6 +449,7 @@
     }
 
     .archive-card::before,
+    .feature-video-card::before,
     .stamp-card::before {
       content: attr(data-code);
       position: absolute;
@@ -466,7 +468,14 @@
       min-height: 340px;
     }
 
+    .feature-video-card {
+      display: grid;
+      grid-template-columns: minmax(320px, 1.08fr) minmax(0, 0.92fr);
+      min-height: 420px;
+    }
+
     .archive-media,
+    .feature-video-media,
     .stamp-media {
       position: relative;
       min-height: 280px;
@@ -482,10 +491,13 @@
     }
 
     .archive-media img,
+    .feature-video-media img,
     .stamp-media img,
     .archive-media video,
+    .feature-video-media video,
     .stamp-media video,
     .archive-media iframe,
+    .feature-video-media iframe,
     .stamp-media iframe {
       display: block;
       width: 100%;
@@ -556,6 +568,7 @@
     }
 
     .archive-body,
+    .feature-video-body,
     .stamp-body {
       padding: 1.55rem;
       display: flex;
@@ -600,6 +613,29 @@
       border-left: 1px solid rgba(255, 62, 219, 0.45);
       padding-left: 1rem;
       margin: 0.2rem 0 0;
+    }
+
+    .feature-video-body {
+      padding: 1.75rem;
+      gap: 1.1rem;
+    }
+
+    .feature-video-body .item-title {
+      font-size: clamp(1.55rem, 3.6vw, 2.45rem);
+      line-height: 1.12;
+    }
+
+    .feature-video-body .shop-meta {
+      grid-template-columns: 1fr;
+    }
+
+    .feature-video-body .purchase-row {
+      margin-top: auto;
+    }
+
+    .feature-video-list {
+      display: grid;
+      gap: 1rem;
     }
 
     .purchase-row {
@@ -855,9 +891,14 @@
         grid-template-columns: 1fr;
       }
 
-      .archive-media {
+      .archive-media,
+      .feature-video-media {
         border-right: none;
         border-bottom: 1px solid rgba(206, 255, 42, 0.16);
+      }
+
+      .feature-video-card {
+        grid-template-columns: 1fr;
       }
 
       .stamp-grid {

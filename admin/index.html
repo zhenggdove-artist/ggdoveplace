@@ -346,7 +346,7 @@
       var resolvedVideo = resolveImg(getAsset, rawVideo);
       var embed = videoEmbedUrl(rawVideo);
       if (isVideoFile(resolvedVideo) || isVideoFile(rawVideo)) {
-        return h('video', { src: resolvedVideo, controls: true, muted: true, playsInline: true, style: mediaStyle });
+        return h('video', { src: resolvedVideo, autoPlay: true, loop: true, muted: true, playsInline: true, controls: true, preload: 'metadata', style: mediaStyle });
       }
       return h('iframe', {
         src: embed,
@@ -1375,6 +1375,7 @@
       var productCard = function(product, layout, key) {
         product = product || {};
         var isArchive = layout === 'archive';
+        var isFeatureVideo = layout === 'feature-video';
         var meta = [
           product.year ? ['年份', product.year] : null,
           product.medium ? ['媒材', product.medium] : null,
@@ -1385,18 +1386,18 @@
           return item && (item.src || item.image || item.url);
         }).slice(0, 3);
         return h('div', { key: key, style: {
-          display: isArchive ? 'grid' : 'flex',
-          gridTemplateColumns: isArchive ? 'minmax(180px, 0.8fr) 1fr' : undefined,
-          flexDirection: isArchive ? undefined : 'column',
+          display: isArchive || isFeatureVideo ? 'grid' : 'flex',
+          gridTemplateColumns: isArchive ? 'minmax(180px, 0.8fr) 1fr' : isFeatureVideo ? 'minmax(240px, 1.08fr) minmax(0, 0.92fr)' : undefined,
+          flexDirection: isArchive ? undefined : isFeatureVideo ? undefined : 'column',
           border: '1px solid rgba(206,255,42,0.24)',
           background: 'linear-gradient(135deg, rgba(206,255,42,0.08), transparent 36%), rgba(4,4,12,0.9)',
           boxShadow: 'inset 0 0 0 1px rgba(255,62,219,0.08)',
-          minHeight: isArchive ? '260px' : 'auto',
+          minHeight: isArchive ? '260px' : isFeatureVideo ? '380px' : 'auto',
           overflow: 'hidden'
         }},
           h('div', { style: {
-            aspectRatio: isArchive ? '4/3' : '1/1',
-            minHeight: isArchive ? '220px' : undefined,
+            aspectRatio: isArchive ? '4/3' : isFeatureVideo ? '16/9' : '1/1',
+            minHeight: isArchive ? '220px' : isFeatureVideo ? '320px' : undefined,
             borderRight: isArchive ? '1px solid rgba(206,255,42,0.16)' : '0',
             borderBottom: isArchive ? '0' : '1px solid rgba(206,255,42,0.16)',
             background: '#030307',
@@ -1405,10 +1406,10 @@
             justifyContent: 'center',
             overflow: 'hidden'
           }}, previewMedia(getAsset, product)),
-          h('div', { style: { padding: isArchive ? '1.2rem' : '0.95rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' } },
+          h('div', { style: { padding: isArchive ? '1.2rem' : isFeatureVideo ? '1.4rem' : '0.95rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' } },
             h('div', { style: { color: pink, fontFamily: mono, fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase' } }, product.categoryLabel || product.code || ''),
-            h('h3', { style: { margin: 0, color: text, fontFamily: saint, fontWeight: 400, fontSize: isArchive ? '1.45rem' : '1.05rem', letterSpacing: '0.08em', lineHeight: 1.25 } }, product.title || ''),
-            meta.length ? h('div', { style: { display: 'grid', gridTemplateColumns: isArchive ? 'repeat(2,minmax(0,1fr))' : '1fr', gap: '0.35rem 0.8rem', color: text, opacity: 0.84, fontFamily: mono, fontSize: '0.72rem', lineHeight: 1.55 } },
+            h('h3', { style: { margin: 0, color: text, fontFamily: saint, fontWeight: 400, fontSize: isArchive ? '1.45rem' : isFeatureVideo ? '2rem' : '1.05rem', letterSpacing: '0.08em', lineHeight: 1.25 } }, product.title || ''),
+            meta.length ? h('div', { style: { display: 'grid', gridTemplateColumns: isArchive ? 'repeat(2,minmax(0,1fr))' : isFeatureVideo ? '1fr' : '1fr', gap: '0.35rem 0.8rem', color: text, opacity: 0.84, fontFamily: mono, fontSize: '0.72rem', lineHeight: 1.55 } },
               meta.map(function(m, i) {
                 return h('div', { key: i }, h('span', { style: { color: dim } }, m[0] + ': '), m[1]);
               })
@@ -1460,7 +1461,7 @@
             ),
             h('div', { style: {
               display: 'grid',
-              gridTemplateColumns: layout === 'archive' ? '1fr' : 'repeat(auto-fill,minmax(180px,1fr))',
+              gridTemplateColumns: layout === 'archive' ? '1fr' : layout === 'feature-video' ? '1fr' : 'repeat(auto-fill,minmax(180px,1fr))',
               gap: '1rem'
             }},
               products.map(function(product, pi) { return productCard(product, layout, pi); })

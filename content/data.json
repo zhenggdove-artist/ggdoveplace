@@ -801,6 +801,28 @@
         ]
       },
       {
+        "id": "moonkey",
+        "label": "MoonKey / Featured Video",
+        "layout": "feature-video",
+        "products": [
+          {
+            "code": "VIDEO:F-001",
+            "categoryLabel": "Featured Video",
+            "title": "〈MoonKey01〉",
+            "year": "2025",
+            "price": "新台幣 1,000 元",
+            "medium": "Video",
+            "dimensions": "",
+            "statement": "",
+            "placeholder": "",
+            "mediaAlt": "〈MoonKey01〉",
+            "image": "",
+            "video": "/ggdoveplace/SHOP/XsHTQjEDKxNFz0G7hLmcoJ-IIqWJXAUtrwqL-PnJ_QU.mp4",
+            "videoUrl": ""
+          }
+        ]
+      },
+      {
         "id": "stamps",
         "label": "Game Entrance Stamps",
         "layout": "stamp-grid",

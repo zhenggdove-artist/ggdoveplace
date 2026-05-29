@@ -200,6 +200,7 @@ collections:
                     widget: select
                     options:
                       - { label: "Archive 檔案室列表（實體作品）", value: "archive" }
+                      - { label: "Featured Video 大型影片區塊", value: "feature-video" }
                       - { label: "Stamp Grid 印章商品格狀", value: "stamp-grid" }
                     default: "archive"
                   - label: "商品 Products"

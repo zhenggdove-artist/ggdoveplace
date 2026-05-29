@@ -742,7 +742,7 @@ function renderMediaItem(item, cls) {
     // Direct video file
     if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
       return `<div class="${className} media-video">
-        <video src="${escapeHtml(fixImg(embedUrl))}" controls preload="metadata" playsinline></video>
+        <video src="${escapeHtml(fixImg(embedUrl))}" autoplay loop muted playsinline controls preload="metadata"></video>
         ${caption ? `<figcaption>${caption}</figcaption>` : ''}
       </div>`;
     }
@@ -776,7 +776,7 @@ function mountSlideshow(container, slides, height) {
     if (embedUrl && !/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
       slide.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
     } else if (embedUrl) {
-      slide.innerHTML = `<video src="${embedUrl}" controls preload="metadata" playsinline></video>`;
+      slide.innerHTML = `<video src="${embedUrl}" autoplay loop muted playsinline controls preload="metadata"></video>`;
     } else if (sl.src) {
       slide.innerHTML = `<img src="${fixImg(sl.src)}" alt="${sl.caption || ''}" loading="lazy">`;
     }
@@ -869,7 +869,7 @@ function renderExhibition() {
       if (embedUrl) {
         html += '<div class="exh-video">';
         if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
-          html += `<video src="${embedUrl}" controls preload="metadata" playsinline></video>`;
+          html += `<video src="${embedUrl}" autoplay loop muted playsinline controls preload="metadata"></video>`;
         } else {
           html += `<iframe src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
         }
@@ -954,7 +954,7 @@ function renderExhibitionDetail() {
       if (embedUrl) {
         shtml += '<div class="exh-video">';
         if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
-          shtml += `<video src="${embedUrl}" controls preload="metadata" playsinline></video>`;
+          shtml += `<video src="${embedUrl}" autoplay loop muted playsinline controls preload="metadata"></video>`;
         } else {
           shtml += `<iframe src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
         }
@@ -1224,7 +1224,11 @@ function renderShop() {
   sectionsWrap.innerHTML = renderShopSubscription(subscription) + sections.map((section, sectionIndex) => {
     const layout = section.layout || 'archive';
     const products = section.products || [];
-    const listClass = layout === 'archive' ? 'archive-list' : 'stamp-grid';
+    const listClass = layout === 'archive'
+      ? 'archive-list'
+      : layout === 'feature-video'
+        ? 'feature-video-list'
+        : 'stamp-grid';
     return `
       <section class="shop-section" aria-labelledby="shop-section-${sectionIndex}">
         <div class="section-heading">
@@ -1252,9 +1256,10 @@ function renderShopProduct(product, layout, purchase, productIndex) {
   product = product || {};
   purchase = purchase || {};
   const isArchive = layout === 'archive';
-  const cardClass = isArchive ? 'archive-card' : 'stamp-card';
-  const mediaClass = isArchive ? 'archive-media' : 'stamp-media';
-  const bodyClass = isArchive ? 'archive-body' : 'stamp-body';
+  const isFeatureVideo = layout === 'feature-video';
+  const cardClass = isArchive ? 'archive-card' : isFeatureVideo ? 'feature-video-card' : 'stamp-card';
+  const mediaClass = isArchive ? 'archive-media' : isFeatureVideo ? 'feature-video-media' : 'stamp-media';
+  const bodyClass = isArchive ? 'archive-body' : isFeatureVideo ? 'feature-video-body' : 'stamp-body';
   const buttonLabel = purchase.buttonLabel || 'Purchase';
   const message = purchase.disabledMessage || '系統建置中，暫停購買';
   const meta = [
@@ -1293,7 +1298,7 @@ function renderShopMedia(product, productIndex) {
   const gallery = shopGallerySets[productIndex] || getShopGalleryItems(product);
   if (embedUrl) {
     if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
-      return `<video src="${escapeHtml(fixImg(embedUrl))}" controls preload="metadata" playsinline></video>`;
+      return `<video src="${escapeHtml(fixImg(embedUrl))}" autoplay loop muted playsinline controls preload="metadata"></video>`;
     }
     return `<iframe src="${escapeHtml(embedUrl)}" title="${alt}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
   }
