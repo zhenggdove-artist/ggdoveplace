@@ -720,7 +720,7 @@
       "titleFontFamily": "var(--shop-saint)",
       "imageWidth": "100%",
       "disabledMessage": "真心感謝您的支持，我會用心書寫每一封信，希望能為您的日常帶來一些溫暖的陪伴。",
-      "name": "Artistletter\n藝術家手寫信",
+      "name": "Artistletter\n藝術家信",
       "titleColor": "#d6def0",
       "buttonBgColor": "#ceff2a",
       "copyColor": "rgba(214,222,240,0.86)",
@@ -740,7 +740,7 @@
       "priceColor": "#ceff2a",
       "image": "/ggdoveplace/SHOP/0.png",
       "priceFontFamily": "\"Courier New\", monospace",
-      "description": "訂閱後，我將定期每月寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我想說的一些話、創作靈感筆記、閱讀心得，以及一個小插畫。也有可能隨機附上一些正在做的有趣東東demo連結。",
+      "description": "我將定期每月寄給您一封實體信。信件內容包含約一百字內的短文或短詩，它們會是一些挺發散的想法，一些我想說的胡言亂語或創作靈感的筆記，以及一個小插畫。也有可能隨機附上一些正在做的遊戲demo連結。\n（信件內容為印刷品+親筆簽名，每月唯一的手寫信原稿也將隨機寄送予其中一位訂閱者。）",
       "imageSize": "contain"
     },
     "contactInfo": {
