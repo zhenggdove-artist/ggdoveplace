@@ -699,7 +699,8 @@
     "purchase": {
       "buttonLabel": "Purchase",
       "disabledMessage": "金流系統建置中，購買請直接私訊Instagram：gg_dove",
-      "refundNotice": "實體藝術品與數位商品售出後恕不退款"
+      "refundNotice": "實體藝術品與數位商品售出後恕不退款",
+      "buttonUrl": "https://www.instagram.com/gg_dove/"
     },
     "subscription": {
       "buttonTextSize": "0.72rem",
@@ -714,12 +715,12 @@
       "noteFontFamily": "\"Courier New\", monospace",
       "kickerFontFamily": "\"Courier New\", monospace",
       "copyFontFamily": "\"Courier New\", monospace",
-      "price": "NTD$30/月",
+      "price": "????????",
       "priceSize": "1.08rem",
       "titleFontFamily": "var(--shop-saint)",
       "imageWidth": "100%",
-      "disabledMessage": "很抱歉金流系統建置中，暫時無法訂閱",
-      "name": "ArtistLetter\n藝術家手寫信",
+      "disabledMessage": "??????????",
+      "name": "Artistletter?????????",
       "titleColor": "#d6def0",
       "buttonBgColor": "#ceff2a",
       "copyColor": "rgba(214,222,240,0.86)",
@@ -727,7 +728,7 @@
       "kickerColor": "#58f4ff",
       "noteColor": "rgba(214,222,240,0.68)",
       "panelGlowColor": "rgba(206,255,42,0.12)",
-      "cancelNotice": "隨時可取消訂閱",
+      "cancelNotice": "???????",
       "panelBackground": "linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)",
       "asciiColor": "rgba(206,255,42,0.66)",
       "panelBorderColor": "rgba(206,255,42,0.72)",
@@ -738,8 +739,9 @@
       "priceColor": "#ceff2a",
       "image": "/ggdoveplace/SHOP/2b39da62-52cd-4ed5-b12e-528ac122e720.png",
       "priceFontFamily": "\"Courier New\", monospace",
-      "description": "訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。也有可能隨機附上一些正在做的有趣東東demo連結。",
-      "imageSize": "contain"
+      "description": "???????????????????????????????????????????????????????????????????",
+      "imageSize": "contain",
+      "subscriptionUrl": "https://p.ecpay.com.tw/6E4953E"
     },
     "contactInfo": {
       "heading": "Contact Info",
@@ -774,7 +776,12 @@
             "title": "〈無人知悉的角落 I〉",
             "video": "",
             "image": "/ggdoveplace/SHOP/s__79716365.jpg",
-            "year": "2025"
+            "year": "2025",
+            "purchaseUrl": "https://www.instagram.com/gg_dove/",
+            "mediaFit": "contain",
+            "mediaPosition": "center center",
+            "mediaWidth": "100%",
+            "mediaHeight": "220px"
           },
           {
             "mediaAlt": "〈無人知悉的角落II〉",
@@ -796,7 +803,12 @@
             "title": "〈無人知悉的角落II〉",
             "video": "",
             "image": "/ggdoveplace/SHOP/s__82264103.jpg",
-            "year": "2025"
+            "year": "2025",
+            "purchaseUrl": "https://www.instagram.com/gg_dove/",
+            "mediaFit": "contain",
+            "mediaPosition": "center center",
+            "mediaWidth": "100%",
+            "mediaHeight": "220px"
           }
         ]
       },
@@ -819,6 +831,7 @@
             "image": "",
             "video": "/ggdoveplace/SHOP/XsHTQjEDKxNFz0G7hLmcoJ-IIqWJXAUtrwqL-PnJ_QU.mp4",
             "videoUrl": "",
+            "purchaseUrl": "https://www.instagram.com/gg_dove/",
             "mediaWidth": "100%",
             "mediaHeight": "520px",
             "mediaFit": "contain",
@@ -844,7 +857,12 @@
             "title": "〈Chiang-Flower〉Game entrance Stamp",
             "video": "",
             "image": "/ggdoveplace/SHOP/Game01.PNG",
-            "year": "2025"
+            "year": "2025",
+            "purchaseUrl": "https://www.instagram.com/gg_dove/",
+            "mediaFit": "contain",
+            "mediaPosition": "center center",
+            "mediaWidth": "100%",
+            "mediaHeight": "220px"
           },
           {
             "mediaAlt": "〈UrbanLegend-Rat〉Game entrance Stamp",
@@ -859,7 +877,12 @@
             "title": "〈UrbanLegend-Rat〉Game entrance Stamp",
             "video": "",
             "image": "/ggdoveplace/SHOP/UrbanLegend_Rat02.jpeg",
-            "year": "2026"
+            "year": "2026",
+            "purchaseUrl": "https://www.instagram.com/gg_dove/",
+            "mediaFit": "contain",
+            "mediaPosition": "center center",
+            "mediaWidth": "100%",
+            "mediaHeight": "220px"
           },
           {
             "mediaAlt": "〈MoonKey01〉",
@@ -874,7 +897,12 @@
             "title": "〈MoonKey01〉",
             "video": "/ggdoveplace/SHOP/XsHTQjEDKxNFz0G7hLmcoJ-IIqWJXAUtrwqL-PnJ_QU.mp4",
             "image": "/ggdoveplace/SHOP/MoonkeyI.PNG",
-            "year": "2025"
+            "year": "2025",
+            "purchaseUrl": "https://www.instagram.com/gg_dove/",
+            "mediaFit": "contain",
+            "mediaPosition": "center center",
+            "mediaWidth": "100%",
+            "mediaHeight": "220px"
           },
           {
             "mediaAlt": "〈MoonKey02 & Moonkey01〉",
@@ -889,7 +917,12 @@
             "title": "〈MoonKey01&02〉",
             "video": "",
             "image": "/ggdoveplace/SHOP/IMG_4722.PNG",
-            "year": "2025"
+            "year": "2025",
+            "purchaseUrl": "https://www.instagram.com/gg_dove/",
+            "mediaFit": "contain",
+            "mediaPosition": "center center",
+            "mediaWidth": "100%",
+            "mediaHeight": "220px"
           }
         ]
       }

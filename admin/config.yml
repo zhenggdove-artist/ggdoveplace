@@ -130,6 +130,7 @@ collections:
                 collapsed: false
                 fields:
                   - { label: "按鈕文字 Button Label", name: buttonLabel, widget: string, default: "Purchase" }
+                  - { label: "購買連結 Purchase URL", name: buttonUrl, widget: string, required: false, default: "https://www.instagram.com/gg_dove/" }
                   - { label: "點擊提示 Alert Message", name: disabledMessage, widget: string, default: "系統建置中，暫停購買" }
                   - { label: "退款聲明 Refund Notice", name: refundNotice, widget: string, default: "實體藝術品與數位商品售出後恕不退款" }
               - label: "訂閱制服務 Subscription"
@@ -139,6 +140,7 @@ collections:
                 fields:
                   - { label: "啟用 Enabled", name: enabled, widget: boolean, default: true }
                   - { label: "服務名稱 Service Name", name: name, widget: text, default: "Artistletter（實體手寫信訂閱）" }
+                  - { label: "訂閱連結 Subscription URL", name: subscriptionUrl, widget: string, required: false, default: "https://p.ecpay.com.tw/6E4953E" }
                   - { label: "示意圖 Image", name: image, widget: image, required: false, media_folder: /SHOP, public_folder: /ggdoveplace/SHOP }
                   - { label: "示意圖替代文字 Alt", name: imageAlt, widget: string, required: false }
                   - label: "示意圖尺寸 Image Size"
@@ -230,6 +232,25 @@ collections:
                       - { label: "商品圖片 Image", name: image, widget: image, required: false, media_folder: /SHOP, public_folder: /ggdoveplace/SHOP }
                       - { label: "商品影片上傳 Video Upload（mp4/webm/mov）", name: video, widget: file, required: false, media_folder: /SHOP, public_folder: /ggdoveplace/SHOP }
                       - { label: "外部影片網址 External Video URL（YouTube/Vimeo，可選）", name: videoUrl, widget: string, required: false }
+                      - { label: "購買連結 Purchase URL", name: purchaseUrl, widget: string, required: false }
+                      - { label: "媒體寬度 Media Width", name: mediaWidth, widget: string, required: false, default: "100%" }
+                      - { label: "媒體高度 Media Height", name: mediaHeight, widget: string, required: false, default: "220px" }
+                      - label: "裁切方式 Media Fit"
+                        name: mediaFit
+                        widget: select
+                        options:
+                          - { label: "Contain 完整顯示", value: "contain" }
+                          - { label: "Cover 填滿裁切", value: "cover" }
+                          - { label: "Auto 原尺寸", value: "auto" }
+                        default: "contain"
+                      - label: "對齊位置 Media Position"
+                        name: mediaPosition
+                        widget: select
+                        options:
+                          - { label: "Center 中央", value: "center center" }
+                          - { label: "Top 上方", value: "center top" }
+                          - { label: "Bottom 下方", value: "center bottom" }
+                        default: "center center"
                       - label: "商品細節圖 Detail Images（最多三張，點商品圖後顯示）"
                         name: detailImages
                         widget: list

@@ -1070,6 +1070,11 @@ function normalizeShopMediaPosition(value, fallback) {
   return raw || fallback;
 }
 
+function normalizeShopLink(value) {
+  const raw = String(value || '').trim();
+  return raw || '';
+}
+
 function normalizeSubscriptionImagePosition(value) {
   const normalized = String(value || 'center center').trim().toLowerCase();
   if (normalized === 'center top' || normalized === 'top') return 'center top';
@@ -1126,6 +1131,7 @@ function getSubscriptionTheme(subscription) {
 function renderShopSubscription(subscription) {
   if (!subscription) return '';
   const message = subscription.disabledMessage || '系統建置中，暫停訂閱';
+  const url = normalizeShopLink(subscription.subscriptionUrl || subscription.url);
   const theme = getSubscriptionTheme(subscription);
   const imageSize = normalizeSubscriptionImageSize(subscription.imageSize);
   const imageHeight = normalizeSubscriptionImageHeight(subscription.imageHeight);
@@ -1190,6 +1196,10 @@ function renderShopSubscription(subscription) {
     'font-size': theme.buttonTextSize,
     'text-transform': 'uppercase'
   });
+  const buttonLabel = subscription.buttonLabel || '訂閱';
+  const buttonHtml = url
+    ? `<a class="subscription-button" href="${escapeHtml(url)}" style="${escapeHtml(buttonStyle)}">${escapeHtml(buttonLabel)}</a>`
+    : `<a class="subscription-button" href="#" style="${escapeHtml(buttonStyle)}" onclick="alert('${escapeJsSingle(message)}'); return false;">${escapeHtml(buttonLabel)}</a>`;
   const noteStyle = buildStyleString({
     color: theme.noteColor,
     'font-family': theme.noteFontFamily,
@@ -1209,7 +1219,7 @@ function renderShopSubscription(subscription) {
         <p class="subscription-copy" style="${escapeHtml(copyStyle)}">${escapeHtml(subscription.description || '')}</p>
         <div class="subscription-action">
           <div class="subscription-price" style="${escapeHtml(priceStyle)}">${escapeHtml(subscription.price || '每月新台幣三百元')}</div>
-          <a class="subscription-button" href="#" style="${escapeHtml(buttonStyle)}" onclick="alert('${escapeJsSingle(message)}'); return false;">${escapeHtml(subscription.buttonLabel || '訂閱')}</a>
+          ${buttonHtml}
           <p class="subscription-note" style="${escapeHtml(noteStyle)}">${escapeHtml(subscription.cancelNotice || '隨時可取消訂閱')}</p>
         </div>
       </div>
@@ -1288,16 +1298,15 @@ function renderShopProduct(product, layout, purchase, productIndex) {
   const isFeatureVideo = layout === 'feature-video';
   const mediaWidth = normalizeShopMediaWidth(product.mediaWidth, '100%');
   const mediaHeight = normalizeShopMediaHeight(product.mediaHeight, isFeatureVideo ? '520px' : '100%');
-  const mediaFit = normalizeShopMediaFit(product.mediaFit, isFeatureVideo ? 'contain' : 'cover');
+  const mediaFit = normalizeShopMediaFit(product.mediaFit, 'contain');
   const mediaPosition = normalizeShopMediaPosition(product.mediaPosition, 'center center');
-  const mediaWrapStyle = isFeatureVideo
-    ? `--shop-media-width:${mediaWidth};--shop-media-height:${mediaHeight};--shop-media-fit:${mediaFit};--shop-media-position:${mediaPosition};`
-    : '';
+  const mediaWrapStyle = `--shop-media-width:${mediaWidth};--shop-media-height:${mediaHeight};--shop-media-fit:${mediaFit};--shop-media-position:${mediaPosition};`;
   const cardClass = isArchive ? 'archive-card' : isFeatureVideo ? 'feature-video-card' : 'stamp-card';
   const mediaClass = isArchive ? 'archive-media' : isFeatureVideo ? 'feature-video-media' : 'stamp-media';
   const bodyClass = isArchive ? 'archive-body' : isFeatureVideo ? 'feature-video-body' : 'stamp-body';
   const buttonLabel = purchase.buttonLabel || 'Purchase';
   const message = purchase.disabledMessage || '系統建置中，暫停購買';
+  const purchaseUrl = normalizeShopLink(product.purchaseUrl);
   const meta = [
     product.year ? ['年份', product.year] : null,
     product.medium ? ['媒材', product.medium] : null,
@@ -1320,7 +1329,9 @@ function renderShopProduct(product, layout, purchase, productIndex) {
         ${statement ? `<div class="archive-statement">${statement}</div>` : ''}
         <div class="purchase-row">
           <div class="price-tag">${escapeHtml(product.price || '')}</div>
-          <a class="purchase-button" href="#" onclick="alert('${escapeJsSingle(message)}'); return false;">${escapeHtml(buttonLabel)}</a>
+          ${purchaseUrl
+            ? `<a class="purchase-button" href="${escapeHtml(purchaseUrl)}">${escapeHtml(buttonLabel)}</a>`
+            : `<a class="purchase-button" href="#" onclick="alert('${escapeJsSingle(message)}'); return false;">${escapeHtml(buttonLabel)}</a>`}
         </div>
       </div>
     </article>`;
@@ -1335,7 +1346,7 @@ function renderShopMedia(product, productIndex, layout) {
   const isFeatureVideo = layout === 'feature-video';
   const mediaWidth = normalizeShopMediaWidth(product.mediaWidth, '100%');
   const mediaHeight = normalizeShopMediaHeight(product.mediaHeight, isFeatureVideo ? '520px' : '100%');
-  const mediaFit = normalizeShopMediaFit(product.mediaFit, isFeatureVideo ? 'contain' : 'cover');
+  const mediaFit = normalizeShopMediaFit(product.mediaFit, 'contain');
   const mediaPosition = normalizeShopMediaPosition(product.mediaPosition, 'center center');
   const mediaStyle = [
     `--shop-media-width:${mediaWidth}`,
