@@ -714,7 +714,7 @@
       "noteFontFamily": "\"Courier New\", monospace",
       "kickerFontFamily": "\"Courier New\", monospace",
       "copyFontFamily": "\"Courier New\", monospace",
-      "price": "NTD$30/月",
+      "price": "NTD$300/月",
       "priceSize": "1.08rem",
       "titleFontFamily": "var(--shop-saint)",
       "imageWidth": "100%",
@@ -736,7 +736,7 @@
       "copySize": "0.9rem",
       "titleSize": "2.3rem",
       "priceColor": "#ceff2a",
-      "image": "/ggdoveplace/SHOP/2b39da62-52cd-4ed5-b12e-528ac122e720.png",
+      "image": "/ggdoveplace/SHOP/0.png",
       "priceFontFamily": "\"Courier New\", monospace",
       "description": "訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。也有可能隨機附上一些正在做的有趣東東demo連結。",
       "imageSize": "contain"
@@ -806,23 +806,23 @@
         "layout": "feature-video",
         "products": [
           {
-            "code": "VIDEO:F-001",
-            "categoryLabel": "Featured Video",
-            "title": "〈MoonKey01〉",
-            "year": "2025",
+            "mediaWidth": "100%",
+            "mediaAlt": "〈MoonKey01〉",
             "price": "新台幣 1,000 元",
-            "medium": "Video",
+            "mediaHeight": "520px",
+            "mediaPosition": "center center",
+            "mediaFit": "contain",
+            "code": "VIDEO:F-001",
             "dimensions": "",
             "statement": "",
             "placeholder": "",
-            "mediaAlt": "〈MoonKey01〉",
-            "image": "",
-            "video": "/ggdoveplace/SHOP/XsHTQjEDKxNFz0G7hLmcoJ-IIqWJXAUtrwqL-PnJ_QU.mp4",
             "videoUrl": "",
-            "mediaWidth": "100%",
-            "mediaHeight": "520px",
-            "mediaFit": "contain",
-            "mediaPosition": "center center"
+            "medium": "Video",
+            "categoryLabel": "Featured Video",
+            "title": "〈MoonKey01〉",
+            "video": "/ggdoveplace/SHOP/XsHTQjEDKxNFz0G7hLmcoJ-IIqWJXAUtrwqL-PnJ_QU.mp4",
+            "image": "",
+            "year": "2025"
           }
         ]
       },
@@ -872,7 +872,7 @@
             "medium": "",
             "categoryLabel": "Digital Key",
             "title": "〈MoonKey01〉",
-            "video": "/ggdoveplace/SHOP/XsHTQjEDKxNFz0G7hLmcoJ-IIqWJXAUtrwqL-PnJ_QU.mp4",
+            "video": "",
             "image": "/ggdoveplace/SHOP/MoonkeyI.PNG",
             "year": "2025"
           },
