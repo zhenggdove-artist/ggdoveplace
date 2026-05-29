@@ -719,7 +719,7 @@
       "titleFontFamily": "var(--shop-saint)",
       "imageWidth": "100%",
       "disabledMessage": "很抱歉金流系統建置中，暫時無法訂閱",
-      "name": "Artistletter\n（藝術家手寫信)",
+      "name": "ArtistLetter\n藝術家手寫信",
       "titleColor": "#d6def0",
       "buttonBgColor": "#ceff2a",
       "copyColor": "rgba(214,222,240,0.86)",
