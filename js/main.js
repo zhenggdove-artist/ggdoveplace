@@ -1041,6 +1041,35 @@ function normalizeSubscriptionImageWidth(value) {
   return raw;
 }
 
+function normalizeShopMediaWidth(value, fallback) {
+  const raw = String(value || '').trim();
+  if (!raw) return fallback;
+  if (raw === 'auto' || raw === 'fit-content' || raw === 'max-content' || raw === 'min-content') return raw;
+  if (/^\d+(\.\d+)?(px|rem|em|vh|vw|%)$/.test(raw)) return raw;
+  if (/^\d+(\.\d+)?$/.test(raw)) return `${raw}px`;
+  return fallback;
+}
+
+function normalizeShopMediaHeight(value, fallback) {
+  const raw = String(value || '').trim();
+  if (!raw) return fallback;
+  if (raw === 'auto') return raw;
+  if (/^\d+(\.\d+)?(px|rem|em|vh|vw|%)$/.test(raw)) return raw;
+  if (/^\d+(\.\d+)?$/.test(raw)) return `${raw}px`;
+  return fallback;
+}
+
+function normalizeShopMediaFit(value, fallback) {
+  const raw = String(value || '').trim().toLowerCase();
+  if (raw === 'cover' || raw === 'contain' || raw === 'auto') return raw;
+  return fallback;
+}
+
+function normalizeShopMediaPosition(value, fallback) {
+  const raw = String(value || '').trim();
+  return raw || fallback;
+}
+
 function normalizeSubscriptionImagePosition(value) {
   const normalized = String(value || 'center center').trim().toLowerCase();
   if (normalized === 'center top' || normalized === 'top') return 'center top';
@@ -1257,6 +1286,13 @@ function renderShopProduct(product, layout, purchase, productIndex) {
   purchase = purchase || {};
   const isArchive = layout === 'archive';
   const isFeatureVideo = layout === 'feature-video';
+  const mediaWidth = normalizeShopMediaWidth(product.mediaWidth, '100%');
+  const mediaHeight = normalizeShopMediaHeight(product.mediaHeight, isFeatureVideo ? '520px' : '100%');
+  const mediaFit = normalizeShopMediaFit(product.mediaFit, isFeatureVideo ? 'contain' : 'cover');
+  const mediaPosition = normalizeShopMediaPosition(product.mediaPosition, 'center center');
+  const mediaWrapStyle = isFeatureVideo
+    ? `--shop-media-width:${mediaWidth};--shop-media-height:${mediaHeight};--shop-media-fit:${mediaFit};--shop-media-position:${mediaPosition};`
+    : '';
   const cardClass = isArchive ? 'archive-card' : isFeatureVideo ? 'feature-video-card' : 'stamp-card';
   const mediaClass = isArchive ? 'archive-media' : isFeatureVideo ? 'feature-video-media' : 'stamp-media';
   const bodyClass = isArchive ? 'archive-body' : isFeatureVideo ? 'feature-video-body' : 'stamp-body';
@@ -1272,8 +1308,8 @@ function renderShopProduct(product, layout, purchase, productIndex) {
 
   return `
     <article class="${cardClass}" data-code="${escapeHtml(product.code || '')}">
-      <div class="${mediaClass}">
-        ${renderShopMedia(product, productIndex)}
+      <div class="${mediaClass}"${mediaWrapStyle ? ` style="${escapeHtml(mediaWrapStyle)}"` : ''}>
+        ${renderShopMedia(product, productIndex, layout)}
       </div>
       <div class="${bodyClass}">
         <div class="item-kicker">${escapeHtml(product.categoryLabel || '')}</div>
@@ -1290,15 +1326,26 @@ function renderShopProduct(product, layout, purchase, productIndex) {
     </article>`;
 }
 
-function renderShopMedia(product, productIndex) {
+function renderShopMedia(product, productIndex, layout) {
   product = product || {};
   const alt = escapeHtml(product.mediaAlt || product.title || '');
   const mediaVideo = product.video || product.videoUrl || '';
   const embedUrl = videoEmbedUrl(mediaVideo);
   const gallery = shopGallerySets[productIndex] || getShopGalleryItems(product);
+  const isFeatureVideo = layout === 'feature-video';
+  const mediaWidth = normalizeShopMediaWidth(product.mediaWidth, '100%');
+  const mediaHeight = normalizeShopMediaHeight(product.mediaHeight, isFeatureVideo ? '520px' : '100%');
+  const mediaFit = normalizeShopMediaFit(product.mediaFit, isFeatureVideo ? 'contain' : 'cover');
+  const mediaPosition = normalizeShopMediaPosition(product.mediaPosition, 'center center');
+  const mediaStyle = [
+    `--shop-media-width:${mediaWidth}`,
+    `--shop-media-height:${mediaHeight}`,
+    `--shop-media-fit:${mediaFit}`,
+    `--shop-media-position:${mediaPosition}`
+  ].join(';');
   if (embedUrl) {
     if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
-      return `<video src="${escapeHtml(fixImg(embedUrl))}" autoplay loop muted playsinline controls preload="metadata"></video>`;
+      return `<video class="${isFeatureVideo ? 'feature-video-player' : ''}" style="${escapeHtml(mediaStyle)}" src="${escapeHtml(fixImg(embedUrl))}" autoplay loop muted playsinline controls preload="metadata"></video>`;
     }
     return `<iframe src="${escapeHtml(embedUrl)}" title="${alt}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
   }

@@ -76,7 +76,19 @@ collections:
                 hint: "此處可設定 Play 頁每個作品的影片網址（YouTube / Vimeo / 本地 mp4 / webm）。留空則使用預設。"
                 fields:
                   - { label: "作品 英文標題 Title (EN)", name: titleEn, widget: string }
-                  - { label: "影片網址 Video URL", name: video, widget: string, required: false, hint: "支援 YouTube 完整網址 / YouTube Shorts / Vimeo / 本地 mp4, webm" }
+                      - { label: "影片網址 Video URL", name: video, widget: string, required: false, hint: "支援 YouTube 完整網址 / YouTube Shorts / Vimeo / 本地 mp4, webm" }
+                      - { label: "影片寬度 Video Width", name: mediaWidth, widget: string, required: false, default: "100%" }
+                      - { label: "影片高度 Video Height", name: mediaHeight, widget: string, required: false, default: "520px" }
+                      - label: "影片適配 Video Fit"
+                        name: mediaFit
+                        widget: select
+                        required: false
+                        options:
+                          - { label: "Contain 完整顯示", value: "contain" }
+                          - { label: "Cover 填滿裁切", value: "cover" }
+                          - { label: "Auto 自動", value: "auto" }
+                        default: "contain"
+                      - { label: "影片位置 Video Position", name: mediaPosition, widget: string, required: false, default: "center center" }
                   - label: "影片比例 Aspect"
                     name: aspect
                     widget: select

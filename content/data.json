@@ -818,7 +818,11 @@
             "mediaAlt": "〈MoonKey01〉",
             "image": "",
             "video": "/ggdoveplace/SHOP/XsHTQjEDKxNFz0G7hLmcoJ-IIqWJXAUtrwqL-PnJ_QU.mp4",
-            "videoUrl": ""
+            "videoUrl": "",
+            "mediaWidth": "100%",
+            "mediaHeight": "520px",
+            "mediaFit": "contain",
+            "mediaPosition": "center center"
           }
         ]
       },
