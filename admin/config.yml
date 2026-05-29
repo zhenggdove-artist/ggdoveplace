@@ -126,7 +126,7 @@ collections:
                 collapsed: false
                 fields:
                   - { label: "啟用 Enabled", name: enabled, widget: boolean, default: true }
-                  - { label: "服務名稱 Service Name", name: name, widget: string, default: "Artistletter（實體手寫信訂閱）" }
+                  - { label: "服務名稱 Service Name", name: name, widget: text, default: "Artistletter（實體手寫信訂閱）" }
                   - { label: "示意圖 Image", name: image, widget: image, required: false, media_folder: /SHOP, public_folder: /ggdoveplace/SHOP }
                   - { label: "示意圖替代文字 Alt", name: imageAlt, widget: string, required: false }
                   - label: "示意圖尺寸 Image Size"
@@ -172,11 +172,11 @@ collections:
                   - { label: "備註顏色 Note Color", name: noteColor, widget: string, required: false, default: "rgba(214,222,240,0.68)" }
                   - { label: "備註字級 Note Size", name: noteSize, widget: string, required: false, default: "0.7rem" }
                   - { label: "備註字體 Note Font Family", name: noteFontFamily, widget: string, required: false, default: "\"Courier New\", monospace" }
-                  - { label: "訂閱費用 Price", name: price, widget: string, default: "每月新台幣三百元" }
+                  - { label: "訂閱費用 Price", name: price, widget: text, default: "每月新台幣三百元" }
                   - { label: "服務內容 Description", name: description, widget: text, default: "訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。" }
                   - { label: "按鈕文字 Button Label", name: buttonLabel, widget: string, default: "訂閱" }
-                  - { label: "點擊提示 Alert Message", name: disabledMessage, widget: string, default: "系統建置中，暫停訂閱" }
-                  - { label: "取消聲明 Cancel Notice", name: cancelNotice, widget: string, default: "隨時可取消訂閱" }
+                  - { label: "點擊提示 Alert Message", name: disabledMessage, widget: text, default: "系統建置中，暫停訂閱" }
+                  - { label: "取消聲明 Cancel Notice", name: cancelNotice, widget: text, default: "隨時可取消訂閱" }
               - label: "頁尾聯絡資訊 Contact Info"
                 name: contactInfo
                 widget: object

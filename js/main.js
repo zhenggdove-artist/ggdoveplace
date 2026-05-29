@@ -1132,20 +1132,26 @@ function renderShopSubscription(subscription) {
     color: theme.titleColor,
     'font-family': theme.titleFontFamily,
     'font-size': theme.titleSize,
-    'line-height': 1.06
+    'line-height': 1.06,
+    'white-space': 'pre-wrap',
+    'overflow-wrap': 'anywhere'
   });
   const copyStyle = buildStyleString({
     color: theme.copyColor,
     'font-family': theme.copyFontFamily,
     'font-size': theme.copySize,
-    'line-height': 1.9
+    'line-height': 1.9,
+    'white-space': 'pre-wrap',
+    'overflow-wrap': 'anywhere'
   });
   const priceStyle = buildStyleString({
     color: theme.priceColor,
     'font-family': theme.priceFontFamily,
     'font-size': theme.priceSize,
     'line-height': 1.4,
-    'text-shadow': '0 0 18px rgba(206,255,42,0.42)'
+    'text-shadow': '0 0 18px rgba(206,255,42,0.42)',
+    'white-space': 'pre-wrap',
+    'overflow-wrap': 'anywhere'
   });
   const buttonStyle = buildStyleString({
     color: theme.buttonTextColor,
@@ -1158,7 +1164,9 @@ function renderShopSubscription(subscription) {
   const noteStyle = buildStyleString({
     color: theme.noteColor,
     'font-family': theme.noteFontFamily,
-    'font-size': theme.noteSize
+    'font-size': theme.noteSize,
+    'white-space': 'pre-wrap',
+    'overflow-wrap': 'anywhere'
   });
   return `
     <section class="subscription-panel" aria-labelledby="shop-subscription-title" style="${escapeHtml(panelStyle)}">

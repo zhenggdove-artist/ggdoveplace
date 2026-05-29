@@ -1326,8 +1326,8 @@
           ? { gridColumn: '1 / -1', gridRow: '2', display: 'flex', flexDirection: 'column', gap: '0.45rem' }
           : { display: 'flex', flexDirection: 'column', gap: '0.45rem' };
         var copyBlockStyle = desktopSubscription
-          ? { gridColumn: '1 / -1', gridRow: '3', margin: '0.25rem 0 0', color: theme.copyColor, fontFamily: theme.copyFontFamily, fontSize: theme.copySize, lineHeight: 1.7 }
-          : { margin: '0.25rem 0 0', color: theme.copyColor, fontFamily: theme.copyFontFamily, fontSize: theme.copySize, lineHeight: 1.7 };
+          ? { gridColumn: '1 / -1', gridRow: '3', margin: '0.25rem 0 0', color: theme.copyColor, fontFamily: theme.copyFontFamily, fontSize: theme.copySize, lineHeight: 1.7, whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }
+          : { margin: '0.25rem 0 0', color: theme.copyColor, fontFamily: theme.copyFontFamily, fontSize: theme.copySize, lineHeight: 1.7, whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' };
         var actionStyle = desktopSubscription
           ? { gridColumn: '2', gridRow: '1', borderLeft: '1px solid rgba(88,244,255,0.32)', paddingLeft: '1rem', fontFamily: mono }
           : { borderTop: '1px solid rgba(88,244,255,0.32)', paddingTop: '1.2rem', fontFamily: mono };
@@ -1358,14 +1358,14 @@
                 })
               ) : null,
               h('div', { style: headingStyle },
-                h('div', { style: { color: theme.kickerColor, fontFamily: theme.kickerFontFamily, fontSize: theme.kickerSize, textTransform: 'uppercase', marginBottom: '0' } }, 'subscription / handwritten mail / artistletter'),
-                h('h2', { style: { margin: 0, color: theme.titleColor, fontFamily: theme.titleFontFamily, fontSize: theme.titleSize, fontWeight: 400, lineHeight: 1.1, textShadow: '-2px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)' } }, sub.name || '')
+                h('div', { style: { color: theme.kickerColor, fontFamily: theme.kickerFontFamily, fontSize: theme.kickerSize, textTransform: 'uppercase', marginBottom: '0', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' } }, 'subscription / handwritten mail / artistletter'),
+                h('h2', { style: { margin: 0, color: theme.titleColor, fontFamily: theme.titleFontFamily, fontSize: theme.titleSize, fontWeight: 400, lineHeight: 1.1, textShadow: '-2px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' } }, sub.name || '')
               ),
               h('p', { style: copyBlockStyle }, sub.description || ''),
               h('div', { style: actionStyle },
-                h('div', { style: { color: theme.priceColor, fontFamily: theme.priceFontFamily, fontSize: theme.priceSize, marginBottom: '0.8rem', textShadow: '0 0 18px rgba(206,255,42,0.42)' } }, sub.price || '每月新台幣三百元'),
+                h('div', { style: { color: theme.priceColor, fontFamily: theme.priceFontFamily, fontSize: theme.priceSize, marginBottom: '0.8rem', textShadow: '0 0 18px rgba(206,255,42,0.42)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' } }, sub.price || '每月新台幣三百元'),
                 h('span', { style: { display: 'inline-block', color: theme.buttonTextColor, background: theme.buttonBgColor, border: '1px solid ' + theme.buttonBorderColor, padding: '0.62rem 1rem', fontFamily: theme.buttonFontFamily, fontSize: theme.buttonTextSize, textTransform: 'uppercase' } }, sub.buttonLabel || '訂閱'),
-                h('div', { style: { marginTop: '0.8rem', color: theme.noteColor, fontFamily: theme.noteFontFamily, fontSize: theme.noteSize } }, sub.cancelNotice || '隨時可取消訂閱')
+                h('div', { style: { marginTop: '0.8rem', color: theme.noteColor, fontFamily: theme.noteFontFamily, fontSize: theme.noteSize, whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' } }, sub.cancelNotice || '隨時可取消訂閱')
               )
             )
           )
