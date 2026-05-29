@@ -1356,12 +1356,12 @@ function renderShopMedia(product, productIndex, layout) {
   ].join(';');
   if (embedUrl) {
     if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
-      return `<video class="${isFeatureVideo ? 'feature-video-player' : ''}" style="${escapeHtml(mediaStyle)}" src="${escapeHtml(fixImg(embedUrl))}" autoplay loop muted playsinline controls preload="metadata"></video>`;
+      return `<video class="${isFeatureVideo ? 'feature-video-player' : ''}" style="${escapeHtml(mediaStyle)}" src="${escapeHtml(fixImg(embedUrl))}" autoplay loop muted playsinline webkit-playsinline="webkit-playsinline" preload="auto"></video>`;
     }
     return `<iframe src="${escapeHtml(embedUrl)}" title="${alt}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
   }
   if (product.image) {
-    const img = `<img src="${escapeHtml(fixImg(product.image))}" alt="${alt}" loading="lazy">`;
+    const img = `<img src="${escapeHtml(fixImg(product.image))}" alt="${alt}" loading="eager" decoding="async">`;
     if (gallery.length) {
       return `<button class="shop-media-button" type="button" onclick="openShopGallery(${Number(productIndex) || 0}, 0)" aria-label="View detail images for ${alt}">
         ${img}
@@ -1374,7 +1374,7 @@ function renderShopMedia(product, productIndex, layout) {
     const first = gallery[0];
     const firstAlt = escapeHtml(first.caption || product.title || '');
     return `<button class="shop-media-button" type="button" onclick="openShopGallery(${Number(productIndex) || 0}, 0)" aria-label="View detail images for ${firstAlt}">
-      <img src="${escapeHtml(fixImg(first.src))}" alt="${firstAlt}" loading="lazy">
+      <img src="${escapeHtml(fixImg(first.src))}" alt="${firstAlt}" loading="eager" decoding="async">
       <span class="shop-media-hint">VIEW DETAILS</span>
     </button>`;
   }

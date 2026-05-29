@@ -346,7 +346,7 @@
       var resolvedVideo = resolveImg(getAsset, rawVideo);
       var embed = videoEmbedUrl(rawVideo);
       if (isVideoFile(resolvedVideo) || isVideoFile(rawVideo)) {
-        return h('video', { src: resolvedVideo, autoPlay: true, loop: true, muted: true, playsInline: true, controls: true, preload: 'metadata', style: mediaStyle });
+        return h('video', { src: resolvedVideo, autoPlay: true, loop: true, muted: true, playsInline: true, 'webkit-playsinline': 'webkit-playsinline', preload: 'auto', style: mediaStyle });
       }
       return h('iframe', {
         src: embed,
@@ -361,7 +361,8 @@
       return h('img', {
         src: resolveImg(getAsset, image),
         alt: item.caption || item.mediaAlt || item.title || '',
-        loading: 'lazy',
+        loading: 'eager',
+        decoding: 'async',
         style: mediaStyle
       });
     }
