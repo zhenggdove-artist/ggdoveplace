@@ -714,7 +714,7 @@
       "noteFontFamily": "\"Courier New\", monospace",
       "kickerFontFamily": "\"Courier New\", monospace",
       "copyFontFamily": "\"Courier New\", monospace",
-      "price": "NTD$300/月",
+      "price": "NTD$30/月",
       "priceSize": "1.08rem",
       "titleFontFamily": "var(--shop-saint)",
       "imageWidth": "100%",
@@ -738,7 +738,7 @@
       "priceColor": "#ceff2a",
       "image": "/ggdoveplace/SHOP/2b39da62-52cd-4ed5-b12e-528ac122e720.png",
       "priceFontFamily": "\"Courier New\", monospace",
-      "description": "訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。",
+      "description": "訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。也有可能隨機附上一些正在做的有趣東東demo連結。",
       "imageSize": "contain"
     },
     "contactInfo": {
@@ -846,7 +846,7 @@
             "medium": "",
             "categoryLabel": "Digital Key",
             "title": "〈MoonKey01〉",
-            "video": "",
+            "video": "/ggdoveplace/SHOP/XsHTQjEDKxNFz0G7hLmcoJ-IIqWJXAUtrwqL-PnJ_QU.mp4",
             "image": "/ggdoveplace/SHOP/MoonkeyI.PNG",
             "year": "2025"
           },
