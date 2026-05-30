@@ -1260,6 +1260,7 @@ function renderShop() {
 
   const sections = shop.sections || [];
   shopGallerySets = [];
+  let priorityMediaAssigned = false;
   sectionsWrap.innerHTML = renderShopSubscription(subscription) + sections.map((section, sectionIndex) => {
     const layout = section.layout || 'archive';
     const products = section.products || [];
@@ -1277,8 +1278,10 @@ function renderShop() {
         <div class="${listClass}">
           ${products.map(product => {
             const productIndex = shopGallerySets.length;
+            const prioritizeMedia = !priorityMediaAssigned;
+            priorityMediaAssigned = true;
             shopGallerySets.push(getShopGalleryItems(product));
-            return renderShopProduct(product, layout, purchase, productIndex);
+            return renderShopProduct(product, layout, purchase, productIndex, prioritizeMedia);
           }).join('')}
         </div>
       </section>`;
@@ -1289,9 +1292,10 @@ function renderShop() {
     sectionsWrap.insertAdjacentHTML('beforeend', `<div class="purchase-note">${escapeHtml(refund)}</div>`);
   }
   initShopGalleryEvents();
+  initShopLazyMedia();
 }
 
-function renderShopProduct(product, layout, purchase, productIndex) {
+function renderShopProduct(product, layout, purchase, productIndex, prioritizeMedia) {
   product = product || {};
   purchase = purchase || {};
   const isArchive = layout === 'archive';
@@ -1318,7 +1322,7 @@ function renderShopProduct(product, layout, purchase, productIndex) {
   return `
     <article class="${cardClass}" data-code="${escapeHtml(product.code || '')}">
       <div class="${mediaClass}"${mediaWrapStyle ? ` style="${escapeHtml(mediaWrapStyle)}"` : ''}>
-        ${renderShopMedia(product, productIndex, layout)}
+        ${renderShopMedia(product, productIndex, layout, prioritizeMedia)}
       </div>
       <div class="${bodyClass}">
         <div class="item-kicker">${escapeHtml(product.categoryLabel || '')}</div>
@@ -1337,7 +1341,13 @@ function renderShopProduct(product, layout, purchase, productIndex) {
     </article>`;
 }
 
-function renderShopMedia(product, productIndex, layout) {
+function shopImageAttrs(prioritizeMedia) {
+  return prioritizeMedia
+    ? 'loading="eager" decoding="async" fetchpriority="high"'
+    : 'loading="lazy" decoding="async" fetchpriority="low"';
+}
+
+function renderShopMedia(product, productIndex, layout, prioritizeMedia) {
   product = product || {};
   const alt = escapeHtml(product.mediaAlt || product.title || '');
   const mediaVideo = product.video || product.videoUrl || '';
@@ -1356,12 +1366,12 @@ function renderShopMedia(product, productIndex, layout) {
   ].join(';');
   if (embedUrl) {
     if (/\.(mp4|webm|ogg|mov)/i.test(embedUrl)) {
-      return `<video class="${isFeatureVideo ? 'feature-video-player' : ''}" style="${escapeHtml(mediaStyle)}" src="${escapeHtml(fixImg(embedUrl))}" autoplay loop muted playsinline webkit-playsinline="webkit-playsinline" preload="auto"></video>`;
+      return `<video class="${isFeatureVideo ? 'feature-video-player' : ''}" style="${escapeHtml(mediaStyle)}" data-shop-src="${escapeHtml(fixImg(embedUrl))}" autoplay loop muted playsinline webkit-playsinline="webkit-playsinline" preload="none"></video>`;
     }
     return `<iframe src="${escapeHtml(embedUrl)}" title="${alt}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
   }
   if (product.image) {
-    const img = `<img src="${escapeHtml(fixImg(product.image))}" alt="${alt}" loading="eager" decoding="async">`;
+    const img = `<img src="${escapeHtml(fixImg(product.image))}" alt="${alt}" ${shopImageAttrs(prioritizeMedia)}>`;
     if (gallery.length) {
       return `<button class="shop-media-button" type="button" onclick="openShopGallery(${Number(productIndex) || 0}, 0)" aria-label="View detail images for ${alt}">
         ${img}
@@ -1374,11 +1384,44 @@ function renderShopMedia(product, productIndex, layout) {
     const first = gallery[0];
     const firstAlt = escapeHtml(first.caption || product.title || '');
     return `<button class="shop-media-button" type="button" onclick="openShopGallery(${Number(productIndex) || 0}, 0)" aria-label="View detail images for ${firstAlt}">
-      <img src="${escapeHtml(fixImg(first.src))}" alt="${firstAlt}" loading="eager" decoding="async">
+      <img src="${escapeHtml(fixImg(first.src))}" alt="${firstAlt}" ${shopImageAttrs(prioritizeMedia)}>
       <span class="shop-media-hint">VIEW DETAILS</span>
     </button>`;
   }
   return `<pre class="archive-placeholder" aria-hidden="true">${escapeHtml(product.placeholder || 'FILE WITHOUT IMAGE')}</pre>`;
+}
+
+function initShopLazyMedia() {
+  const videos = Array.from(document.querySelectorAll('video[data-shop-src]'));
+  if (!videos.length) return;
+
+  const loadVideo = video => {
+    if (!video || video.dataset.loaded === 'true') return;
+    const src = video.dataset.shopSrc;
+    if (!src) return;
+    video.dataset.loaded = 'true';
+    video.src = src;
+    video.load();
+    if (video.autoplay && typeof video.play === 'function') {
+      const playback = video.play();
+      if (playback && typeof playback.catch === 'function') playback.catch(() => {});
+    }
+  };
+
+  if (!('IntersectionObserver' in window)) {
+    videos.forEach(loadVideo);
+    return;
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      loadVideo(entry.target);
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: '600px 0px' });
+
+  videos.forEach(video => observer.observe(video));
 }
 
 function initShopGalleryEvents() {
