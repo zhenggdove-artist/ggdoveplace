@@ -686,6 +686,46 @@
       "year": "2023"
     }
   ],
+  "play": {
+    "works": [
+      {
+        "titleEn": "Sin Tower",
+        "video": "",
+        "mediaWidth": "100%",
+        "mediaHeight": "520px",
+        "mediaFit": "contain",
+        "mediaPosition": "center center",
+        "aspect": "16/9"
+      },
+      {
+        "titleEn": "Stick and Ice Cream",
+        "video": "",
+        "mediaWidth": "100%",
+        "mediaHeight": "520px",
+        "mediaFit": "contain",
+        "mediaPosition": "center center",
+        "aspect": "16/9"
+      },
+      {
+        "titleEn": "Chiang-Flower",
+        "video": "",
+        "mediaWidth": "100%",
+        "mediaHeight": "520px",
+        "mediaFit": "contain",
+        "mediaPosition": "center center",
+        "aspect": "9/16"
+      },
+      {
+        "titleEn": "Urban Legend - All flowers",
+        "video": "",
+        "mediaWidth": "100%",
+        "mediaHeight": "520px",
+        "mediaFit": "contain",
+        "mediaPosition": "center center",
+        "aspect": "16/9"
+      }
+    ]
+  },
   "shop": {
     "hero": {
       "kicker": "︻╦̵̵̿╤──",

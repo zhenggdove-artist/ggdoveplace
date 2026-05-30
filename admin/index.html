@@ -475,24 +475,116 @@
   CMS.registerPreviewTemplate('relic', RelicPreview);
   CMS.registerPreviewTemplate('relic_data', RelicPreview);
 
+  var DEFAULT_PLAY_WORKS = [
+    {
+      titleEn: 'Sin Tower',
+      titleZh: '斷罪塔',
+      meta: '2025 · mixed-media · game engine, sculpture, painting, AI-written text, performance',
+      video: '/ggdoveplace/images/games/sintower.webm',
+      aspect: '16/9',
+      images: [
+        '/ggdoveplace/images/sin-tower/S__88702980.jpg',
+        '/ggdoveplace/images/sin-tower/S__88702981.jpg',
+        '/ggdoveplace/images/sin-tower/S__88702982.jpg'
+      ]
+    },
+    {
+      titleEn: 'Stick and Ice Cream',
+      titleZh: '棍與雪糕',
+      meta: '2025 · medium: blank exhibition wall · MoCA Taipei',
+      video: '/ggdoveplace/images/games/stick.webm',
+      aspect: '16/9',
+      images: [
+        '/ggdoveplace/images/games/stick-01.jpg',
+        '/ggdoveplace/images/games/stick-02.jpg',
+        '/ggdoveplace/images/games/stick-03.jpg'
+      ]
+    },
+    {
+      titleEn: 'Chiang-Flower',
+      titleZh: '蔣花',
+      meta: '2025 · UV pigment, code, epoxy putty, rubber stamp, mineral-based coating',
+      video: 'https://www.youtube.com/embed/T20hf_QJx84',
+      aspect: '9/16',
+      images: [
+        '/ggdoveplace/images/games/chiang-01.jpg',
+        '/ggdoveplace/images/games/chiang-02.jpg',
+        '/ggdoveplace/images/games/chiang-03.jpg'
+      ]
+    },
+    {
+      titleEn: 'Urban Legend - All flowers',
+      titleZh: '都市傳說－全都開成了花',
+      meta: '2025 · web-based generative game · invisible QR code, UV-activated installation',
+      video: '/ggdoveplace/images/games/urban-01.mp4',
+      aspect: '16/9',
+      images: [
+        '/ggdoveplace/images/games/urban-01.jpg',
+        '/ggdoveplace/images/games/urban-02.jpg',
+        '/ggdoveplace/images/games/urban-03.jpg'
+      ]
+    }
+  ];
+
+  function hasTextValue(value) {
+    return typeof value === 'string' && value.trim() !== '';
+  }
+
+  function mergePlayPreviewWorks(rawWorks) {
+    var works = Array.isArray(rawWorks) ? rawWorks : [];
+    var validOverrides = works.filter(function(work) {
+      return work && hasTextValue(work.titleEn);
+    });
+    var used = {};
+    var merged = DEFAULT_PLAY_WORKS.map(function(base) {
+      var override = validOverrides.find(function(work) {
+        return String(work.titleEn || '').trim() === base.titleEn;
+      });
+      if (!override) return Object.assign({}, base);
+      used[base.titleEn] = true;
+      var next = Object.assign({}, base, override);
+      if (!hasTextValue(override.video)) next.video = base.video;
+      if (!hasTextValue(override.aspect)) next.aspect = base.aspect;
+      return next;
+    });
+    validOverrides.forEach(function(work) {
+      if (used[String(work.titleEn || '').trim()]) return;
+      merged.push(work);
+    });
+    return merged;
+  }
+
   // Play Preview
   var PlayPreview = createClass({
     render: function() {
       var entry    = this.props.entry;
       var getAsset = this.props.getAsset;
       var play     = entry.getIn(['data', 'play']);
-      if (!play) return h('div', { style: { padding: '2rem', color: '#6a6080', fontFamily: 'monospace', fontSize: '0.8rem' } }, 'No play data yet.');
-      var p = play.toJS ? play.toJS() : play;
-      var works = p.works || [];
+      var p = play ? (play.toJS ? play.toJS() : play) : {};
+      var works = mergePlayPreviewWorks(p.works || []);
       return h('div', null,
-        h('h2', { className: 'page-title' }, 'Play — Video Preview'),
+        h('h2', { className: 'page-title' }, 'Play — Live Preview'),
         h('div', { style: { display: 'grid', gap: '1.4rem', marginTop: '1rem' } },
           works.map(function(work, i) {
+            var title = work.titleEn || ('Play item ' + (i + 1));
             return h('div', { key: i, style: { background: '#0d0820', border: '1px solid rgba(120,85,255,0.16)', padding: '1rem' } },
-              h('div', { style: { color: '#eee8ff', fontFamily: 'Georgia,serif', fontSize: '1rem', marginBottom: '0.7rem' } }, work.titleEn || ('Play item ' + (i + 1))),
+              h('div', { style: { color: '#eee8ff', fontFamily: 'Georgia,serif', fontSize: '1.15rem', marginBottom: '0.2rem' } }, title),
+              work.titleZh ? h('div', { style: { color: '#6a6080', fontFamily: 'Georgia,serif', fontSize: '0.92rem', marginBottom: '0.35rem' } }, work.titleZh) : null,
+              work.meta ? h('div', { style: { color: '#7755ff', fontFamily: '"Courier New",monospace', fontSize: '0.66rem', letterSpacing: '0.08em', marginBottom: '0.7rem' } }, work.meta) : null,
               h('div', { style: { width: '100%', aspectRatio: work.aspect || '16/9', background: '#05050a', overflow: 'hidden' } },
-                previewMedia(getAsset, { video: work.video, title: work.titleEn })
-              )
+                previewMedia(getAsset, { video: work.video, title: title })
+              ),
+              work.images && work.images.length ? h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.45rem', marginTop: '0.7rem' } },
+                work.images.slice(0, 3).map(function(src, imageIndex) {
+                  return h('img', {
+                    key: imageIndex,
+                    src: resolveImg(getAsset, src),
+                    alt: title,
+                    loading: 'lazy',
+                    style: { width: '100%', aspectRatio: '4/3', objectFit: 'cover', background: '#05050a', display: 'block' }
+                  });
+                })
+              ) : null
             );
           })
         )
