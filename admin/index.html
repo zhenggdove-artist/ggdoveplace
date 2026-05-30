@@ -648,7 +648,7 @@
 
       // Nav logo style
       var navLogoSty = elSty('navLogo', {
-        fontFamily: headingFont, fontWeight: 400,
+        fontFamily: '"Saint", ' + headingFont, fontWeight: 400,
         fontSize: '0.9rem', color: '#eee8ff', letterSpacing: '0.06em', lineHeight: 1
       });
 
@@ -660,7 +660,7 @@
       var nlUseDefault = navLinksEl.useDefaultColor === true || navLinksEl.useDefaultColor === 'true'
                       || (navLinksEl.useDefaultColor === undefined && (!nlCol || COLOR_RESET_P.indexOf(nlCol.toLowerCase()) >= 0));
       var navLinksSty = {
-        fontFamily: accentFont,
+        fontFamily: '"Saint", ' + accentFont,
         fontSize:   normLen(navLinksEl.fontSize) || '0.72rem',
         color:      (!nlUseDefault && nlCol) ? nlCol : '#c8c0e8',
         letterSpacing: '0.14em', textTransform: 'uppercase',

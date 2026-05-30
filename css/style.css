@@ -189,7 +189,7 @@ nav {
 }
 
 .nav-links a {
-  font-family: var(--mono);
+  font-family: var(--saint);
   text-decoration: none;
   color: var(--text-dim);
   font-size: 0.70rem;
@@ -1037,7 +1037,7 @@ body.home-page {
 }
 
 #home-nav .nav-links a {
-  font-family: var(--mono);
+  font-family: var(--saint);
   font-size: 0.68rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
