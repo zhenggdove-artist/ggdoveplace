@@ -528,6 +528,7 @@ function renderHeader(activePage) {
     { id: 'exhibition', label: nl.exhibition  || 'Exhibition',  href: 'exhibition.html' },
     { id: 'play',       label: nl.play        || 'Play',        href: 'play.html'       },
     { id: 'shop',       label: nl.shop        || 'Shop',        href: 'shop.html'       },
+    { id: 'gallery',    label: nl.gallery     || 'Gallery',     href: 'virtual-gallery-scene.html' },
     ...customPages
   ];
   nav.innerHTML = `
