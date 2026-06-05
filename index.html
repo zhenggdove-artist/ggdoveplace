@@ -257,9 +257,14 @@
         <text class="nav-sub" x="115" y="550">&#xB7; games</text>
       </a>
       <a href="shop.html">
-        <text class="nav-ornament" x="500" y="156" text-anchor="middle">&#x2727;</text>
-        <text class="nav-label" x="500" y="174" text-anchor="middle">Shop</text>
-        <text class="nav-sub" x="500" y="194" text-anchor="middle">&#xB7; market</text>
+        <text class="nav-ornament" x="500" y="106" text-anchor="middle">&#x2727;</text>
+        <text class="nav-label" x="500" y="124" text-anchor="middle">Shop</text>
+        <text class="nav-sub" x="500" y="144" text-anchor="middle">&#xB7; market</text>
+      </a>
+      <a href="https://zhenggdove-artist.github.io/3Dgallery01/">
+        <text class="nav-ornament" x="500" y="592" text-anchor="middle">&#x2727;</text>
+        <text class="nav-label" x="500" y="610" text-anchor="middle">Gallery</text>
+        <text class="nav-sub" x="500" y="630" text-anchor="middle">&#xB7; archive</text>
       </a>
     </svg>
   </div>
@@ -276,7 +281,7 @@
       }
       const nl = (siteData.site && siteData.site.navLabels) || {};
       const labels = document.querySelectorAll('.nav-label');
-      [nl.bio || 'CV', nl.relic || nl.weapons || 'Relics', nl.exhibition || 'Exhibition', nl.play || 'Play', nl.shop || 'Shop']
+      [nl.bio || 'CV', nl.relic || nl.weapons || 'Relics', nl.exhibition || 'Exhibition', nl.play || 'Play', nl.shop || 'Shop', nl.gallery || 'Gallery']
         .forEach((v, i) => { if (labels[i]) labels[i].textContent = v; });
     });
 

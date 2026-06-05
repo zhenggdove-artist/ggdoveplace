@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGdove</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    @font-face {
+      font-family: 'Saint';
+      src: url('fonts/saint.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    body.landing-body {
+      margin: 0;
+      overflow: hidden;
+      background: #000000;
+      cursor: none;
+    }
+
+    .landing-wrap {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 900px;
+    }
+
+    .tilt-scene {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-style: preserve-3d;
+      transform: rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg));
+      transition: transform 0.15s ease-out;
+    }
+
+    /* ── Creature canvas (replaces TV) ── */
+    .creature-canvas {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) translateZ(30px);
+      z-index: 2;
+      cursor: none;
+    }
+
+    /* ── Orbit ASCII canvas (replaces SVG curves) ── */
+    .orbit-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+      transform: translateZ(0px);
+    }
+
+    /* ── SVG nav labels only ── */
+    .landing-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .landing-svg a {
+      pointer-events: all;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .landing-svg text {
+      pointer-events: all;
+      cursor: pointer;
+    }
+
+    .nav-label {
+      font-family: 'Saint', 'Courier New', monospace;
+      font-size: 19.5px;
+      font-weight: normal;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      fill: #b8b8d0;
+      cursor: pointer;
+      transition: fill 0.3s, filter 0.3s;
+    }
+    .landing-svg a:hover .nav-label {
+      fill: var(--nav-hover-color, #ffffff);
+      filter: drop-shadow(0 0 8px var(--nav-hover-glow, rgba(255,255,255,0.4)));
+    }
+
+    .nav-sub {
+      font-family: 'Courier New', monospace;
+      font-size: 13.5px;
+      font-style: italic;
+      fill: #787890;
+      letter-spacing: 1px;
+      transition: fill 0.3s;
+    }
+    .landing-svg a:hover .nav-sub {
+      fill: var(--nav-hover-color, #ffffff);
+    }
+
+    .nav-ornament {
+      font-family: 'Courier New', monospace;
+      font-size: 15px;
+      fill: rgba(184, 184, 208, 0.35);
+      transition: fill 0.3s;
+    }
+    .landing-svg a:hover .nav-ornament {
+      fill: var(--nav-hover-color, #ffffff);
+    }
+
+    .dino-cursor {
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none;
+      width: 48px;
+      height: auto;
+      opacity: 0;
+      transform: translate(-24px, -24px);
+      user-select: none;
+    }
+
+    .landing-scanlines {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px, transparent 3px,
+        rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 6px
+      );
+    }
+
+    .landing-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.8rem 2rem;
+      gap: 1rem;
+      cursor: none;
+    }
+
+    .ascii-deco {
+      font-family: 'Courier New', monospace;
+      font-size: 0.975rem;
+      color: rgba(120, 120, 144, 0.4);
+      white-space: nowrap;
+    }
+
+    .landing-artist {
+      font-family: 'Saint', 'Courier New', monospace;
+      font-size: 1.125rem;
+      letter-spacing: 0.35em;
+      color: rgba(184, 184, 208, 0.7);
+      white-space: nowrap;
+    }
+
+    /* Click counter */
+    .click-counter {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      color: rgba(120, 120, 144, 0);
+      letter-spacing: 3px;
+      transition: color 0.5s;
+      pointer-events: none;
+    }
+    .click-counter.visible {
+      color: rgba(120, 120, 144, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .nav-label { font-size: 30px; letter-spacing: 3px; }
+      .nav-sub { font-size: 16px; }
+      .nav-ornament { font-size: 22px; }
+      .dino-cursor { display: none; }
+      body.landing-body { cursor: auto; }
+      .landing-svg { pointer-events: none !important; }
+      .landing-svg a { cursor: pointer !important; pointer-events: auto !important; }
+      .landing-svg text { pointer-events: auto !important; cursor: pointer !important; }
+      .nav-label { cursor: pointer !important; }
+      .creature-canvas { cursor: auto; }
+      .landing-header { padding: 1rem; }
+      .ascii-deco { display: none; }
+    }
+    @media (max-width: 480px) {
+      .nav-label { font-size: 26px; letter-spacing: 2px; }
+      .nav-sub { font-size: 14px; }
+    }
+  </style>
+</head>
+<body class="landing-body">
+  <div class="landing-scanlines"></div>
+
+  <div class="landing-header">
+    <span class="ascii-deco">o()xxxx[{:::::::::::::::::::></span>
+    <span class="landing-artist">&#xFF61;&#xFF65;&#xFF9F;&#xFF65;&#x2727; GGdove &#x2727;&#xFF65;&#xFF9F;&#xFF65;&#xFF61;</span>
+    <span class="ascii-deco">&lt;:::::::::::::::::::}]xxxx()o</span>
+  </div>
+
+  <img id="dino-cursor" class="dino-cursor" src="images/cursor-dino.png" alt="" aria-hidden="true">
+
+  <div class="click-counter" id="click-counter"></div>
+
+  <div class="landing-wrap">
+    <div class="tilt-scene" id="tilt-scene">
+
+      <!-- Creature canvas (replaces TV) -->
+      <canvas class="creature-canvas" id="creature-canvas" width="600" height="600"></canvas>
+
+      <!-- Orbit curves rendered as ASCII on canvas -->
+      <canvas class="orbit-canvas" id="orbit-canvas"></canvas>
+
+    </div>
+
+    <!-- SVG navigation labels — OUTSIDE tilt-scene to avoid 3D stacking issues -->
+    <svg class="landing-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
+      <a href="bio.html">
+        <text class="nav-ornament" x="115" y="180">&#x2727;</text>
+        <text class="nav-label" x="135" y="198">CV</text>
+        <text class="nav-sub" x="115" y="218">&#xB7; profiles</text>
+      </a>
+      <a href="relic.html">
+        <text class="nav-ornament" x="870" y="180" text-anchor="end">&#x2727;</text>
+        <text class="nav-label" x="855" y="198" text-anchor="end">Relics</text>
+        <text class="nav-sub" x="870" y="218" text-anchor="end">&#xB7; artifacts</text>
+      </a>
+      <a href="exhibition.html">
+        <text class="nav-ornament" x="870" y="512" text-anchor="end">&#x2727;</text>
+        <text class="nav-label" x="855" y="530" text-anchor="end">Exhibition</text>
+        <text class="nav-sub" x="870" y="550" text-anchor="end">&#xB7; showcase</text>
+      </a>
+      <a href="play.html">
+        <text class="nav-ornament" x="115" y="512">&#x2727;</text>
+        <text class="nav-label" x="135" y="530">Play</text>
+        <text class="nav-sub" x="115" y="550">&#xB7; games</text>
+      </a>
+      <a href="shop.html">
+        <text class="nav-ornament" x="500" y="156" text-anchor="middle">&#x2727;</text>
+        <text class="nav-label" x="500" y="174" text-anchor="middle">Shop</text>
+        <text class="nav-sub" x="500" y="194" text-anchor="middle">&#xB7; market</text>
+      </a>
+    </svg>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // ── CMS data ──
+    loadData().then(() => {
+      applyBackground(siteData.site);
+      applyNavHoverColor(siteData.site);
+      const artistEl = document.querySelector('.landing-artist');
+      if (artistEl && siteData.site && siteData.site.title) {
+        artistEl.innerHTML = '\uFF61\uFF65\uFF9F\uFF65\u2727 ' + siteData.site.title + ' \u2727\uFF65\uFF9F\uFF65\uFF61';
+      }
+      const nl = (siteData.site && siteData.site.navLabels) || {};
+      const labels = document.querySelectorAll('.nav-label');
+      [nl.bio || 'CV', nl.relic || nl.weapons || 'Relics', nl.exhibition || 'Exhibition', nl.play || 'Play', nl.shop || 'Shop']
+        .forEach((v, i) => { if (labels[i]) labels[i].textContent = v; });
+    });
+
+    // ── 3D Tilt (mouse / gyroscope / touch) ──
+    (function() {
+      const scene = document.getElementById('tilt-scene');
+      if (!scene) return;
+      const isMobile = 'ontouchstart' in window;
+
+      // Desktop: mouse-driven tilt
+      if (!isMobile) {
+        document.addEventListener('mousemove', function(e) {
+          const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+          scene.style.setProperty('--tiltY', ((e.clientX - cx) / cx * 54) + 'deg');
+          scene.style.setProperty('--tiltX', ((cy - e.clientY) / cy * 27) + 'deg');
+        });
+        document.addEventListener('mouseleave', function() {
+          scene.style.setProperty('--tiltY', '0deg');
+          scene.style.setProperty('--tiltX', '0deg');
+        });
+      }
+
+      // Mobile tilt
+      if (isMobile) {
+        let targetX = 0, targetY = 0;
+        let smoothX = 0, smoothY = 0;
+        let gyroWorking = false;
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+          || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        // Smooth animation loop
+        function tiltLoop() {
+          smoothX += (targetX - smoothX) * 0.1;
+          smoothY += (targetY - smoothY) * 0.1;
+          scene.style.setProperty('--tiltX', smoothX.toFixed(2) + 'deg');
+          scene.style.setProperty('--tiltY', smoothY.toFixed(2) + 'deg');
+          requestAnimationFrame(tiltLoop);
+        }
+        tiltLoop();
+
+        // Try gyroscope first (Android only, no permission prompt)
+        if (!isIOS && window.DeviceOrientationEvent) {
+          const needsPermission = typeof DeviceOrientationEvent.requestPermission === 'function';
+          if (!needsPermission) {
+            window.addEventListener('deviceorientation', function(e) {
+              if (e.beta === null && e.gamma === null) return;
+              gyroWorking = true;
+              const beta = e.beta || 0;
+              const gamma = e.gamma || 0;
+              targetX = Math.max(-72, Math.min(72, -(beta - 70) / 20 * 36));
+              targetY = Math.max(-108, Math.min(108, gamma / 20 * 72));
+            });
+          }
+        }
+
+        // Touch fallback: finger position drives parallax (iOS + any device)
+        document.addEventListener('touchmove', function(e) {
+          if (gyroWorking) return; // gyroscope takes priority
+          const t = e.touches[0];
+          if (!t) return;
+          const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+          targetY = (t.clientX - cx) / cx * 72;
+          targetX = (cy - t.clientY) / cy * 36;
+        }, { passive: true });
+        document.addEventListener('touchend', function() {
+          if (gyroWorking) return;
+          targetX = 0; targetY = 0;
+        });
+      }
+    })();
+
+    // ── Dino cursor ──
+    (function() {
+      const cur = document.getElementById('dino-cursor');
+      if (!cur || window.innerWidth < 768) return;
+      document.addEventListener('mousemove', function(e) {
+        cur.style.left = e.clientX + 'px';
+        cur.style.top = e.clientY + 'px';
+        cur.style.opacity = '1';
+      });
+      document.addEventListener('mouseleave', function() { cur.style.opacity = '0'; });
+      document.addEventListener('mouseenter', function() { cur.style.opacity = '1'; });
+    })();
+
+    // ══════════════════════════════════════════════
+    //  ORBIT CURVES — rendered as ASCII dot particles
+    //  OPTIMIZED: no DPR scaling, pre-cached fonts, reduced density
+    // ══════════════════════════════════════════════
+    var orbitCtx, orbitW, orbitH, orbitPts, shimmerPts, orbitCurves;
+    (function() {
+      const oc = document.getElementById('orbit-canvas');
+      if (!oc) return;
+      orbitCtx = oc.getContext('2d');
+      const OGLYPHS = ['.', '\u00B7', '\u2022', '\u2219', '\u25E6', '+', '*', 'o'];
+
+      function resizeOrbit() {
+        oc.width = oc.offsetWidth;
+        oc.height = oc.offsetHeight;
+        orbitW = oc.width; orbitH = oc.height;
+      }
+      resizeOrbit();
+      window.addEventListener('resize', resizeOrbit);
+
+      function cubicBez(p0, p1, p2, p3, t) {
+        const u = 1-t;
+        return {
+          x: u*u*u*p0.x + 3*u*u*t*p1.x + 3*u*t*t*p2.x + t*t*t*p3.x,
+          y: u*u*u*p0.y + 3*u*u*t*p1.y + 3*u*t*t*p2.y + t*t*t*p3.y
+        };
+      }
+
+      function seg(x0,y0,x1,y1,x2,y2,x3,y3) {
+        return { p0:{x:x0,y:y0}, p1:{x:x1,y:y1}, p2:{x:x2,y:y2}, p3:{x:x3,y:y3} };
+      }
+      orbitCurves = [
+        [seg(.17,.335, .20,.19, .28,.08, .35,.18), seg(.35,.18, .42,.28, .33,.07, .46,.05),
+         seg(.46,.05, .59,.03, .50,.22, .58,.11), seg(.58,.11, .66,.00, .68,.25, .74,.15),
+         seg(.74,.15, .80,.05, .85,.25, .83,.335)],
+        [seg(.83,.335, .92,.29, .97,.36, .94,.44), seg(.94,.44, .91,.52, .98,.48, .97,.54),
+         seg(.97,.54, .96,.60, .93,.56, .95,.62), seg(.95,.62, .97,.68, .91,.67, .87,.65),
+         seg(.87,.65, .83,.63, .85,.70, .83,.693)],
+        [seg(.83,.693, .79,.79, .74,.88, .67,.82), seg(.67,.82, .60,.76, .66,.91, .57,.92),
+         seg(.57,.92, .48,.93, .52,.77, .44,.84), seg(.44,.84, .36,.91, .34,.76, .28,.81),
+         seg(.28,.81, .22,.86, .21,.74, .19,.70), seg(.19,.70, .17,.66, .17,.69, .17,.693)],
+        [seg(.17,.693, .10,.66, .03,.62, .06,.54), seg(.06,.54, .09,.46, .02,.50, .01,.44),
+         seg(.01,.44, .00,.38, .05,.40, .03,.35), seg(.03,.35, .01,.30, .06,.33, .09,.36),
+         seg(.09,.36, .12,.39, .10,.30, .14,.32), seg(.14,.32, .18,.34, .16,.33, .17,.335)],
+        [seg(.25,.20, .38,.35, .22,.42, .40,.38), seg(.40,.38, .58,.34, .35,.52, .25,.45)],
+        [seg(.75,.20, .62,.35, .78,.42, .60,.38), seg(.60,.38, .42,.34, .65,.52, .75,.45)],
+        [seg(.38,.14, .52,.24, .44,.34, .52,.28), seg(.52,.28, .60,.22, .62,.32, .52,.36)],
+        [seg(.62,.82, .48,.72, .56,.62, .48,.68), seg(.48,.68, .40,.74, .38,.64, .48,.60)]
+      ];
+
+      orbitPts = [];
+      var DENSITY = 35;
+      orbitCurves.forEach(function(segs, ci) {
+        segs.forEach(function(s) {
+          for (var i = 0; i <= DENSITY; i++) {
+            var t = i / DENSITY;
+            var pt = cubicBez(s.p0, s.p1, s.p2, s.p3, t);
+            var sz = 7 + Math.floor(Math.random()*5);
+            orbitPts.push({
+              nx: pt.x, ny: pt.y,
+              glyph: OGLYPHS[Math.floor(Math.random()*OGLYPHS.length)],
+              phase: Math.random()*6.28,
+              speed: 0.15+Math.random()*0.4,
+              amp: 0.5+Math.random()*2,
+              alpha: ci<4 ? (0.25+Math.random()*0.25) : (0.15+Math.random()*0.2),
+              font: sz+'px monospace',
+              ci: ci
+            });
+          }
+        });
+      });
+
+      shimmerPts = [];
+      orbitCurves.slice(0,4).forEach(function(segs, ci) {
+        for (var i=0;i<8;i++) {
+          shimmerPts.push({
+            segs:segs, progress:Math.random(),
+            speed:0.02+Math.random()*0.025,
+            glyph:'\u2727', font:'10px monospace', alpha:0.5
+          });
+        }
+      });
+    })();
+
+    // ══════════════════════════════════════════════
+    //  CREATURE — Thin worm body + thin donut-ring tentacles
+    //  Halved sizes, more chaotic motion, tentacles from click point
+    // ══════════════════════════════════════════════
+    (function() {
+      const canvas = document.getElementById('creature-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = 600, H = 600;
+      const CX = W / 2, CY = H / 2;
+      const mobCreature = window.innerWidth < 768;
+      const cBoost = mobCreature ? 2.0 : 1.0; // mobile: 2x brighter/larger
+
+      let clickCount = 0;
+      let scaleMul = 1.0;
+      let targetScale = 1.0;  // target after pendulum settles
+      let scaleAnim = null;   // { from, to, birth, duration } pendulum swell
+      let redirecting = false;
+      let redirectTimer = 0;
+      let bodyGrowth = null; // { prevRings, birth, duration } for animated tail growth
+      const counterEl = document.getElementById('click-counter');
+
+      const GLYPHS = ['.', '\u00B7', '\u2022', '\u2219', '\u25E6', '\u2218', 'o', '\u00B0', '*', '+'];
+
+      // ── Helper: build spine from control points ──
+      function buildSpine(ctrlPts, numSeg) {
+        const spine = [];
+        for (let i = 0; i < numSeg; i++) {
+          const u = i / (numSeg - 1);
+          const ci = u * (ctrlPts.length - 1);
+          const i0 = Math.floor(ci);
+          const i1 = Math.min(i0 + 1, ctrlPts.length - 1);
+          const f = ci - i0;
+          spine.push({
+            x: ctrlPts[i0].x + (ctrlPts[i1].x - ctrlPts[i0].x) * f,
+            y: ctrlPts[i0].y + (ctrlPts[i1].y - ctrlPts[i0].y) * f
+          });
+        }
+        return spine;
+      }
+
+      // ── Helper: generate donut rings along spine ──
+      function generateRings(spine, baseR, taperEnd, ptsPerRing, dotSize, dotAlpha) {
+        const rings = [];
+        for (let r = 0; r < spine.length; r++) {
+          const u = r / (spine.length - 1);
+          const ringR = baseR * (1.0 - u * taperEnd);
+          const ringPts = [];
+          let tx, ty;
+          if (r < spine.length - 1) { tx = spine[r+1].x - spine[r].x; ty = spine[r+1].y - spine[r].y; }
+          else { tx = spine[r].x - spine[r-1].x; ty = spine[r].y - spine[r-1].y; }
+          const tLen = Math.sqrt(tx*tx+ty*ty) || 1;
+          const nx = -ty/tLen, ny = tx/tLen;
+          const tiltC = 0.3 + Math.abs(ny) * 0.5;
+          for (let j = 0; j < ptsPerRing; j++) {
+            const theta = (j / ptsPerRing) * Math.PI * 2;
+            ringPts.push({
+              baseX: spine[r].x + Math.cos(theta)*ringR*nx - Math.sin(theta)*ringR*tiltC*tx/tLen,
+              baseY: spine[r].y + Math.cos(theta)*ringR*ny - Math.sin(theta)*ringR*tiltC*ty/tLen,
+              x: 0, y: 0,
+              phase: Math.random()*Math.PI*2,
+              speed: 0.3+Math.random()*1.0,
+              amp: 0.3+Math.random()*1.5*(1-u*0.5),
+              glyph: GLYPHS[Math.floor(Math.random()*GLYPHS.length)],
+              size: dotSize*(1-u*0.4),
+              alpha: dotAlpha*(1-u*0.3)
+            });
+          }
+          rings.push(ringPts);
+        }
+        return rings;
+      }
+
+      // ══════════════════════════════════════
+      //  BODY — thin writhing worm (radius halved: 8px)
+      //  More chaotic multi-frequency spine
+      // ══════════════════════════════════════
+      const BODY_RINGS = 55;
+      const BODY_PTS_RING = 10;
+      const bodyCtrl = [];
+      const bodyCtrlN = 16; // more control points = more irregular
+      for (let i = 0; i < bodyCtrlN; i++) {
+        const t = i / (bodyCtrlN - 1);
+        bodyCtrl.push({
+          x: CX + Math.sin(t*Math.PI*4.2)*18 + Math.sin(t*11.3)*9 + Math.cos(t*7.7)*6,
+          y: CY - 35 + t*70 + Math.cos(t*Math.PI*3.1)*10 + Math.sin(t*8.5)*5
+        });
+      }
+      const bodySpine = buildSpine(bodyCtrl, BODY_RINGS);
+      const bodyRings = generateRings(bodySpine, 4, 0.7, BODY_PTS_RING, 2.8, 0.8);
+      const bodySpineBase = bodySpine.map(p => ({x:p.x, y:p.y}));
+
+      // Worm animation — multiple layered frequencies for irregular motion
+      const wormPhases = [];
+      for (let i = 0; i < 4; i++) {
+        wormPhases.push({
+          freq: 1.5 + Math.random()*2.5,
+          amp: 2 + Math.random()*4,
+          phase: Math.random()*Math.PI*2,
+          spatialFreq: 3 + Math.random()*4
+        });
+      }
+
+      // ══════════════════════════════════════
+      //  TENTACLES — thin donut rings (radius halved: ~4px)
+      // ══════════════════════════════════════
+      const tentacles = [];
+      const TENT_RINGS = 35;
+      const TENT_PTS_RING = 10;
+
+      function spawnTentacle(ox, oy) {
+        const baseAngle = Math.random()*Math.PI*2;
+        const totalLen = (30 + Math.random()*40) * scaleMul;
+        const spiralDir = Math.random()<0.5 ? 1 : -1;
+        const spiralStr = 0.5+Math.random()*1.2;
+        const wiggle = 2+Math.random()*4;
+
+        const ctrlCount = 18;
+        const ctrls = [{x:ox, y:oy}];
+        let cx = ox, cy = oy, angle = baseAngle;
+        for (let c = 0; c < ctrlCount; c++) {
+          const seg = totalLen/ctrlCount;
+          angle += spiralDir*spiralStr*(Math.PI/ctrlCount);
+          angle += (Math.random()-0.5)*wiggle*(Math.PI/ctrlCount);
+          cx += Math.cos(angle)*seg;
+          cy += Math.sin(angle)*seg;
+          ctrls.push({x:cx, y:cy});
+        }
+
+        const spine = buildSpine(ctrls, TENT_RINGS);
+        const baseR = (1.5 + Math.random()*2) * scaleMul;
+        const rings = generateRings(spine, baseR, 0.85, TENT_PTS_RING, 1.5, 0.5);
+
+        const palettes = [[0,255,220],[255,0,180],[0,220,80],[200,200,230]];
+        const pal = palettes[Math.floor(Math.random()*palettes.length)];
+
+        const gd = 200 + Math.random() * 500;  // random grow duration 200-700ms per tentacle
+        // Recoil distance fully randomized:
+        //   strong recoil → target 0.2-0.3 (almost root), fast retract
+        //   weak recoil   → target 0.6-0.7 (mild), slow retract (half speed or less)
+        const recoilRand = Math.random(); // 0=strongest, 1=weakest
+        const recoilTarget = 0.2 + recoilRand * 0.5; // 0.2 (near root) → 0.7 (mild)
+        // Speed inversely proportional: strong recoil = fast, weak = much slower
+        const recoilSpeedMul = 1.0 - recoilRand * 0.7; // 1.0 (fast) → 0.3 (very slow)
+        tentacles.push({
+          rings: rings, spine: spine,
+          spineBase: spine.map(p => ({x:p.x, y:p.y})),
+          birth: Date.now(), growDuration: gd,
+          totalRings: TENT_RINGS, color: pal, baseR: baseR,
+          wrigglePhase: Math.random()*Math.PI*2,
+          wriggleFreq: 1.5+Math.random()*2.5,
+          wriggleAmp: 2+Math.random()*4,
+          recoilTarget: recoilTarget,
+          recoilDuration: gd * (1 - recoilTarget) * recoilSpeedMul * (0.8 + Math.random()*0.4) * 4,
+          relaxDuration: gd * (1 - recoilTarget) / (0.15 + Math.random()*0.1)
+        });
+      }
+
+      // ── Find nearest body spine point to click ──
+      function nearestBodySpineIdx(mx, my) {
+        let best = 0, bestD = Infinity;
+        for (let i = 0; i < bodySpine.length; i++) {
+          const dx = bodySpine[i].x - mx, dy = bodySpine[i].y - my;
+          const d = dx*dx + dy*dy;
+          if (d < bestD) { bestD = d; best = i; }
+        }
+        return best;
+      }
+
+      // ── Click: tentacles grow from nearest body point to click ──
+      function getAllPoints() {
+        const pts = [];
+        bodyRings.forEach(r => r.forEach(p => pts.push(p)));
+        tentacles.forEach(t => t.rings.forEach(r => r.forEach(p => pts.push(p))));
+        return pts;
+      }
+
+      function handleCreatureClick(clientX, clientY) {
+        if (redirecting) return;
+        const rect = canvas.getBoundingClientRect();
+        const mx = (clientX-rect.left)*(W/rect.width);
+        const my = (clientY-rect.top)*(H/rect.height);
+
+        // Hit test — bigger radius on mobile for easier tapping
+        const hitR = window.innerWidth < 768 ? 2400 : 800;
+        let hit = false;
+        const allPts = getAllPoints();
+        for (let i = 0; i < allPts.length; i++) {
+          const dx = allPts[i].x-mx, dy = allPts[i].y-my;
+          if (dx*dx+dy*dy < hitR) { hit = true; break; }
+        }
+        if (!hit) return;
+
+        clickCount++;
+
+        // Bouncy swell: A(+3~15%) → B(-3~10%) → C(+3~15%) → damping...
+        // Like a bouncy ball oscillating and settling
+        const prevTarget = targetScale;
+        const settleGain = 1 + (0.03 + Math.random() * 0.05); // final rest: +3~8%
+        targetScale *= settleGain;
+        const initialBurst = 0.03 + Math.random() * 0.12; // first burst: +3~15%
+        scaleAnim = {
+          from: prevTarget,
+          target: targetScale,
+          amplitude: prevTarget * initialBurst,  // initial bounce amplitude
+          birth: Date.now(),
+          freq: 2.5 + Math.random() * 1.5,       // oscillation frequency (random)
+          damping: 2.5 + Math.random() * 1.5,     // how fast it decays (random)
+          duration: 1200 + Math.random() * 800    // total anim time 1.2~2s
+        };
+
+        // Extend body from tail end: add 20% + random extra that COILS tightly
+        const prevLen = bodySpineBase.length;
+        const tailIdx = prevLen - 1;
+        const tail = bodySpineBase[tailIdx];
+        const prev2 = bodySpineBase[Math.max(0, tailIdx - 1)];
+        let tailAngle = Math.atan2(tail.y - prev2.y, tail.x - prev2.x);
+
+        const addCount = Math.floor(prevLen * (0.2 + Math.random()*0.15));
+        // Chaotic 3D-like tangling: direction changes, varying tightness, crossovers
+        const segLen = 4 + Math.random() * 3;
+        // Coil radius: tight limit so creature stays compact
+        const coilRadius = Math.min(20 + clickCount * 3, 70);
+        // Max allowed distance from center (accounts for scaleMul expansion)
+        const maxDist = Math.min(W, H) * 0.3; // 180px from center max
+        let curDir = Math.random() < 0.5 ? 1 : -1;
+        let curTight = 0.3 + Math.random() * 0.3;
+        let flipCountdown = 2 + Math.floor(Math.random() * 4);
+
+        let cx = tail.x, cy = tail.y;
+        for (let i = 0; i < addCount; i++) {
+          const distToCenter = Math.sqrt((cx-CX)*(cx-CX)+(cy-CY)*(cy-CY));
+          const toCenter = Math.atan2(CY - cy, CX - cx);
+
+          flipCountdown--;
+          if (flipCountdown <= 0) {
+            curDir *= -1;
+            curTight = 0.2 + Math.random() * 0.5;
+            flipCountdown = 2 + Math.floor(Math.random() * 5);
+          }
+
+          tailAngle += curDir * curTight + (Math.random() - 0.5) * 0.6;
+
+          // Aggressive pull toward center when outside coil radius
+          let pullStr;
+          if (distToCenter > coilRadius) {
+            // Ramp from 0.6 to 0.95 as distance exceeds coilRadius
+            const excess = (distToCenter - coilRadius) / coilRadius;
+            pullStr = Math.min(0.95, 0.6 + excess * 0.3);
+          } else {
+            pullStr = 0.15;
+          }
+          tailAngle = tailAngle * (1 - pullStr) + toCenter * pullStr;
+
+          // Occasionally aim at a random existing body point (crossover)
+          if (Math.random() < 0.15 && prevLen > 5) {
+            const ri = Math.floor(Math.random() * prevLen);
+            const crossAngle = Math.atan2(bodySpineBase[ri].y - cy, bodySpineBase[ri].x - cx);
+            tailAngle = tailAngle * 0.5 + crossAngle * 0.5;
+          }
+
+          cx += Math.cos(tailAngle) * segLen;
+          cy += Math.sin(tailAngle) * segLen;
+
+          // Hard clamp: if beyond maxDist, snap back toward center
+          const newDist = Math.sqrt((cx-CX)*(cx-CX)+(cy-CY)*(cy-CY));
+          if (newDist > maxDist) {
+            cx = CX + (cx - CX) * (maxDist / newDist);
+            cy = CY + (cy - CY) * (maxDist / newDist);
+          }
+          bodySpineBase.push({ x: cx, y: cy });
+        }
+
+        // Rebuild spine & rings with new length
+        const newSpine = buildSpine(bodySpineBase, bodySpineBase.length);
+        bodySpine.length = 0;
+        newSpine.forEach(p => bodySpine.push(p));
+        const newRings = generateRings(bodySpine, 4, 0.7, BODY_PTS_RING, 2.8, 0.8);
+        bodyRings.length = 0;
+        newRings.forEach(r => bodyRings.push(r));
+
+        // Animated growth: record how many rings to reveal over time
+        bodyGrowth = {
+          prevRings: prevLen,
+          birth: Date.now(),
+          duration: 300 + Math.random() * 500  // random growth speed per click
+        };
+
+        // Spawn tentacles from NEAREST body spine point to click
+        const nearIdx = nearestBodySpineIdx(mx, my);
+        const count = 2 + Math.floor(clickCount * 1.2);
+        for (let i = 0; i < count; i++) {
+          const si = Math.max(0, Math.min(bodySpine.length-1,
+            nearIdx + Math.floor((Math.random()-0.5)*6)));
+          spawnTentacle(bodySpine[si].x, bodySpine[si].y);
+        }
+
+        if (counterEl) {
+          counterEl.textContent = clickCount + ' / 10';
+          counterEl.classList.add('visible');
+        }
+        if (clickCount >= 10 && !redirecting) {
+          redirecting = true;
+          redirectTimer = Date.now();
+        }
+      }
+
+      canvas.addEventListener('click', function(e) {
+        handleCreatureClick(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        const t = e.changedTouches[0];
+        if (t) handleCreatureClick(t.clientX, t.clientY);
+      }, { passive: false });
+
+      // ── Draw rings ──
+      function drawRings(rings, visCount, color, sc, growT) {
+        for (let r = 0; r < visCount; r++) {
+          const u = r / rings.length;
+          // Smooth growth: rings near the tip fade in smoothly
+          let ringAlpha = 1;
+          if (growT !== undefined && growT < 1) {
+            const ringPos = r / rings.length;
+            const fadeZone = 0.15;
+            ringAlpha = Math.max(0, Math.min(1, (growT - ringPos + fadeZone) / fadeZone));
+          }
+          const cr = Math.min(255, Math.floor(color[0]*(1-u*0.3)));
+          const cg = Math.min(255, Math.floor(color[1]*(1-u*0.2)));
+          const cb = Math.min(255, Math.floor(color[2]*(1-u*0.1)));
+          ctx.fillStyle = 'rgb('+cr+','+cg+','+cb+')';
+          const ring = rings[r];
+          for (let j = 0; j < ring.length; j++) {
+            const p = ring[j];
+            ctx.globalAlpha = Math.min(1, p.alpha * ringAlpha * cBoost);
+            ctx.font = Math.max(2, p.size*sc*ringAlpha*cBoost)+'px "Courier New", monospace';
+            ctx.fillText(p.glyph, p.x, p.y);
+          }
+        }
+      }
+
+      // ── Rebuild rings from spine ──
+      function rebuildRings(rings, spine, baseR, taperEnd) {
+        for (let r = 0; r < spine.length && r < rings.length; r++) {
+          const u = r/(spine.length-1);
+          const ringR = baseR*(1.0-u*taperEnd);
+          let tx, ty;
+          if (r < spine.length-1) { tx=spine[r+1].x-spine[r].x; ty=spine[r+1].y-spine[r].y; }
+          else { tx=spine[r].x-spine[r-1].x; ty=spine[r].y-spine[r-1].y; }
+          const tLen = Math.sqrt(tx*tx+ty*ty)||1;
+          const nx=-ty/tLen, ny=tx/tLen;
+          const tiltC = 0.3+Math.abs(ny)*0.5;
+          const ring = rings[r];
+          for (let j = 0; j < ring.length; j++) {
+            const theta = (j/ring.length)*Math.PI*2;
+            ring[j].baseX = spine[r].x + Math.cos(theta)*ringR*nx - Math.sin(theta)*ringR*tiltC*tx/tLen;
+            ring[j].baseY = spine[r].y + Math.cos(theta)*ringR*ny - Math.sin(theta)*ringR*tiltC*ty/tLen;
+          }
+        }
+      }
+
+      // ══════════════════════════════════════
+      //  ANIMATION
+      // ══════════════════════════════════════
+      function animate() {
+        const t = Date.now()*0.001;
+        ctx.clearRect(0, 0, W, H);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // ── Bouncy swell: damped spring oscillation ──
+        if (scaleAnim) {
+          const sa = scaleAnim;
+          const ms = Date.now() - sa.birth;
+          const tNorm = ms / 1000; // time in seconds for physics
+          if (ms < sa.duration) {
+            // Damped sine: starts big, oscillates smaller each cycle
+            // A * e^(-d*t) * sin(f*2π*t)
+            const decay = Math.exp(-sa.damping * tNorm);
+            const wave = Math.sin(sa.freq * Math.PI * 2 * tNorm);
+            scaleMul = sa.target + sa.amplitude * decay * wave;
+          } else {
+            scaleMul = sa.target;
+            scaleAnim = null;
+          }
+        }
+
+        // ── Animate body: multi-frequency irregular writhing ──
+        // Wriggle INCREASES with clicks — more tangled = more agitated
+        const wriggleScale = 1.0 + clickCount * 0.3;
+        for (let i = 0; i < bodySpine.length; i++) {
+          const u = i/bodySpine.length;
+          // Snake-like traveling wave: wave moves along the body over time
+          let wx = 0, wy = 0;
+          for (let f = 0; f < wormPhases.length; f++) {
+            const wp = wormPhases[f];
+            // Traveling wave: (t*freq - u*spatial) makes wave propagate along spine
+            wx += Math.sin(t*wp.freq - u*Math.PI*wp.spatialFreq + wp.phase) * wp.amp;
+            wy += Math.cos(t*wp.freq*0.8 - u*Math.PI*(wp.spatialFreq*0.7) + wp.phase*1.3) * wp.amp*0.6;
+          }
+          // Add higher-frequency serpentine motion that travels along body
+          wx += Math.sin(t*3.5 - i*0.15) * 2.0 * wriggleScale;
+          wy += Math.cos(t*2.8 - i*0.12 + 1.2) * 1.5 * wriggleScale;
+          // Scale spine positions outward from center
+          const bx = CX + (bodySpineBase[i].x - CX) * scaleMul;
+          const by = CY + (bodySpineBase[i].y - CY) * scaleMul;
+          let fx = bx + wx * wriggleScale;
+          let fy = by + wy * wriggleScale;
+          // Clamp: keep all points within max radius from center
+          const maxR = Math.min(W, H) * 0.38; // ~228px from center
+          const dr = Math.sqrt((fx-CX)*(fx-CX)+(fy-CY)*(fy-CY));
+          if (dr > maxR) {
+            fx = CX + (fx - CX) * (maxR / dr);
+            fy = CY + (fy - CY) * (maxR / dr);
+          }
+          bodySpine[i].x = fx;
+          bodySpine[i].y = fy;
+        }
+        rebuildRings(bodyRings, bodySpine, 4 * scaleMul, 0.7);
+
+        // Update body ring points
+        bodyRings.forEach(ring => ring.forEach(p => {
+          p.x = p.baseX + Math.sin(t*p.speed+p.phase)*p.amp;
+          p.y = p.baseY + Math.cos(t*p.speed*0.7+p.phase)*p.amp;
+        }));
+
+        const cr = Math.min(255, 220+clickCount*4);
+        const cg = Math.max(20, 40-clickCount*3);
+        const cb = Math.max(30, 50-clickCount*3);
+        // Animated growth: gradually reveal new rings from tail
+        let bodyVisRings = bodyRings.length;
+        if (bodyGrowth) {
+          const gElapsed = Date.now() - bodyGrowth.birth;
+          const gT = Math.min(1, gElapsed / bodyGrowth.duration);
+          const newCount = bodyRings.length - bodyGrowth.prevRings;
+          bodyVisRings = bodyGrowth.prevRings + Math.ceil(newCount * gT);
+          if (gT >= 1) bodyGrowth = null;
+        }
+        drawRings(bodyRings, bodyVisRings, [cr,cg,cb], Math.min(scaleMul, 2.5));
+
+        // ── Animate & draw tentacles ──
+        const now = Date.now();
+        for (let ti = 0; ti < tentacles.length; ti++) {
+          const ten = tentacles[ti];
+          const ms = now - ten.birth;
+          // Phase 1: Grow (0 → growDuration)
+          // Phase 2: Recoil — tip collapses to recoilTarget (growDuration → +recoilDuration)
+          // Phase 3: Relax — slowly re-extend to 1.0 (+recoilDuration → +relaxDuration)
+          let lengthFrac;  // 0→1 fraction of spine length to show/use
+          const p2Start = ten.growDuration;
+          const p3Start = p2Start + ten.recoilDuration;
+          const p3End   = p3Start + ten.relaxDuration;
+
+          if (ms < p2Start) {
+            // Growing
+            lengthFrac = ms / p2Start;
+          } else if (ms < p3Start) {
+            // Recoiling: 1.0 → recoilTarget (decelerating like growth in reverse)
+            const rc = (ms - p2Start) / ten.recoilDuration;
+            lengthFrac = 1 - (1 - ten.recoilTarget) * rc;
+          } else if (ms < p3End) {
+            // Relaxing: recoilTarget → 1.0 at ~20% speed
+            const rl = (ms - p3Start) / ten.relaxDuration;
+            lengthFrac = ten.recoilTarget + (1 - ten.recoilTarget) * rl;
+          } else {
+            lengthFrac = 1;
+          }
+          lengthFrac = Math.max(0, Math.min(1, lengthFrac));
+          const growT = Math.min(1, ms / p2Start); // for fade/visibility
+
+          // Wriggle spine + length contraction
+          // Contraction: points beyond lengthFrac*spineLength collapse toward that cutoff
+          const ox = ten.spineBase[0].x, oy = ten.spineBase[0].y;
+          const cutoff = lengthFrac * (ten.spine.length - 1);
+          for (let i = 0; i < ten.spine.length; i++) {
+            const u = i/ten.spine.length;
+            const wave = Math.sin(t*ten.wriggleFreq + u*Math.PI*5 + ten.wrigglePhase);
+            const wave2 = Math.cos(t*ten.wriggleFreq*0.6 + u*Math.PI*3 + ten.wrigglePhase);
+            if (i <= cutoff) {
+              // Normal position
+              ten.spine[i].x = ten.spineBase[i].x + wave*ten.wriggleAmp*u;
+              ten.spine[i].y = ten.spineBase[i].y + wave2*ten.wriggleAmp*0.6*u;
+            } else {
+              // Collapse toward cutoff — but with random twisting, not along original path
+              const ci = Math.floor(cutoff);
+              const cf = cutoff - ci;
+              const cx = ten.spineBase[ci].x + (ci < ten.spineBase.length-1 ?
+                (ten.spineBase[ci+1].x - ten.spineBase[ci].x) * cf : 0);
+              const cy = ten.spineBase[ci].y + (ci < ten.spineBase.length-1 ?
+                (ten.spineBase[ci+1].y - ten.spineBase[ci].y) * cf : 0);
+              // Blend between original position and cutoff, with extra random wriggle
+              const collapse = (i - cutoff) / (ten.spine.length - 1 - cutoff + 0.001);
+              const bx = ten.spineBase[i].x * (1 - collapse) + cx * collapse;
+              const by = ten.spineBase[i].y * (1 - collapse) + cy * collapse;
+              // Extra chaotic twist during recoil — each point gets unique wobble
+              const twist1 = Math.sin(t*ten.wriggleFreq*1.3 + i*1.7 + ten.wrigglePhase*2.1);
+              const twist2 = Math.cos(t*ten.wriggleFreq*0.9 + i*2.3 + ten.wrigglePhase*1.4);
+              ten.spine[i].x = bx + (wave + twist1*2.25)*ten.wriggleAmp*u;
+              ten.spine[i].y = by + (wave2 + twist2*2.25)*ten.wriggleAmp*0.6*u;
+            }
+          }
+          rebuildRings(ten.rings, ten.spine, ten.baseR, 0.85);
+
+          ten.rings.forEach(ring => ring.forEach(p => {
+            p.x = p.baseX + Math.sin(t*p.speed+p.phase)*p.amp;
+            p.y = p.baseY + Math.cos(t*p.speed*0.7+p.phase)*p.amp;
+          }));
+
+          const visRings = Math.ceil(ten.totalRings * growT);
+          drawRings(ten.rings, visRings, ten.color, Math.min(scaleMul, 2.0), growT);
+        }
+
+        // ── Post-10-click transition ──
+        if (redirecting) {
+          const elapsed = (now-redirectTimer)/1000;
+          if (elapsed < 3) {
+            scaleMul += 0.01;
+            if (Math.random() < 0.1) {
+              const si = Math.floor(Math.random()*bodySpine.length);
+              spawnTentacle(bodySpine[si].x, bodySpine[si].y);
+            }
+          } else if (elapsed < 5.5) {
+            getAllPoints().forEach(p => {
+              p.alpha = Math.max(0, p.alpha-0.003);
+              const dx=p.baseX-CX, dy=p.baseY-CY;
+              const dist = Math.sqrt(dx*dx+dy*dy)||1;
+              p.baseX += (dx/dist)*2; p.baseY += (dy/dist)*2;
+            });
+            bodySpineBase.forEach(p => {
+              const dx=p.x-CX, dy=p.y-CY;
+              const dist = Math.sqrt(dx*dx+dy*dy)||1;
+              p.x += (dx/dist)*1.5; p.y += (dy/dist)*1.5;
+            });
+            tentacles.forEach(ten => ten.spineBase.forEach(p => {
+              const dx=p.x-CX, dy=p.y-CY;
+              const dist = Math.sqrt(dx*dx+dy*dy)||1;
+              p.x += (dx/dist)*2; p.y += (dy/dist)*2;
+            }));
+          } else {
+            window.location.href = 'play.html';
+            return;
+          }
+        }
+
+        ctx.globalAlpha = 1;
+
+        // ── Orbit curves (merged into single rAF loop) ──
+        if (orbitCtx && orbitPts) {
+          var ow = orbitW, oh = orbitH;
+          orbitCtx.clearRect(0, 0, ow, oh);
+
+          // Batch by color: main curves vs stray wires
+          orbitCtx.textAlign = 'center';
+          orbitCtx.textBaseline = 'middle';
+          orbitCtx.fillStyle = 'rgb(184,184,208)';
+          for (var oi = 0; oi < orbitPts.length; oi++) {
+            var op = orbitPts[oi];
+            if (op.ci >= 4) continue;
+            orbitCtx.globalAlpha = op.alpha;
+            orbitCtx.font = op.font;
+            orbitCtx.fillText(op.glyph,
+              op.nx*ow + Math.sin(t*op.speed+op.phase)*op.amp,
+              op.ny*oh + Math.cos(t*op.speed*0.7+op.phase)*op.amp);
+          }
+          orbitCtx.fillStyle = 'rgba(184,184,208,0.6)';
+          for (var oi = 0; oi < orbitPts.length; oi++) {
+            var op = orbitPts[oi];
+            if (op.ci < 4) continue;
+            orbitCtx.globalAlpha = op.alpha;
+            orbitCtx.font = op.font;
+            orbitCtx.fillText(op.glyph,
+              op.nx*ow + Math.sin(t*op.speed+op.phase)*op.amp,
+              op.ny*oh + Math.cos(t*op.speed*0.7+op.phase)*op.amp);
+          }
+
+          // Shimmer
+          orbitCtx.fillStyle = 'rgb(210,150,150)';
+          for (var si = 0; si < shimmerPts.length; si++) {
+            var sp = shimmerPts[si];
+            sp.progress = (sp.progress + sp.speed*0.016) % 1;
+            var totalSegs = sp.segs.length;
+            var gT = sp.progress * totalSegs;
+            var segI = Math.min(Math.floor(gT), totalSegs-1);
+            var lT = gT - segI;
+            var s = sp.segs[segI];
+            var u2 = 1-lT;
+            var px = u2*u2*u2*s.p0.x + 3*u2*u2*lT*s.p1.x + 3*u2*lT*lT*s.p2.x + lT*lT*lT*s.p3.x;
+            var py = u2*u2*u2*s.p0.y + 3*u2*u2*lT*s.p1.y + 3*u2*lT*lT*s.p2.y + lT*lT*lT*s.p3.y;
+            orbitCtx.globalAlpha = sp.alpha;
+            orbitCtx.font = sp.font;
+            orbitCtx.fillText(sp.glyph, px*ow, py*oh);
+          }
+          orbitCtx.globalAlpha = 1;
+        }
+
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
+  </script>
+</body>
+</html>
