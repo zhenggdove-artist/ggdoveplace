@@ -914,7 +914,7 @@ nav {
   border-bottom: 1px solid rgba(184,184,208,0.06);
 }
 .bio-cv-list .cv-year {
-  color: var(--accent, #b8b8d0);
+  color: #5A5AAD;
   font-weight: bold;
   margin-right: 0.5rem;
 }
