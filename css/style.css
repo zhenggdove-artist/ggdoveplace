@@ -80,8 +80,8 @@ body.theme-light.shop-body {
   --shop-pink: #7A3F69;
   --shop-acid: #4C650D;
   --shop-red: #9D2946;
-  --shop-text: #18202C;
-  --shop-dim: #626D7F;
+  --shop-text: #181845;
+  --shop-dim: #181845;
   background: var(--bg) !important;
   color: var(--shop-text);
 }

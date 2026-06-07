@@ -190,7 +190,7 @@ collections:
                       - { label: "Bottom 下方", value: "center bottom" }
                     default: "center center"
                   - { label: "示意圖寬度 Image Width", name: imageWidth, widget: string, required: false, default: "100%" }
-                  - { label: "區塊背景 Panel Background", name: panelBackground, widget: string, required: false, default: "linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)" }
+                  - { label: "區塊背景 Panel Background", name: panelBackground, widget: string, required: false, default: "rgba(255,255,255,0.70)" }
                   - { label: "區塊邊框顏色 Panel Border Color", name: panelBorderColor, widget: string, required: false, default: "rgba(206,255,42,0.72)" }
                   - { label: "區塊光暈顏色 Panel Glow Color", name: panelGlowColor, widget: string, required: false, default: "rgba(206,255,42,0.12)" }
                   - { label: "ASCII 顏色 ASCII Color", name: asciiColor, widget: string, required: false, default: "rgba(206,255,42,0.66)" }
@@ -198,13 +198,13 @@ collections:
                   - { label: "小標顏色 Kicker Color", name: kickerColor, widget: string, required: false, default: "#58f4ff" }
                   - { label: "小標字級 Kicker Size", name: kickerSize, widget: string, required: false, default: "0.72rem" }
                   - { label: "小標字體 Kicker Font Family", name: kickerFontFamily, widget: string, required: false, default: "\"Courier New\", monospace" }
-                  - { label: "標題顏色 Title Color", name: titleColor, widget: string, required: false, default: "#d6def0" }
+                  - { label: "標題顏色 Title Color", name: titleColor, widget: string, required: false, default: "#181845" }
                   - { label: "標題字級 Title Size", name: titleSize, widget: string, required: false, default: "2.8rem" }
                   - { label: "標題字體 Title Font Family", name: titleFontFamily, widget: string, required: false, default: "var(--shop-saint)" }
-                  - { label: "內文顏色 Copy Color", name: copyColor, widget: string, required: false, default: "rgba(214,222,240,0.86)" }
+                  - { label: "內文顏色 Copy Color", name: copyColor, widget: string, required: false, default: "#181845" }
                   - { label: "內文字級 Copy Size", name: copySize, widget: string, required: false, default: "0.9rem" }
                   - { label: "內文字體 Copy Font Family", name: copyFontFamily, widget: string, required: false, default: "\"Courier New\", monospace" }
-                  - { label: "價格顏色 Price Color", name: priceColor, widget: string, required: false, default: "#ceff2a" }
+                  - { label: "價格顏色 Price Color", name: priceColor, widget: string, required: false, default: "#181845" }
                   - { label: "價格字級 Price Size", name: priceSize, widget: string, required: false, default: "1.08rem" }
                   - { label: "價格字體 Price Font Family", name: priceFontFamily, widget: string, required: false, default: "\"Courier New\", monospace" }
                   - { label: "按鈕文字顏色 Button Text Color", name: buttonTextColor, widget: string, required: false, default: "#000000" }
@@ -212,7 +212,7 @@ collections:
                   - { label: "按鈕文字字體 Button Font Family", name: buttonFontFamily, widget: string, required: false, default: "\"Courier New\", monospace" }
                   - { label: "按鈕背景顏色 Button Background", name: buttonBgColor, widget: string, required: false, default: "#ceff2a" }
                   - { label: "按鈕邊框顏色 Button Border Color", name: buttonBorderColor, widget: string, required: false, default: "rgba(206,255,42,0.72)" }
-                  - { label: "備註顏色 Note Color", name: noteColor, widget: string, required: false, default: "rgba(214,222,240,0.68)" }
+                  - { label: "備註顏色 Note Color", name: noteColor, widget: string, required: false, default: "#181845" }
                   - { label: "備註字級 Note Size", name: noteSize, widget: string, required: false, default: "0.7rem" }
                   - { label: "備註字體 Note Font Family", name: noteFontFamily, widget: string, required: false, default: "\"Courier New\", monospace" }
                   - { label: "訂閱費用 Price", name: price, widget: text, default: "每月新台幣三百元" }

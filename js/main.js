@@ -1222,7 +1222,7 @@ function getSubscriptionTheme(subscription) {
   return {
     panelBackground: normalizeSubscriptionCssValue(
       sub.panelBackground,
-      'linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)'
+      'rgba(255,255,255,0.70)'
     ),
     panelBorderColor: normalizeSubscriptionCssValue(sub.panelBorderColor, 'rgba(206,255,42,0.72)'),
     panelGlowColor: normalizeSubscriptionCssValue(sub.panelGlowColor, 'rgba(206,255,42,0.12)'),
@@ -1231,13 +1231,13 @@ function getSubscriptionTheme(subscription) {
     kickerColor: normalizeSubscriptionCssValue(sub.kickerColor, '#58f4ff'),
     kickerSize: normalizeSubscriptionCssValue(sub.kickerSize, '0.72rem'),
     kickerFontFamily: normalizeSubscriptionCssValue(sub.kickerFontFamily, '"Courier New", monospace'),
-    titleColor: normalizeSubscriptionCssValue(sub.titleColor, '#d6def0'),
+    titleColor: normalizeSubscriptionCssValue(sub.titleColor, '#181845'),
     titleSize: normalizeSubscriptionCssValue(sub.titleSize, '2.8rem'),
     titleFontFamily: normalizeSubscriptionCssValue(sub.titleFontFamily, 'var(--shop-saint)'),
-    copyColor: normalizeSubscriptionCssValue(sub.copyColor, 'rgba(214,222,240,0.86)'),
+    copyColor: normalizeSubscriptionCssValue(sub.copyColor, '#181845'),
     copySize: normalizeSubscriptionCssValue(sub.copySize, '0.9rem'),
     copyFontFamily: normalizeSubscriptionCssValue(sub.copyFontFamily, '"Courier New", monospace'),
-    priceColor: normalizeSubscriptionCssValue(sub.priceColor, '#ceff2a'),
+    priceColor: normalizeSubscriptionCssValue(sub.priceColor, '#181845'),
     priceSize: normalizeSubscriptionCssValue(sub.priceSize, '1.08rem'),
     priceFontFamily: normalizeSubscriptionCssValue(sub.priceFontFamily, '"Courier New", monospace'),
     buttonTextColor: normalizeSubscriptionCssValue(sub.buttonTextColor, '#000000'),
@@ -1245,7 +1245,7 @@ function getSubscriptionTheme(subscription) {
     buttonFontFamily: normalizeSubscriptionCssValue(sub.buttonFontFamily, '"Courier New", monospace'),
     buttonBgColor: normalizeSubscriptionCssValue(sub.buttonBgColor, '#ceff2a'),
     buttonBorderColor: normalizeSubscriptionCssValue(sub.buttonBorderColor, 'rgba(206,255,42,0.72)'),
-    noteColor: normalizeSubscriptionCssValue(sub.noteColor, 'rgba(214,222,240,0.68)'),
+    noteColor: normalizeSubscriptionCssValue(sub.noteColor, '#181845'),
     noteSize: normalizeSubscriptionCssValue(sub.noteSize, '0.7rem'),
     noteFontFamily: normalizeSubscriptionCssValue(sub.noteFontFamily, '"Courier New", monospace')
   };

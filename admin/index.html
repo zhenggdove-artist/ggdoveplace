@@ -1359,7 +1359,7 @@
   function getSubscriptionTheme(sub) {
     sub = sub || {};
     return {
-      panelBackground: normalizeSubscriptionCssValue(sub.panelBackground, 'linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)'),
+      panelBackground: normalizeSubscriptionCssValue(sub.panelBackground, 'rgba(255,255,255,0.70)'),
       panelBorderColor: normalizeSubscriptionCssValue(sub.panelBorderColor, 'rgba(206,255,42,0.72)'),
       panelGlowColor: normalizeSubscriptionCssValue(sub.panelGlowColor, 'rgba(206,255,42,0.12)'),
       asciiColor: normalizeSubscriptionCssValue(sub.asciiColor, 'rgba(206,255,42,0.66)'),
@@ -1367,13 +1367,13 @@
       kickerColor: normalizeSubscriptionCssValue(sub.kickerColor, '#58f4ff'),
       kickerSize: normalizeSubscriptionCssValue(sub.kickerSize, '0.72rem'),
       kickerFontFamily: normalizeSubscriptionCssValue(sub.kickerFontFamily, '"Courier New", monospace'),
-      titleColor: normalizeSubscriptionCssValue(sub.titleColor, '#d6def0'),
+      titleColor: normalizeSubscriptionCssValue(sub.titleColor, '#181845'),
       titleSize: normalizeSubscriptionCssValue(sub.titleSize, '2.8rem'),
       titleFontFamily: normalizeSubscriptionCssValue(sub.titleFontFamily, 'var(--shop-saint)'),
-      copyColor: normalizeSubscriptionCssValue(sub.copyColor, 'rgba(214,222,240,0.86)'),
+      copyColor: normalizeSubscriptionCssValue(sub.copyColor, '#181845'),
       copySize: normalizeSubscriptionCssValue(sub.copySize, '0.9rem'),
       copyFontFamily: normalizeSubscriptionCssValue(sub.copyFontFamily, '"Courier New", monospace'),
-      priceColor: normalizeSubscriptionCssValue(sub.priceColor, '#ceff2a'),
+      priceColor: normalizeSubscriptionCssValue(sub.priceColor, '#181845'),
       priceSize: normalizeSubscriptionCssValue(sub.priceSize, '1.08rem'),
       priceFontFamily: normalizeSubscriptionCssValue(sub.priceFontFamily, '"Courier New", monospace'),
       buttonTextColor: normalizeSubscriptionCssValue(sub.buttonTextColor, '#000000'),
@@ -1381,7 +1381,7 @@
       buttonFontFamily: normalizeSubscriptionCssValue(sub.buttonFontFamily, '"Courier New", monospace'),
       buttonBgColor: normalizeSubscriptionCssValue(sub.buttonBgColor, '#ceff2a'),
       buttonBorderColor: normalizeSubscriptionCssValue(sub.buttonBorderColor, 'rgba(206,255,42,0.72)'),
-      noteColor: normalizeSubscriptionCssValue(sub.noteColor, 'rgba(214,222,240,0.68)'),
+      noteColor: normalizeSubscriptionCssValue(sub.noteColor, '#181845'),
       noteSize: normalizeSubscriptionCssValue(sub.noteSize, '0.7rem'),
       noteFontFamily: normalizeSubscriptionCssValue(sub.noteFontFamily, '"Courier New", monospace')
     };
@@ -1408,8 +1408,8 @@
       var acid = '#ceff2a';
       var cyan = '#58f4ff';
       var pink = '#ff3edb';
-      var text = '#d6def0';
-      var dim = '#7b819b';
+      var text = '#181845';
+      var dim = '#181845';
       var mono = '"Courier New",monospace';
       var saint = '"Saint","Courier New",monospace';
       var previewMode = this.state.previewMode || 'desktop';
@@ -1455,7 +1455,7 @@
           imageHeight: '260px',
           imagePosition: 'center center',
           imageWidth: '100%',
-          panelBackground: 'linear-gradient(135deg, rgba(206,255,42,0.14), transparent 36%), linear-gradient(225deg, rgba(255,62,219,0.12), transparent 44%), rgba(0,0,0,0.84)',
+          panelBackground: 'rgba(255,255,255,0.70)',
           panelBorderColor: 'rgba(206,255,42,0.72)',
           panelGlowColor: 'rgba(206,255,42,0.12)',
           asciiColor: 'rgba(206,255,42,0.66)',
@@ -1463,14 +1463,14 @@
           kickerColor: '#58f4ff',
           kickerSize: '0.72rem',
           kickerFontFamily: '"Courier New", monospace',
-          titleColor: '#d6def0',
+          titleColor: '#181845',
           titleSize: '2.8rem',
           titleFontFamily: 'var(--shop-saint)',
-          copyColor: 'rgba(214,222,240,0.86)',
+          copyColor: '#181845',
           copySize: '0.9rem',
           copyFontFamily: '"Courier New", monospace',
           price: '每月新台幣三百元',
-          priceColor: '#ceff2a',
+          priceColor: '#181845',
           priceSize: '1.08rem',
           priceFontFamily: '"Courier New", monospace',
           description: '訂閱後，我每個月會寄出一封實體手寫信。信件內容包含約一百字的短文或短詩，與您分享我的想說的一些話、創作筆記、閱讀心得，以及一個小插畫。',
@@ -1481,7 +1481,7 @@
           buttonBgColor: '#ceff2a',
           buttonBorderColor: 'rgba(206,255,42,0.72)',
           cancelNotice: '隨時可取消訂閱',
-          noteColor: 'rgba(214,222,240,0.68)',
+          noteColor: '#181845',
           noteSize: '0.7rem',
           noteFontFamily: '"Courier New", monospace'
         }, sub || {});
@@ -1601,9 +1601,9 @@
           display: isArchive ? 'grid' : 'flex',
           gridTemplateColumns: isArchive ? 'minmax(180px, 0.8fr) 1fr' : undefined,
           flexDirection: isArchive ? undefined : 'column',
-          border: '1px solid rgba(206,255,42,0.24)',
-          background: 'linear-gradient(135deg, rgba(206,255,42,0.08), transparent 36%), rgba(4,4,12,0.9)',
-          boxShadow: 'inset 0 0 0 1px rgba(255,62,219,0.08)',
+          border: '1px solid rgba(24,24,69,0.18)',
+          background: 'rgba(255,255,255,0.62)',
+          boxShadow: 'inset 0 0 0 1px rgba(122,63,105,0.08)',
           minHeight: isArchive ? '260px' : 'auto',
           overflow: 'hidden'
         }},
@@ -1613,14 +1613,14 @@
             width: mediaWidth,
             borderRight: isArchive ? '1px solid rgba(206,255,42,0.16)' : '0',
             borderBottom: '1px solid rgba(206,255,42,0.16)',
-            background: '#030307',
+            background: '#fffaf4',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden'
           }}, previewMedia(getAsset, product, { width: mediaWidth, height: mediaHeight, objectFit: mediaFit, objectPosition: mediaPosition })),
           h('div', { style: { padding: isArchive ? '1.2rem' : '1.4rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' } },
-            h('div', { style: { color: pink, fontFamily: mono, fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase' } }, product.categoryLabel || product.code || ''),
+            h('div', { style: { color: text, fontFamily: mono, fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase' } }, product.categoryLabel || product.code || ''),
             h('h3', { style: { margin: 0, color: text, fontFamily: saint, fontWeight: 400, fontSize: isArchive ? '1.45rem' : isFeatureVideo ? '2rem' : '1.05rem', letterSpacing: '0.08em', lineHeight: 1.25 } }, product.title || ''),
             meta.length ? h('div', { style: { display: 'grid', gridTemplateColumns: isArchive ? 'repeat(2,minmax(0,1fr))' : isFeatureVideo ? '1fr' : '1fr', gap: '0.35rem 0.8rem', color: text, opacity: 0.84, fontFamily: mono, fontSize: '0.72rem', lineHeight: 1.55 } },
               meta.map(function(m, i) {
@@ -1636,7 +1636,7 @@
               })
             ) : null,
             h('div', { style: { marginTop: 'auto', paddingTop: '0.75rem', borderTop: '1px solid rgba(206,255,42,0.14)', display: 'flex', gap: '0.8rem', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' } },
-              h('span', { style: { color: acid, fontFamily: mono, fontSize: '0.78rem', letterSpacing: '0.08em' } }, product.price || ''),
+              h('span', { style: { color: text, fontFamily: mono, fontSize: '0.78rem', letterSpacing: '0.08em' } }, product.price || ''),
               purchaseUrl ? h('a', { href: purchaseUrl, style: { border: '1px solid rgba(206,255,42,0.58)', color: acid, padding: '0.5rem 0.8rem', fontFamily: mono, fontSize: '0.66rem', letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' } }, purchase.buttonLabel || 'Purchase') : h('span', { style: { border: '1px solid rgba(206,255,42,0.58)', color: acid, padding: '0.5rem 0.8rem', fontFamily: mono, fontSize: '0.66rem', letterSpacing: '0.16em', textTransform: 'uppercase' } }, purchase.buttonLabel || 'Purchase')
             )
           )
@@ -1644,7 +1644,7 @@
       };
 
       return h('div', { style: {
-        background: '#000',
+        background: '#FFF3EE',
         color: text,
         padding: '1.4rem',
         fontFamily: mono,
@@ -1657,7 +1657,7 @@
             h('div', { style: { color: cyan, fontSize: '0.66rem', letterSpacing: '0.24em', textTransform: 'uppercase', marginBottom: '0.55rem' } }, hero.kicker || '/relic_market :: static_archive :: no_api'),
             h('h1', { style: { margin: 0, fontFamily: saint, fontSize: '3rem', fontWeight: 400, letterSpacing: '0.12em', textTransform: 'uppercase', textShadow: '-3px 0 rgba(255,62,219,0.5), 2px 0 rgba(88,244,255,0.42)' } }, hero.title || 'Shop')
           ),
-          h('div', { style: { border: '1px solid rgba(88,244,255,0.22)', background: 'rgba(0,0,0,0.44)', padding: '0.8rem', color: 'rgba(214,222,240,0.72)', fontSize: '0.68rem', lineHeight: 1.75 } },
+          h('div', { style: { border: '1px solid rgba(24,24,69,0.18)', background: 'rgba(255,255,255,0.62)', padding: '0.8rem', color: text, fontSize: '0.68rem', lineHeight: 1.75 } },
             (terminalLines.length ? terminalLines : ['catalog mounted: /SHOP', 'payment state: pending review']).map(function(line, i) {
               return h('div', { key: i }, h('span', { style: { color: acid } }, '> '), line);
             })
@@ -1682,7 +1682,7 @@
           );
         }),
         purchase.refundNotice ? h('div', { style: { marginTop: '1rem', padding: '0.9rem 1rem', border: '1px dashed rgba(255,62,219,0.42)', color: text, background: 'rgba(255,62,219,0.045)', fontSize: '0.74rem', letterSpacing: '0.08em', textAlign: 'center' } }, purchase.refundNotice) : null,
-        h('footer', { style: { marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(206,255,42,0.22)', color: 'rgba(214,222,240,0.7)' } },
+        h('footer', { style: { marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(206,255,42,0.22)', color: text } },
           h('h2', { style: { margin: '0 0 0.7rem', color: acid, fontFamily: saint, fontWeight: 400, fontSize: '1rem', letterSpacing: '0.24em', textTransform: 'uppercase' } }, contact.heading || 'Contact Info'),
           h('div', null,
             h('div', null, (contact.emailLabel || '聯絡信箱') + ': ' + (contact.email || '')),
