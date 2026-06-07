@@ -709,6 +709,77 @@
       var COLOR_RESET_P = ['', 'default', 'inherit', 'unset', 'none', '預設', 'reset'];
 
       // Build style for a named text element（支援 useDefaultColor + normLen）
+      var LIGHT_THEME_COLORS_P = ['#FFFAF4', '#FFF3EE', '#D1E9E9', '#F3F3FA', '#E8E8D0', '#F2E6E6', '#ECF5FF'];
+      var normalizeHex = function(value) {
+        var v = String(value || '').trim().toUpperCase();
+        return /^#[0-9A-F]{6}$/.test(v) ? v : '';
+      };
+      var hexToRgb = function(hex) {
+        var v = normalizeHex(hex) || '#000000';
+        return {
+          r: parseInt(v.slice(1, 3), 16),
+          g: parseInt(v.slice(3, 5), 16),
+          b: parseInt(v.slice(5, 7), 16)
+        };
+      };
+      var rgbToHex = function(rgb) {
+        var clamp = function(n) { return Math.max(0, Math.min(255, Math.round(n))); };
+        return '#' + [clamp(rgb.r), clamp(rgb.g), clamp(rgb.b)].map(function(n) {
+          return n.toString(16).padStart(2, '0');
+        }).join('').toUpperCase();
+      };
+      var mixHex = function(baseHex, mixHexValue, amount) {
+        var base = hexToRgb(baseHex);
+        var mix = hexToRgb(mixHexValue);
+        var a = Math.max(0, Math.min(1, Number(amount) || 0));
+        return rgbToHex({
+          r: base.r + (mix.r - base.r) * a,
+          g: base.g + (mix.g - base.g) * a,
+          b: base.b + (mix.b - base.b) * a
+        });
+      };
+
+      var bgCfg = s.siteBackground || {};
+      var themeMode = String(bgCfg.themeMode || bgCfg.paletteMode || bgCfg.colorMode || 'dark').toLowerCase();
+      var lightSelected = normalizeHex(bgCfg.lightColor || bgCfg.lightBackgroundColor);
+      var lightLegacy = normalizeHex(bgCfg.color);
+      var lightColor = LIGHT_THEME_COLORS_P.indexOf(lightSelected) >= 0
+        ? lightSelected
+        : LIGHT_THEME_COLORS_P.indexOf(lightLegacy) >= 0
+          ? lightLegacy
+          : LIGHT_THEME_COLORS_P[0];
+      var isLightTheme = themeMode === 'light';
+      var bgType = isLightTheme ? 'color' : (bgCfg.type || 'color').toLowerCase();
+      var bgUseDefault = !isLightTheme && (bgCfg.useDefaultColor === true || bgCfg.useDefaultColor === 'true' || !bgCfg.color);
+      var bgColor = isLightTheme ? lightColor : ((!bgUseDefault && bgCfg.color) ? bgCfg.color : '#04040c');
+      var palette = isLightTheme ? {
+        bg: bgColor,
+        panel: mixHex(bgColor, '#FFFFFF', 0.58),
+        panelAlt: mixHex(bgColor, '#1F2937', 0.08),
+        text: '#2C3543',
+        dim: '#657184',
+        bright: '#121822',
+        accent: '#7A3F69',
+        border: 'rgba(31,41,55,0.18)',
+        frameBorder: 'rgba(31,41,55,0.30)',
+        statusBg: 'rgba(255,255,255,0.62)',
+        imageBg: mixHex(bgColor, '#1F2937', 0.10),
+        imageText: 'rgba(44,53,67,0.36)'
+      } : {
+        bg: bgColor,
+        panel: '#04020a',
+        panelAlt: '#0d0820',
+        text: '#c8c0e8',
+        dim: '#6a6080',
+        bright: '#eee8ff',
+        accent: '#7755ff',
+        border: '#1e1840',
+        frameBorder: '#2a2050',
+        statusBg: '#0a071e',
+        imageBg: '#0d0820',
+        imageText: '#2a2060'
+      };
+
       var elSty = function(key, base) {
         var el  = ts[key] || {};
         var out = Object.assign({}, base);
@@ -741,7 +812,7 @@
       // Nav logo style
       var navLogoSty = elSty('navLogo', {
         fontFamily: '"Saint", ' + headingFont, fontWeight: 400,
-        fontSize: '0.9rem', color: '#eee8ff', letterSpacing: '0.06em', lineHeight: 1
+        fontSize: '0.9rem', color: palette.bright, letterSpacing: '0.06em', lineHeight: 1
       });
 
       // Nav links style
@@ -754,7 +825,7 @@
       var navLinksSty = {
         fontFamily: '"Saint", ' + accentFont,
         fontSize:   normLen(navLinksEl.fontSize) || '0.72rem',
-        color:      (!nlUseDefault && nlCol) ? nlCol : '#c8c0e8',
+        color:      (!nlUseDefault && nlCol) ? nlCol : palette.text,
         letterSpacing: '0.14em', textTransform: 'uppercase',
         display: 'inline-flex', gap: '1.4rem', flexWrap: 'wrap',
         transform: (nlTx !== '0px' || nlTy !== '0px') ? 'translate(' + nlTx + ',' + nlTy + ')' : 'none'
@@ -770,7 +841,7 @@
       var pageTitleSty = {
         fontFamily: accentFont, fontWeight: 400,
         fontSize:   normLen(pageTitleEl.fontSize) || '0.7rem',
-        color:      (!ptUseDefault && ptCol) ? ptCol : '#6a6080',
+        color:      (!ptUseDefault && ptCol) ? ptCol : palette.dim,
         letterSpacing: '0.25em', textTransform: 'uppercase',
         display: 'block', margin: '0 0 1.2rem',
         transform: (ptTx !== '0px' || ptTy !== '0px') ? 'translate(' + ptTx + ',' + ptTy + ')' : 'none'
@@ -778,30 +849,30 @@
 
       var bioH1Sty = elSty('bioH1', {
         fontFamily: headingFont, fontWeight: 400,
-        fontSize: '2.2rem', color: '#eee8ff', letterSpacing: '0.04em', lineHeight: 1.15,
+        fontSize: '2.2rem', color: palette.bright, letterSpacing: '0.04em', lineHeight: 1.15,
         margin: '0 0 0.3rem'
       });
       var exH2Sty  = elSty('exhibitionH2', {
         fontFamily: headingFont, fontWeight: 400,
-        fontSize: '1.25rem', color: '#eee8ff', margin: '0 0 0.4rem'
+        fontSize: '1.25rem', color: palette.bright, margin: '0 0 0.4rem'
       });
       var ctH2Sty  = elSty('contactH2', {
         fontFamily: headingFont, fontWeight: 400,
-        fontSize: '1.25rem', color: '#eee8ff', margin: '0 0 0.4rem'
+        fontSize: '1.25rem', color: palette.bright, margin: '0 0 0.4rem'
       });
 
-      var divider = h('hr', { style: { border: 'none', borderTop: '1px solid #1e1840', margin: '2rem 0' } });
+      var divider = h('hr', { style: { border: 'none', borderTop: '1px solid ' + palette.border, margin: '2rem 0' } });
       var imgBox = function(w, ht, lbl) {
         return h('div', { style: {
-          background: '#0d0820', width: w, height: ht, flexShrink: 0,
+          background: palette.imageBg, width: w, height: ht, flexShrink: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#2a2060', fontFamily: '"Courier New",monospace', fontSize: '0.55rem',
-          letterSpacing: '0.15em', border: '1px solid #1a1640'
+          color: palette.imageText, fontFamily: '"Courier New",monospace', fontSize: '0.55rem',
+          letterSpacing: '0.15em', border: '1px solid ' + palette.border
         }}, lbl || 'IMG');
       };
       var metaP = function(txt) {
         return h('p', { style: {
-          fontFamily: accentFont, fontSize: '0.7rem', color: '#6a6080',
+          fontFamily: accentFont, fontSize: '0.7rem', color: palette.dim,
           letterSpacing: '0.1em', margin: '0.3rem 0 0.6rem'
         }}, txt);
       };
@@ -818,48 +889,54 @@
           : ('背景影片' + (bgCfg.video ? ' ✓' : '（未上傳）'));
       // Mock frame 背景：color 直接用顏色；image/video 顯示預覽色塊（無法跨域渲染）
       var mockBg = bgType === 'color' ? bgColor : '#04040c';
+      if (isLightTheme) {
+        bgType = 'color';
+        bgColor = lightColor;
+        bgLabel = 'Light theme ' + bgColor;
+        mockBg = bgColor;
+      }
 
       return h('div', null,
 
         // ── 背景狀態提示條 ──
         h('div', { style: {
           display: 'flex', alignItems: 'center', gap: '0.8rem',
-          background: '#0a071e', border: '1px solid #2a2060', borderRadius: '3px',
+          background: palette.statusBg, border: '1px solid ' + palette.frameBorder, borderRadius: '3px',
           padding: '0.4rem 0.8rem', marginBottom: '0.7rem', fontFamily: '"Courier New",monospace',
-          fontSize: '0.65rem', color: '#9090c0'
+          fontSize: '0.65rem', color: palette.dim
         }},
-          h('span', { style: { color: '#7755ff', letterSpacing: '0.1em' } }, '🖼 背景'),
+          h('span', { style: { color: palette.accent, letterSpacing: '0.1em' } }, '🖼 背景'),
           h('span', null, bgType.toUpperCase()),
-          h('span', { style: { color: '#555088' } }, '│'),
-          h('span', { style: { color: '#b0a8e0' } }, bgLabel),
+          h('span', { style: { color: palette.border } }, '│'),
+          h('span', { style: { color: palette.text } }, bgLabel),
           bgType !== 'color' && bgCfg.overlayOpacity > 0
-            ? h('span', { style: { color: '#888' } }, '│ 遮罩 ' + Math.round(bgCfg.overlayOpacity * 100) + '%')
+            ? h('span', { style: { color: palette.dim } }, '│ 遮罩 ' + Math.round(bgCfg.overlayOpacity * 100) + '%')
             : null,
           bgType === 'color'
             ? h('span', { style: {
                 display: 'inline-block', width: '14px', height: '14px',
-                background: bgColor, border: '1px solid #3a2880', borderRadius: '2px', flexShrink: 0
+                background: bgColor, border: '1px solid ' + palette.frameBorder, borderRadius: '2px', flexShrink: 0
               }})
             : null
         ),
 
         // header label
         h('div', { style: {
-          color: '#6a6080', fontFamily: '"Courier New",monospace', fontSize: '0.62rem',
+          color: palette.dim, fontFamily: '"Courier New",monospace', fontSize: '0.62rem',
           letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '0.5rem', marginTop: '0.6rem'
         }}, '\u25bc  \u7db2\u7ad9\u7248\u9762\u9810\u89bd  Site Layout Preview'),
 
         // MOCK WEBSITE FRAME
         h('div', { style: {
-          background: mockBg, border: '2px solid #2a2050', borderRadius: '4px',
+          background: mockBg, border: '2px solid ' + palette.frameBorder, borderRadius: '4px',
           overflow: 'visible', marginBottom: '1rem', fontFamily: headingFont
         }},
 
           // Nav bar
           h('nav', { style: {
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            padding: '0.9rem 2rem', borderBottom: '1px solid #1e1840',
-            background: '#04020a', overflow: 'visible'
+            padding: '0.9rem 2rem', borderBottom: '1px solid ' + palette.border,
+            background: palette.panel, overflow: 'visible'
           }},
             h('div', { style: navLogoSty }, applyZ(s.title || 'GGdove', 'navLogo')),
             h('div', { style: { overflow: 'visible' } },
@@ -885,7 +962,7 @@
                   imgBox('100%', '100px', 'IMAGE'),
                   h('div', { style: {
                     padding: '0.3rem 0', fontFamily: headingFont,
-                    fontSize: '0.85rem', color: '#c8c0e8'
+                    fontSize: '0.85rem', color: palette.text
                   }}, n)
                 );
               })
@@ -935,9 +1012,9 @@
         // Zalgo status strip
         h('div', { style: {
           fontFamily: '"Courier New",monospace', fontSize: '0.62rem',
-          color: zEnabled ? '#ff4466' : '#6a6080',
+          color: zEnabled ? (isLightTheme ? '#9D2946' : '#ff4466') : palette.dim,
           letterSpacing: '0.1em', marginBottom: '0.4rem',
-          padding: '0.35rem 0.7rem', background: '#08040f', border: '1px solid #1e1840'
+          padding: '0.35rem 0.7rem', background: palette.statusBg, border: '1px solid ' + palette.border
         }},
           zEnabled
             ? ('Zalgo ON  \xb7  intensity ' + zIntensity.toFixed(2) + '  \xb7  '
