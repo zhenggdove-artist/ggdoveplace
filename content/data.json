@@ -725,6 +725,24 @@
         "mediaFit": "contain",
         "mediaPosition": "center center",
         "aspect": "16/9"
+      },
+      {
+        "titleEn": "Urban Legend II - Run Artist RUN!",
+        "video": "https://youtube.com/shorts/Z7za7pbT9Yw?feature=share",
+        "mediaWidth": "100%",
+        "mediaHeight": "520px",
+        "mediaFit": "contain",
+        "mediaPosition": "center center",
+        "aspect": "9/16"
+      },
+      {
+        "titleEn": "Urban Legend III - 鼠巴拉西",
+        "video": "https://youtube.com/shorts/MbPJs7ue-3U?si=4xvrzbMr1nIx04KX",
+        "mediaWidth": "100%",
+        "mediaHeight": "520px",
+        "mediaFit": "contain",
+        "mediaPosition": "center center",
+        "aspect": "9/16"
       }
     ]
   },
