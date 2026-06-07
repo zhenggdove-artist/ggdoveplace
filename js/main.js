@@ -315,10 +315,122 @@ function applyZalgo(site) {
 }
 
 // ── Apply site background (color / image / video) ──
+const LIGHT_THEME_COLORS = [
+  '#FFFAF4',
+  '#FFF3EE',
+  '#D1E9E9',
+  '#F3F3FA',
+  '#E8E8D0',
+  '#F2E6E6',
+  '#ECF5FF'
+];
+
+const THEME_VARS = [
+  '--bg',
+  '--bg-2',
+  '--bg-3',
+  '--text',
+  '--text-dim',
+  '--text-bright',
+  '--text-secondary',
+  '--accent',
+  '--accent-dim',
+  '--accent-glow',
+  '--border',
+  '--red-ghost',
+  '--blue-ghost'
+];
+
+function normalizeThemeHex(value) {
+  const v = String(value || '').trim().toUpperCase();
+  return /^#[0-9A-F]{6}$/.test(v) ? v : '';
+}
+
+function hexToRgb(hex) {
+  const v = normalizeThemeHex(hex);
+  if (!v) return { r: 0, g: 0, b: 0 };
+  return {
+    r: parseInt(v.slice(1, 3), 16),
+    g: parseInt(v.slice(3, 5), 16),
+    b: parseInt(v.slice(5, 7), 16)
+  };
+}
+
+function rgbToHex({ r, g, b }) {
+  const clamp = n => Math.max(0, Math.min(255, Math.round(n)));
+  return '#' + [clamp(r), clamp(g), clamp(b)]
+    .map(n => n.toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase();
+}
+
+function mixHex(baseHex, mixHexValue, amount) {
+  const base = hexToRgb(baseHex);
+  const mix = hexToRgb(mixHexValue);
+  const a = Math.max(0, Math.min(1, Number(amount) || 0));
+  return rgbToHex({
+    r: base.r + (mix.r - base.r) * a,
+    g: base.g + (mix.g - base.g) * a,
+    b: base.b + (mix.b - base.b) * a
+  });
+}
+
+function getSiteThemeMode(site) {
+  const bg = site && site.siteBackground;
+  return String((bg && (bg.themeMode || bg.paletteMode || bg.colorMode)) || 'dark').toLowerCase();
+}
+
+function isLightTheme(site) {
+  return getSiteThemeMode(site) === 'light';
+}
+
+function getLightThemeColor(bg) {
+  const selected = normalizeThemeHex(bg && (bg.lightColor || bg.lightBackgroundColor));
+  if (LIGHT_THEME_COLORS.includes(selected)) return selected;
+
+  const legacyColor = normalizeThemeHex(bg && bg.color);
+  if (LIGHT_THEME_COLORS.includes(legacyColor)) return legacyColor;
+
+  return LIGHT_THEME_COLORS[0];
+}
+
+function applyThemePalette(site) {
+  const root = document.documentElement;
+  THEME_VARS.forEach(name => root.style.removeProperty(name));
+  root.dataset.theme = 'dark';
+  if (document.body) document.body.classList.remove('theme-light');
+
+  const bg = (site && site.siteBackground) || {};
+  if (!isLightTheme(site)) return { mode: 'dark', color: null };
+
+  const lightBg = getLightThemeColor(bg);
+  const panelBg = mixHex(lightBg, '#FFFFFF', 0.58);
+  const recessedBg = mixHex(lightBg, '#1F2937', 0.08);
+
+  root.dataset.theme = 'light';
+  if (document.body) document.body.classList.add('theme-light');
+  root.style.setProperty('--bg', lightBg);
+  root.style.setProperty('--bg-2', panelBg);
+  root.style.setProperty('--bg-3', recessedBg);
+  root.style.setProperty('--text', '#2C3543');
+  root.style.setProperty('--text-secondary', '#414B5A');
+  root.style.setProperty('--text-dim', '#657184');
+  root.style.setProperty('--text-bright', '#121822');
+  root.style.setProperty('--accent', '#7A3F69');
+  root.style.setProperty('--accent-dim', 'rgba(122,63,105,0.24)');
+  root.style.setProperty('--accent-glow', 'rgba(122,63,105,0.20)');
+  root.style.setProperty('--border', 'rgba(31,41,55,0.18)');
+  root.style.setProperty('--red-ghost', 'rgba(170,40,64,0.42)');
+  root.style.setProperty('--blue-ghost', 'rgba(24,92,142,0.34)');
+
+  return { mode: 'light', color: lightBg };
+}
+
 function applyBackground(site) {
   if (!site || !site.siteBackground) return;
+  const theme = applyThemePalette(site);
   const bg = site.siteBackground;
-  const type = (bg.type || 'color').toLowerCase();
+  const type = theme.mode === 'light' ? 'color' : (bg.type || 'color').toLowerCase();
 
   // 清除舊的背景層與影片層
   const oldLayer = document.getElementById('site-bg-layer');
@@ -328,10 +440,12 @@ function applyBackground(site) {
 
   // 純色模式
   if (type === 'color') {
-    const useDefault = bg.useDefaultColor === true || bg.useDefaultColor === 'true' || !bg.color;
-    if (!useDefault && bg.color) {
-      document.documentElement.style.setProperty('--bg', bg.color);
-      document.body.style.setProperty('background', bg.color, 'important');
+    const useDefault = theme.mode !== 'light'
+      && (bg.useDefaultColor === true || bg.useDefaultColor === 'true' || !bg.color);
+    const color = theme.mode === 'light' ? theme.color : bg.color;
+    if (!useDefault && color) {
+      document.documentElement.style.setProperty('--bg', color);
+      document.body.style.setProperty('background', color, 'important');
     } else {
       document.documentElement.style.removeProperty('--bg');
       document.body.style.removeProperty('background');
@@ -507,7 +621,16 @@ function applyAnimations(site) {
 // ── Init VHS effect (call after all rendering) ─
 function initVHS() {
   if (window.VHSEffect && visualData) {
-    VHSEffect.init(visualData);
+    const cfg = Object.assign({}, visualData);
+    if (isLightTheme(siteData && siteData.site)) {
+      cfg.vignetteOpacity = Math.min(Number(cfg.vignetteOpacity) || 0, 0.12);
+      cfg.overlayOpacity = Math.min(Number(cfg.overlayOpacity) || 0, 0.08);
+      cfg.grainOpacity = Math.min(Number(cfg.grainOpacity) || 0, 0.045);
+      cfg.scanlinesOpacity = Math.min(Number(cfg.scanlinesOpacity) || 0, 0.06);
+      cfg.artifactsOpacity = Math.min(Number(cfg.artifactsOpacity) || 0, 0.18);
+      cfg.glowIntensity = Math.min(Number(cfg.glowIntensity) || 0, 0.7);
+    }
+    VHSEffect.init(cfg);
   }
 }
 

@@ -44,6 +44,98 @@ body {
   min-height: 100vh;
 }
 
+body.theme-light {
+  color: var(--text);
+}
+
+body.theme-light.landing-body {
+  background: var(--bg) !important;
+  color: var(--text);
+}
+
+body.theme-light .landing-svg .nav-label {
+  fill: var(--text-bright);
+}
+
+body.theme-light .landing-svg .nav-sub {
+  fill: var(--text-dim);
+}
+
+body.theme-light .landing-svg .nav-ornament {
+  fill: rgba(18, 24, 34, 0.34);
+}
+
+body.theme-light .landing-svg a:hover .nav-label,
+body.theme-light .landing-svg a:hover .nav-sub {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+
+body.theme-light.shop-body {
+  --shop-bg: var(--bg);
+  --shop-panel: rgba(255, 255, 255, 0.70);
+  --shop-line: rgba(31, 41, 55, 0.18);
+  --shop-line-strong: rgba(31, 41, 55, 0.36);
+  --shop-cyan: #24656C;
+  --shop-pink: #7A3F69;
+  --shop-acid: #4C650D;
+  --shop-red: #9D2946;
+  --shop-text: #18202C;
+  --shop-dim: #626D7F;
+  background: var(--bg) !important;
+  color: var(--shop-text);
+}
+
+body.theme-light .shop-scanlines,
+body.theme-light .shop-noise {
+  opacity: 0.05;
+}
+
+body.theme-light .shop-terminal,
+body.theme-light .shop-lightbox-close,
+body.theme-light .shop-lightbox-nav {
+  background: rgba(255, 255, 255, 0.62);
+}
+
+body.theme-light .shop-page .nav-links a {
+  color: rgba(44, 53, 67, 0.62);
+}
+
+body.theme-light .shop-page .nav-links a:hover,
+body.theme-light .shop-page .nav-links a.active {
+  color: var(--shop-acid);
+  text-shadow: 0 0 12px rgba(76, 101, 13, 0.26);
+}
+
+body.theme-light .ascii-deco {
+  color: rgba(76, 101, 13, 0.48);
+}
+
+body.theme-light .landing-artist {
+  color: rgba(44, 53, 67, 0.78);
+}
+
+body.theme-light .gallery-grid.caption-overlay .gallery-caption {
+  background: linear-gradient(transparent, rgba(255, 255, 255, 0.94));
+}
+
+body.theme-light .subpage-body code,
+body.theme-light .custom-page-body code {
+  background: rgba(18, 24, 34, 0.08);
+}
+
+body.theme-light .ex-slide-btn {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: var(--border);
+  color: var(--text-bright);
+}
+
+body.theme-light .ex-slide-caption,
+body.theme-light .media-video figcaption {
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--text-dim);
+}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--bg); }

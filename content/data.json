@@ -171,6 +171,8 @@
     },
     "imageAspect": "4/3",
     "siteBackground": {
+      "themeMode": "dark",
+      "lightColor": "#FFFAF4",
       "type": "color",
       "color": "#0f0c0c",
       "useDefaultColor": false,

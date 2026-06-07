@@ -773,9 +773,30 @@ collections:
               - label: "🎨 網站背景 Site Background"
                 name: siteBackground
                 widget: object
-                collapsed: true
+                collapsed: false
                 hint: "設定整個網站的背景：純色、圖片或影片均可"
                 fields:
+                  - label: "Theme Mode 深色 / 淺色"
+                    name: themeMode
+                    widget: select
+                    options:
+                      - { label: "Dark 深色配置", value: "dark" }
+                      - { label: "Light 淺色配置", value: "light" }
+                    default: "dark"
+                    hint: "切到 Light 時，網站會同步套用深色文字、淺色面板與下方指定底色。"
+                  - label: "Light Background 淺色底色"
+                    name: lightColor
+                    widget: select
+                    options:
+                      - { label: "#FFFAF4", value: "#FFFAF4" }
+                      - { label: "#FFF3EE", value: "#FFF3EE" }
+                      - { label: "#D1E9E9", value: "#D1E9E9" }
+                      - { label: "#F3F3FA", value: "#F3F3FA" }
+                      - { label: "#E8E8D0", value: "#E8E8D0" }
+                      - { label: "#F2E6E6", value: "#F2E6E6" }
+                      - { label: "#ECF5FF", value: "#ECF5FF" }
+                    default: "#FFFAF4"
+                    hint: "只在 Theme Mode 選 Light 時生效。"
                   - label: "背景類型 Type"
                     name: type
                     widget: select
