@@ -1727,20 +1727,9 @@ function renderBio() {
     <div class="bio-content">
       <h1>${escapeHtml(b.name)}</h1>
       <p class="bio-subtitle">${escapeHtml(b.subtitle)}</p>
-      <div class="bio-text">${formatBioText(b.text)}</div>
+      <div class="bio-text">${escapeHtml(b.text)}</div>
       ${b.cv_url ? `<a class="bio-cv-link" href="${b.cv_url}" target="_blank">Download CV \u2192</a>` : ''}
     </div>`;
-}
-
-function formatBioText(text) {
-  return String(text || '')
-    .replace(/\r\n?/g, '\n')
-    .trim()
-    .split(/\n\s*\n+/)
-    .map(block => block.replace(/\s*\n\s*/g, ' ').trim())
-    .filter(Boolean)
-    .map(block => `<p>${escapeHtml(block)}</p>`)
-    .join('');
 }
 
 // ── Contact ────────────────────────────────────

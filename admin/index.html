@@ -631,7 +631,7 @@
         h('div', { style: { flex: 1, minWidth: '200px' } },
           h('h1', { style: { fontFamily: 'Georgia,serif', fontSize: '1.8rem', fontWeight: 400, color: '#eee8ff', margin: '0 0 0.3rem' } }, b.name || ''),
           h('p',  { style: { fontFamily: 'Courier New,monospace', fontSize: '0.72rem', color: '#7755ff', letterSpacing: '0.12em', margin: '0 0 1rem' } }, b.subtitle || ''),
-          h('p',  { style: { lineHeight: 1.75, color: '#c8c0e8', fontSize: '0.92rem' } }, b.text || '')
+          h('div', { style: { lineHeight: 1.75, color: '#c8c0e8', fontSize: '0.92rem', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' } }, b.text || '')
         )
       );
     }

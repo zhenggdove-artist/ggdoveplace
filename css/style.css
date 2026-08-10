@@ -945,14 +945,8 @@ nav {
   color: var(--text);
   line-height: 2.1;
   margin-bottom: 1.5rem;
-}
-
-.bio-text p {
-  margin: 0 0 2.1rem;
-}
-
-.bio-text p:last-child {
-  margin-bottom: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .bio-cv-link {
