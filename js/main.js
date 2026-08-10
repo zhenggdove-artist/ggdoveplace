@@ -1718,18 +1718,29 @@ function renderBio() {
   ).join('');
   wrap.innerHTML = `
     <div class="bio-left">
-      <img class="bio-photo" src="${fixImg(b.photo)}" alt="${b.name}">
+      <img class="bio-photo" src="${fixImg(b.photo)}" alt="${escapeHtml(b.name)}">
       <div class="bio-cv-list">
         <h3>Selected Exhibitions &amp; Residencies</h3>
         <ul>${cvHtml}</ul>
       </div>
     </div>
     <div class="bio-content">
-      <h1>${b.name}</h1>
-      <p class="bio-subtitle">${b.subtitle}</p>
-      <p class="bio-text">${b.text}</p>
+      <h1>${escapeHtml(b.name)}</h1>
+      <p class="bio-subtitle">${escapeHtml(b.subtitle)}</p>
+      <div class="bio-text">${formatBioText(b.text)}</div>
       ${b.cv_url ? `<a class="bio-cv-link" href="${b.cv_url}" target="_blank">Download CV \u2192</a>` : ''}
     </div>`;
+}
+
+function formatBioText(text) {
+  return String(text || '')
+    .replace(/\r\n?/g, '\n')
+    .trim()
+    .split(/\n\s*\n+/)
+    .map(block => block.replace(/\s*\n\s*/g, ' ').trim())
+    .filter(Boolean)
+    .map(block => `<p>${escapeHtml(block)}</p>`)
+    .join('');
 }
 
 // ── Contact ────────────────────────────────────

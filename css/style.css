@@ -947,6 +947,14 @@ nav {
   margin-bottom: 1.5rem;
 }
 
+.bio-text p {
+  margin: 0 0 2.1rem;
+}
+
+.bio-text p:last-child {
+  margin-bottom: 0;
+}
+
 .bio-cv-link {
   display: inline-block;
   font-family: var(--mono);
