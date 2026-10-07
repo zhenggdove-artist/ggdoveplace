@@ -270,6 +270,7 @@
   </div>
 
   <script src="js/main.js"></script>
+  <script src="js/creature-renderer.js"></script>
   <script>
     // ── CMS data ──
     loadData().then(() => {
@@ -456,7 +457,16 @@
     (function() {
       const canvas = document.getElementById('creature-canvas');
       if (!canvas) return;
-      const ctx = canvas.getContext('2d');
+      // Probe on a separate canvas so a failed GPU initialization can always
+      // fall back to the original Canvas 2D renderer.
+      const gpuCanvas = canvas.cloneNode(false);
+      let gpu = null;
+      try { gpu = window.createCreatureRenderer(gpuCanvas,
+        ['.', '\u00B7', '\u2022', '\u2219', '\u25E6', '\u2218', 'o', '\u00B0', '*', '+']); }
+      catch (error) { console.warn('Creature GPU renderer unavailable:', error); }
+      if (gpu) canvas.replaceWith(gpuCanvas);
+      const displayCanvas = gpu ? gpuCanvas : canvas;
+      const ctx = gpu || canvas.getContext('2d');
       const W = 600, H = 600;
       const CX = W / 2, CY = H / 2;
       const mobCreature = window.innerWidth < 768;
@@ -516,6 +526,11 @@
               size: dotSize*(1-u*0.4),
               alpha: dotAlpha*(1-u*0.3)
             });
+          }
+          for (let j = 0; j < ringPts.length; j++) {
+            ringPts[j].glyphIndex = GLYPHS.indexOf(ringPts[j].glyph);
+            ringPts[j].ringCos = Math.cos((j / ptsPerRing) * Math.PI * 2);
+            ringPts[j].ringSin = Math.sin((j / ptsPerRing) * Math.PI * 2);
           }
           rings.push(ringPts);
         }
@@ -628,7 +643,7 @@
 
       function handleCreatureClick(clientX, clientY) {
         if (redirecting) return;
-        const rect = canvas.getBoundingClientRect();
+        const rect = displayCanvas.getBoundingClientRect();
         const mx = (clientX-rect.left)*(W/rect.width);
         const my = (clientY-rect.top)*(H/rect.height);
 
@@ -756,10 +771,10 @@
         }
       }
 
-      canvas.addEventListener('click', function(e) {
+      displayCanvas.addEventListener('click', function(e) {
         handleCreatureClick(e.clientX, e.clientY);
       });
-      canvas.addEventListener('touchend', function(e) {
+      displayCanvas.addEventListener('touchend', function(e) {
         e.preventDefault();
         const t = e.changedTouches[0];
         if (t) handleCreatureClick(t.clientX, t.clientY);
@@ -780,12 +795,17 @@
           const cg = Math.min(255, Math.floor(color[1]*(1-u*0.2)));
           const cb = Math.min(255, Math.floor(color[2]*(1-u*0.1)));
           ctx.fillStyle = 'rgb('+cr+','+cg+','+cb+')';
+          ctx.font = Math.max(2, rings[r][0].size*sc*ringAlpha*cBoost)+'px "Courier New", monospace';
           const ring = rings[r];
           for (let j = 0; j < ring.length; j++) {
             const p = ring[j];
             ctx.globalAlpha = Math.min(1, p.alpha * ringAlpha * cBoost);
-            ctx.font = Math.max(2, p.size*sc*ringAlpha*cBoost)+'px "Courier New", monospace';
-            ctx.fillText(p.glyph, p.x, p.y);
+            if (gpu) {
+              gpu.point(p.glyphIndex, p.x, p.y,
+                Math.max(2, p.size*sc*ringAlpha*cBoost), ctx.globalAlpha, cr, cg, cb);
+            } else {
+              ctx.fillText(p.glyph, p.x, p.y);
+            }
           }
         }
       }
@@ -803,9 +823,9 @@
           const tiltC = 0.3+Math.abs(ny)*0.5;
           const ring = rings[r];
           for (let j = 0; j < ring.length; j++) {
-            const theta = (j/ring.length)*Math.PI*2;
-            ring[j].baseX = spine[r].x + Math.cos(theta)*ringR*nx - Math.sin(theta)*ringR*tiltC*tx/tLen;
-            ring[j].baseY = spine[r].y + Math.cos(theta)*ringR*ny - Math.sin(theta)*ringR*tiltC*ty/tLen;
+            const p = ring[j];
+            p.baseX = spine[r].x + p.ringCos*ringR*nx - p.ringSin*ringR*tiltC*tx/tLen;
+            p.baseY = spine[r].y + p.ringCos*ringR*ny - p.ringSin*ringR*tiltC*ty/tLen;
           }
         }
       }
@@ -994,6 +1014,8 @@
         }
 
         ctx.globalAlpha = 1;
+
+        if (gpu) gpu.flush();
 
         // ── Orbit curves (merged into single rAF loop) ──
         if (orbitCtx && orbitPts) {
